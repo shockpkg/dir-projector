@@ -1,0 +1,73 @@
+scripts:
+  lint:
+    default: concurrently "nps lint.js" "nps lint.ts"
+    watch: concurrently "nps lint.js || true" "nps lint.ts || true"
+    js: eslint .
+    ts: tslint -p . -t stylish
+
+  clean:
+    default: concurrently "nps clean.logs" "nps clean.lib" "nps clean.projectors"
+    logs: rimraf npm-debug.log* yarn-debug.log* yarn-error.log*
+    lib: rimraf lib
+    projectors: rimraf spec/projectors
+
+  build:
+    default: concurrently "nps build.lib"
+    lib:
+      default: concurrently "nps build.lib.dts" "nps build.lib.cjs" "nps build.lib.mjs"
+      dts: tsc
+      cjs: gulp buildLibCjs
+      mjs: gulp buildLibMjs
+
+  shockpkg-install:
+    default: nps "shockpkg-install.update" "shockpkg-install.install-win" "shockpkg-install.install-mac"
+    update: shockpkg update
+    install-win: shockpkg install
+      shockwave-projector-director-7.0.0-win-win
+      shockwave-projector-director-7.0.2-2-win-win
+      shockwave-projector-director-7.0.2-trial-win-win
+      shockwave-projector-director-7.0.2-win-win
+      shockwave-projector-director-8.0.0-trial-win-win
+      shockwave-projector-director-8.0.0-win-win
+      shockwave-projector-director-8.5.0-trial-win-win
+      shockwave-projector-director-8.5.1-trial-win-win
+      shockwave-projector-director-9.0.0-trial-win-win
+      shockwave-projector-director-10.0.0-win-win
+      shockwave-projector-director-10.1.0-mac-win
+      shockwave-projector-director-10.1.0-win-win
+      shockwave-projector-director-10.1.1-mac-win
+      shockwave-projector-director-10.1.1-win-win
+      shockwave-projector-director-11.0.0-mac-win
+      shockwave-projector-director-11.0.0-win-win
+      shockwave-projector-director-11.0.0-hotfix-1-mac-win
+      shockwave-projector-director-11.0.0-hotfix-3-mac-win
+      shockwave-projector-director-11.0.0-hotfix-3-win-win
+      shockwave-projector-director-11.5.0-mac-win
+      shockwave-projector-director-11.5.0-win-win
+      shockwave-projector-director-11.5.8-mac-win
+      shockwave-projector-director-11.5.8-win-win
+      shockwave-projector-director-11.5.9-mac-win
+      shockwave-projector-director-11.5.9-win-win
+      shockwave-projector-director-12.0.0-mac-win
+      shockwave-projector-director-12.0.0-win-win
+    install-mac: shockpkg install
+      shockwave-projector-director-11.0.0-mac-mac
+      shockwave-projector-director-11.0.0-win-mac
+      shockwave-projector-director-11.0.0-hotfix-1-mac-mac
+      shockwave-projector-director-11.0.0-hotfix-3-mac-mac
+      shockwave-projector-director-11.0.0-hotfix-3-win-mac
+      shockwave-projector-director-11.5.0-mac-mac
+      shockwave-projector-director-11.5.0-win-mac
+      shockwave-projector-director-11.5.8-mac-mac
+      shockwave-projector-director-11.5.8-win-mac
+      shockwave-projector-director-11.5.9-mac-mac
+      shockwave-projector-director-11.5.9-win-mac
+      shockwave-projector-director-12.0.0-mac-mac
+      shockwave-projector-director-12.0.0-win-mac
+
+  test:
+    default: concurrently "nps test.node"
+    node: jasmine
+
+  watch:
+    default: nodemon --exec 'nps clean lint.watch build test'

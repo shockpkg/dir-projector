@@ -1,0 +1,5 @@
+on startUp
+	beep
+	beep
+	beep
+end startUp
