@@ -57,7 +57,7 @@
 		"jasmine": "^3.4.0",
 		"jasmine-core": "^3.4.0",
 		"jasmine-spec-reporter": "^4.2.1",
-		"nodemon": "^1.19.0",
+		"nodemon": "^1.19.1",
 		"npm-check": "^5.9.0",
 		"nps": "^5.9.5",
 		"nps-utils": "^1.7.0",
