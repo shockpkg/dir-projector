@@ -1,8 +1,7 @@
 {
-	"private": true,
 	"name": "@shockpkg/dir-projector",
 	"description": "Package for creating Shockwave Director projectors",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"keywords": [
 		"shockpkg",
 		"package",
