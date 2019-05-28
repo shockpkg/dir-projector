@@ -464,6 +464,7 @@ export abstract class Projector extends Object {
 			if (pathToHdiutil) {
 				r.mounterMac.hdiutil = pathToHdiutil;
 			}
+			r.nobrowse = true;
 			return r;
 		}
 		if (/\.tar$/i.test(skeleton)) {
