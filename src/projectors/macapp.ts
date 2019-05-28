@@ -16,7 +16,7 @@ import {
 	infoPlistReplace,
 	pathRelativeBase,
 	pathRelativeBaseMatch,
-	plistStringTag
+	plistStringTagEncode
 } from '../util';
 
 export interface IProjectorMacAppOptions extends IProjectorOptions {
@@ -483,20 +483,20 @@ export class ProjectorMacApp extends Projector {
 			xml = infoPlistReplace(
 				xml,
 				'CFBundleExecutable',
-				plistStringTag(appBinaryNameCustom)
+				plistStringTagEncode(appBinaryNameCustom)
 			);
 		}
 		if (appIconNameCustom) {
 			xml = infoPlistReplace(
 				xml,
 				'CFBundleIconFile',
-				plistStringTag(appIconNameCustom)
+				plistStringTagEncode(appIconNameCustom)
 			);
 		}
 		xml = infoPlistReplace(
 			xml,
 			'CFBundleName',
-			plistStringTag(this.getProjectorNameNoExtension(name))
+			plistStringTagEncode(this.getProjectorNameNoExtension(name))
 		);
 
 		return xml;

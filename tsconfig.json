@@ -31,7 +31,7 @@
 			"jasmine",
 			"fs-extra",
 			"sax",
-			"xml-escape"
+			"entities"
 		],
 		"outDir": "lib"
 	},

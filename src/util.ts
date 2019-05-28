@@ -2,12 +2,15 @@ import {
 	Entry,
 	PathType
 } from '@shockpkg/archive-files';
+import {
+	decodeXML,
+	encodeXML
+} from 'entities';
 // @ts-ignore
 import _rcedit from 'rcedit';
 import {
 	parser as saxParser
 } from 'sax';
-import xmlEscape from 'xml-escape';
 
 export interface IRceditOptionsVersionStrings {
 	[key: string]: string;
@@ -164,13 +167,23 @@ export function trimExtension(
 }
 
 /**
- * Escape string for XML.
+ * Encode string for XML.
  *
  * @param value String value.
  * @return Escaped string.
  */
-export function xmlEntities(value: string) {
-	return xmlEscape(value);
+export function xmlEntitiesEncode(value: string) {
+	return encodeXML(value);
+}
+
+/**
+ * Decode string for XML.
+ *
+ * @param value Encoded value.
+ * @return Decoded string.
+ */
+export function xmlEntitiesDecode(value: string) {
+	return decodeXML(value);
 }
 
 /**
@@ -179,22 +192,36 @@ export function xmlEntities(value: string) {
  * @param value String value.
  * @return Plist string.
  */
-export function plistStringTag(value: string) {
-	return `<string>${xmlEntities(value)}</string>`;
+export function plistStringTagEncode(value: string) {
+	return `<string>${xmlEntitiesEncode(value)}</string>`;
 }
 
 /**
- * A small utility function for replacing Info.plist values.
+ * Decode string from plist string tag.
+ *
+ * @param xml XML tag.
+ * @return Plain string, or null.
+ */
+export function plistStringTagDecode(xml: string) {
+	const start = '<string>';
+	const end = '</string>';
+	if (!xml.startsWith(start) || !xml.endsWith(end)) {
+		return null;
+	}
+	const contents = xml.substring(start.length, xml.length - end.length);
+	return xmlEntitiesDecode(contents);
+}
+
+/**
+ * A small helper function for finding Info.plist values.
  *
  * @param xml XML string.
  * @param key Plist dict key.
- * @param value Plist dict value, XML tag.
- * @return Update document.
+ * @return Found indexes or null.
  */
-export function infoPlistReplace(
+function infoPlistFind(
 	xml: string,
-	key: string,
-	value: string
+	key: string
 ) {
 	let replaceTagStart = -1;
 	let replaceTagEnd = -1;
@@ -272,15 +299,47 @@ export function infoPlistReplace(
 
 	parser.write(xml).close();
 
-	// No change.
-	if (replaceTagStart < 0 || replaceTagEnd < 0) {
+	return (replaceTagStart < 0 || replaceTagEnd < 0) ?
+		null :
+		[replaceTagStart, replaceTagEnd];
+}
+
+/**
+ * A small utility function for replacing Info.plist values.
+ *
+ * @param xml XML string.
+ * @param key Plist dict key.
+ * @param value Plist dict value, XML tag.
+ * @return Updated document.
+ */
+export function infoPlistReplace(
+	xml: string,
+	key: string,
+	value: string
+) {
+	const found = infoPlistFind(xml, key);
+	if (!found) {
 		return xml;
 	}
-
 	// Splice in new value.
-	const before = xml.substr(0, replaceTagStart);
-	const after = xml.substr(replaceTagEnd);
+	const before = xml.substr(0, found[0]);
+	const after = xml.substr(found[1]);
 	return `${before}${value}${after}`;
+}
+
+/**
+ * A small utility function for reading Info.plist values.
+ *
+ * @param xml XML string.
+ * @param key Plist dict key.
+ * @return XML tag.
+ */
+export function infoPlistRead(
+	xml: string,
+	key: string
+) {
+	const found = infoPlistFind(xml, key);
+	return found ? xml.substring(found[0], found[1]) : null;
 }
 
 /**
