@@ -366,13 +366,5 @@ export async function rcedit(
 	if (options.versionStrings) {
 		opts['version-string'] = options.versionStrings;
 	}
-	await new Promise((resolve, reject) => {
-		_rcedit(path, opts, (err: any) => {
-			if (err) {
-				reject(err);
-				return;
-			}
-			resolve();
-		});
-	});
+	await _rcedit(path, opts);
 }
