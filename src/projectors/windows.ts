@@ -1,15 +1,21 @@
 import {
-	Entry
+	Entry,
+	fsWalk
 } from '@shockpkg/archive-files';
 import {
+	basename as pathBasename,
 	join as pathJoin
 } from 'path';
 
+import {
+	patchWindowsS3dInstalledDisplayDriversSize
+} from '../patcher';
 import {
 	IProjectorOptions,
 	Projector
 } from '../projector';
 import {
+	defaultFalse,
 	defaultNull,
 	entryIsEmptyResourceFork,
 	IRceditOptions,
@@ -20,6 +26,17 @@ import {
 } from '../util';
 
 export interface IProjectorWindowsOptions extends IProjectorOptions {
+	/**
+	 * Patch the Shockave 3D Xtra to have a larger buffer to avoid a crash.
+	 * The buffer for resolving InstalledDisplayDrivers to a path is small.
+	 * Changes to the values stored in InstalledDisplayDrivers cause issues.
+	 * The value is now supposed to hold full paths on modern Windows.
+	 * In particular, Nvidia drivers which do this need this patch.
+	 *
+	 * @defaultValue false
+	 */
+	patchShockwave3dInstalledDisplayDriversSize?: boolean;
+
 	/**
 	 * Icon file, requires Windows or Wine.
 	 *
@@ -56,6 +73,17 @@ export interface IProjectorWindowsOptions extends IProjectorOptions {
  */
 export class ProjectorWindows extends Projector {
 	/**
+	 * Patch the Shockave 3D Xtra to have a larger buffer to avoid a crash.
+	 * The buffer for resolving InstalledDisplayDrivers to a path is small.
+	 * Changes to the values stored in InstalledDisplayDrivers cause issues.
+	 * The value is now supposed to hold full paths on modern Windows.
+	 * In particular, Nvidia drivers which do this need this patch.
+	 *
+	 * @defaultValue false
+	 */
+	public patchShockwave3dInstalledDisplayDriversSize: boolean;
+
+	/**
 	 * Icon file, requires Windows or Wine.
 	 *
 	 * @defaultValue null
@@ -90,6 +118,9 @@ export class ProjectorWindows extends Projector {
 		this.fileVersion = defaultNull(options.fileVersion);
 		this.productVersion = defaultNull(options.productVersion);
 		this.versionStrings = defaultNull(options.versionStrings);
+		this.patchShockwave3dInstalledDisplayDriversSize = defaultFalse(
+			options.patchShockwave3dInstalledDisplayDriversSize
+		);
 	}
 
 	/**
@@ -143,6 +174,7 @@ export class ProjectorWindows extends Projector {
 	public async write(path: string, name: string) {
 		await super.write(path, name);
 
+		await this._patch(path, name);
 		await this._updateResources(path, name);
 	}
 
@@ -259,6 +291,58 @@ export class ProjectorWindows extends Projector {
 
 		if (!foundXtras) {
 			throw new Error(`Failed to locate: ${xtrasDirectoryName}`);
+		}
+	}
+
+	/**
+	 * Patch projector.
+	 *
+	 * @param path Save path.
+	 * @param name Save name.
+	 */
+	protected async _patch(path: string, name: string) {
+		await this._patchShockwave3dInstalledDisplayDriversSize(path, name);
+	}
+
+	/**
+	 * Patch projector, Shockwave 3D InstalledDisplayDrivers size.
+	 *
+	 * @param path Save path.
+	 * @param name Save name.
+	 */
+	protected async _patchShockwave3dInstalledDisplayDriversSize(
+		path: string,
+		name: string
+	) {
+		if (!this.patchShockwave3dInstalledDisplayDriversSize) {
+			return;
+		}
+
+		const xtrasDir = pathJoin(path, this.getXtrasPath(name));
+		const search = 'Shockwave 3D Asset.x32';
+		const searchLower = search.toLowerCase();
+
+		let found = false;
+		await fsWalk(xtrasDir, async (path, stat) => {
+			if (!stat.isFile()) {
+				return;
+			}
+
+			const fn = pathBasename(path);
+			if (fn.toLowerCase() !== searchLower) {
+				return;
+			}
+
+			found = true;
+			await patchWindowsS3dInstalledDisplayDriversSize(
+				pathJoin(xtrasDir, path)
+			);
+		}, {
+			ignoreUnreadableDirectories: true
+		});
+
+		if (!found) {
+			throw new Error(`Failed to locate for patching: ${search}`);
 		}
 	}
 

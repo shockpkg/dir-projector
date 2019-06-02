@@ -4,7 +4,8 @@ import {
 	cleanProjectorDir,
 	fixtureFile,
 	getPackageFile,
-	platformIsWindows
+	platformIsWindows,
+	shouldTest
 } from '../util.spec';
 
 import {
@@ -13,37 +14,80 @@ import {
 
 // tslint:disable-next-line no-empty-interface
 interface ISample {
+	patchShockwave3dInstalledDisplayDriversSize?: boolean;
 }
 
-const samples: {[index: string]: ISample} = {
+const samples: {[index: string]: ISample} = shouldTest('windows') ? {
 	'shockwave-projector-director-7.0.0-win-win': {},
 	'shockwave-projector-director-7.0.2-2-win-win': {},
 	'shockwave-projector-director-7.0.2-trial-win-win': {},
 	'shockwave-projector-director-7.0.2-win-win': {},
 	'shockwave-projector-director-8.0.0-trial-win-win': {},
 	'shockwave-projector-director-8.0.0-win-win': {},
-	'shockwave-projector-director-8.5.0-trial-win-win': {},
-	'shockwave-projector-director-8.5.1-trial-win-win': {},
-	'shockwave-projector-director-9.0.0-trial-win-win': {},
-	'shockwave-projector-director-10.0.0-win-win': {},
-	'shockwave-projector-director-10.1.0-mac-win': {},
-	'shockwave-projector-director-10.1.0-win-win': {},
-	'shockwave-projector-director-10.1.1-mac-win': {},
-	'shockwave-projector-director-10.1.1-win-win': {},
-	'shockwave-projector-director-11.0.0-mac-win': {},
-	'shockwave-projector-director-11.0.0-win-win': {},
-	'shockwave-projector-director-11.0.0-hotfix-1-mac-win': {},
-	'shockwave-projector-director-11.0.0-hotfix-3-mac-win': {},
-	'shockwave-projector-director-11.0.0-hotfix-3-win-win': {},
-	'shockwave-projector-director-11.5.0-mac-win': {},
-	'shockwave-projector-director-11.5.0-win-win': {},
-	'shockwave-projector-director-11.5.8-mac-win': {},
-	'shockwave-projector-director-11.5.8-win-win': {},
-	'shockwave-projector-director-11.5.9-mac-win': {},
-	'shockwave-projector-director-11.5.9-win-win': {},
-	'shockwave-projector-director-12.0.0-mac-win': {},
-	'shockwave-projector-director-12.0.0-win-win': {}
-};
+	'shockwave-projector-director-8.5.0-trial-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-8.5.1-trial-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-9.0.0-trial-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-10.0.0-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-10.1.0-mac-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-10.1.0-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-10.1.1-mac-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-10.1.1-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.0.0-mac-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.0.0-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.0.0-hotfix-1-mac-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.0.0-hotfix-3-mac-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.0.0-hotfix-3-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.5.0-mac-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.5.0-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.5.8-mac-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.5.8-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.5.9-mac-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-11.5.9-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-12.0.0-mac-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-12.0.0-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	}
+} : {};
 
 const fileVersion = '3.14.15.92';
 const productVersion = '3.1.4.1';
@@ -61,7 +105,9 @@ const versionStrings = {
 describe('projectors/windows', () => {
 	describe('ProjectorWindows', () => {
 		for (const pkg of Object.keys(samples)) {
-			// const o = samples[pkg];
+			const o = samples[pkg];
+			const patchShockwave3dInstalledDisplayDriversSize =
+				o.patchShockwave3dInstalledDisplayDriversSize || false;
 			const getDir = async (d: string) =>
 				cleanProjectorDir('projectors', 'windows', pkg, d);
 			const getSkeleton = async () => getPackageFile(pkg);
@@ -86,7 +132,8 @@ describe('projectors/windows', () => {
 						configFile: fixtureFile('config.ini.crlf.bin'),
 						includeXtras: {
 							'': null
-						}
+						},
+						patchShockwave3dInstalledDisplayDriversSize
 					})).write(dir, 'application.exe');
 				});
 
@@ -141,7 +188,8 @@ describe('projectors/windows', () => {
 						nestXtrasConfiguration: true,
 						includeXtras: {
 							'': null
-						}
+						},
+						patchShockwave3dInstalledDisplayDriversSize
 					})).write(dir, 'application.exe');
 				});
 
@@ -174,6 +222,7 @@ describe('projectors/windows', () => {
 						includeXtras: {
 							'': null
 						},
+						patchShockwave3dInstalledDisplayDriversSize,
 						iconFile: platformIsWindows ?
 							fixtureFile('icon.ico') : null,
 						fileVersion: platformIsWindows ?

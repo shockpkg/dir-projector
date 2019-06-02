@@ -4,7 +4,8 @@ import {
 	cleanProjectorDir,
 	fixtureFile,
 	getPackageFile,
-	platformIsMac
+	platformIsMac,
+	shouldTest
 } from '../util.spec';
 
 import {
@@ -16,7 +17,8 @@ interface ISample {
 	intel?: boolean;
 }
 
-const samples: {[index: string]: ISample} = platformIsMac ? {
+const doTest = platformIsMac && shouldTest('macapp');
+const samples: {[index: string]: ISample} = doTest ? {
 	'shockwave-projector-director-11.0.0-mac-mac': {},
 	'shockwave-projector-director-11.0.0-win-mac': {},
 	'shockwave-projector-director-11.0.0-hotfix-1-mac-mac': {},
