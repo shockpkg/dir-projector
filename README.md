@@ -43,7 +43,7 @@ async function main() {
 		movieName: 'movie.dir',
 		configFile: 'config.ini'
 	});
-	projector.write('out-dir-windows', 'application.exe');
+	await projector.write('out-dir-windows', 'application.exe');
 }
 main().catch(err => {
 	process.exitCode = 1;
@@ -63,7 +63,7 @@ async function main() {
 		movieName: 'movie.dir',
 		configFile: 'config.ini'
 	});
-	projector.write('out-dir-macapp', 'application.app');
+	await projector.write('out-dir-macapp', 'application.app');
 }
 main().catch(err => {
 	process.exitCode = 1;
