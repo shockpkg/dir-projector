@@ -2,9 +2,7 @@ import {
 	Archive,
 	ArchiveDir,
 	ArchiveHdi,
-	ArchiveTar,
-	ArchiveTarGz,
-	ArchiveZip
+	createArchiveByFileExtension
 } from '@shockpkg/archive-files';
 import {
 	readFile as fseReadFile,
@@ -455,29 +453,19 @@ export abstract class Projector extends Object {
 			throw new Error('Projector skeleton not file or directory');
 		}
 
-		if (/\.zip$/i.test(skeleton)) {
-			return new ArchiveZip(skeleton);
+		const r = createArchiveByFileExtension(skeleton);
+		if (!r) {
+			throw new Error('Projector skeleton archive file type unknown');
 		}
-		if (/\.dmg$/i.test(skeleton)) {
-			const r = new ArchiveHdi(skeleton);
+
+		if (r instanceof ArchiveHdi) {
 			const pathToHdiutil = this.pathToHdiutil;
 			if (pathToHdiutil) {
 				r.mounterMac.hdiutil = pathToHdiutil;
 			}
 			r.nobrowse = true;
-			return r;
 		}
-		if (/\.tar$/i.test(skeleton)) {
-			return new ArchiveTar(skeleton);
-		}
-		if (
-			/\.tar\.gz$/i.test(skeleton) ||
-			/\.tgz$/i.test(skeleton)
-		) {
-			return new ArchiveTarGz(skeleton);
-		}
-
-		throw new Error('Projector skeleton archive file type unknown');
+		return r;
 	}
 
 	/**
