@@ -10,22 +10,29 @@ import gulpFilter from 'gulp-filter';
 import gulpReplace from 'gulp-replace';
 import gulpSourcemaps from 'gulp-sourcemaps';
 import gulpBabel from 'gulp-babel';
+import execa from 'execa';
+import del from 'del';
 
-const pumpP = util.promisify(stream.pipeline);
-const fsReadFileP = util.promisify(fs.readFile);
+const readFile = util.promisify(fs.readFile);
+const pipeline = util.promisify(stream.pipeline);
+
+async function exec(cmd, args = []) {
+	await execa(cmd, args, {
+		preferLocal: true,
+		stdio: 'inherit'
+	});
+}
 
 async function packageJSON() {
-	packageJSON.json = packageJSON.json || fsReadFileP('package.json', 'utf8');
+	packageJSON.json = packageJSON.json || readFile('package.json', 'utf8');
 	return JSON.parse(await packageJSON.json);
 }
 
 async function babelrc() {
-	babelrc.json = babelrc.json || fsReadFileP('.babelrc', 'utf8');
-	const r = JSON.parse(await babelrc.json);
-
-	// Prevent .babelrc file from being loaded again by the plugin.
-	r.babelrc = false;
-	return r;
+	babelrc.json = babelrc.json || readFile('.babelrc', 'utf8');
+	return Object.assign(JSON.parse(await babelrc.json), {
+		babelrc: false
+	});
 }
 
 async function babelTarget(src, srcOpts, dest, modules) {
@@ -47,7 +54,7 @@ async function babelTarget(src, srcOpts, dest, modules) {
 		["'@NAME@'", JSON.stringify(pkg.name)]
 	].map(v => gulpReplace(...v));
 
-	await pumpP(...[
+	await pipeline(...[
 		gulp.src(src, srcOpts),
 		filterMeta,
 		...filterMetaReplaces,
@@ -76,10 +83,211 @@ async function babelTarget(src, srcOpts, dest, modules) {
 	].filter(Boolean));
 }
 
-export async function buildLibCjs() {
-	await babelTarget(['src/**/*.ts'], {}, 'lib', 'commonjs');
+async function eslint(strict) {
+	try {
+		await exec('eslint', ['.']);
+	}
+	catch (err) {
+		if (strict) {
+			throw err;
+		}
+	}
 }
 
-export async function buildLibMjs() {
-	await babelTarget(['src/**/*.ts'], {}, 'lib', false);
+async function tslint(strict) {
+	try {
+		await exec('tslint', ['-p', '.', '-t', 'stylish']);
+	}
+	catch (err) {
+		if (strict) {
+			throw err;
+		}
+	}
 }
+
+// clean
+
+gulp.task('clean:logs', async () => {
+	await del([
+		'npm-debug.log*',
+		'yarn-debug.log*',
+		'yarn-error.log*'
+	]);
+});
+
+gulp.task('clean:lib', async () => {
+	await del([
+		'lib'
+	]);
+});
+
+gulp.task('clean:projectors', async () => {
+	await del([
+		'spec/projectors'
+	]);
+});
+
+gulp.task('clean', gulp.parallel([
+	'clean:logs',
+	'clean:lib',
+	'clean:projectors'
+]));
+
+// lint (watch)
+
+gulp.task('lintw:js', async () => {
+	await eslint(false);
+});
+
+gulp.task('lintw:ts', async () => {
+	await tslint(false);
+});
+
+gulp.task('lintw', gulp.parallel([
+	'lintw:js',
+	'lintw:ts'
+]));
+
+// lint
+
+gulp.task('lint:js', async () => {
+	await eslint(true);
+});
+
+gulp.task('lint:ts', async () => {
+	await tslint(true);
+});
+
+gulp.task('lint', gulp.parallel([
+	'lint:js',
+	'lint:ts'
+]));
+
+// build
+
+gulp.task('build:lib:dts', async () => {
+	await exec('tsc');
+});
+
+gulp.task('build:lib:cjs', async () => {
+	await babelTarget(['src/**/*.ts'], {}, 'lib', 'commonjs');
+});
+
+gulp.task('build:lib:mjs', async () => {
+	await babelTarget(['src/**/*.ts'], {}, 'lib', false);
+});
+
+gulp.task('build:lib', gulp.parallel([
+	'build:lib:dts',
+	'build:lib:cjs',
+	'build:lib:mjs'
+]));
+
+gulp.task('build', gulp.parallel([
+	'build:lib'
+]));
+
+// test
+
+gulp.task('test:node', async () => {
+	await exec('jasmine');
+});
+
+gulp.task('test', gulp.parallel([
+	'test:node'
+]));
+
+// all
+
+gulp.task('all', gulp.series([
+	'clean',
+	'lint',
+	'build',
+	'test'
+]));
+
+// watched
+
+gulp.task('watched', gulp.series([
+	'clean',
+	'lintw',
+	'build',
+	'test'
+]));
+
+// shockpkg-install
+
+gulp.task('shockpkg-install:update', async () => {
+	await exec('shockpkg', ['update']);
+});
+
+gulp.task('shockpkg-install:install-win', async () => {
+	await exec('shockpkg', [
+		'install',
+		'shockwave-projector-director-7.0.0-win-win',
+		'shockwave-projector-director-7.0.2-2-win-win',
+		'shockwave-projector-director-7.0.2-trial-win-win',
+		'shockwave-projector-director-7.0.2-win-win',
+		'shockwave-projector-director-8.0.0-trial-win-win',
+		'shockwave-projector-director-8.0.0-win-win',
+		'shockwave-projector-director-8.5.0-trial-win-win',
+		'shockwave-projector-director-8.5.1-trial-win-win',
+		'shockwave-projector-director-9.0.0-trial-win-win',
+		'shockwave-projector-director-10.0.0-win-win',
+		'shockwave-projector-director-10.1.0-mac-win',
+		'shockwave-projector-director-10.1.0-win-win',
+		'shockwave-projector-director-10.1.1-mac-win',
+		'shockwave-projector-director-10.1.1-win-win',
+		'shockwave-projector-director-11.0.0-mac-win',
+		'shockwave-projector-director-11.0.0-win-win',
+		'shockwave-projector-director-11.0.0-hotfix-1-mac-win',
+		'shockwave-projector-director-11.0.0-hotfix-3-mac-win',
+		'shockwave-projector-director-11.0.0-hotfix-3-win-win',
+		'shockwave-projector-director-11.5.0-mac-win',
+		'shockwave-projector-director-11.5.0-win-win',
+		'shockwave-projector-director-11.5.8-mac-win',
+		'shockwave-projector-director-11.5.8-win-win',
+		'shockwave-projector-director-11.5.9-mac-win',
+		'shockwave-projector-director-11.5.9-win-win',
+		'shockwave-projector-director-12.0.0-mac-win',
+		'shockwave-projector-director-12.0.0-win-win'
+	]);
+});
+
+gulp.task('shockpkg-install:install-mac', async () => {
+	await exec('shockpkg', [
+		'install',
+		'shockwave-projector-director-11.0.0-mac-mac',
+		'shockwave-projector-director-11.0.0-win-mac',
+		'shockwave-projector-director-11.0.0-hotfix-1-mac-mac',
+		'shockwave-projector-director-11.0.0-hotfix-3-mac-mac',
+		'shockwave-projector-director-11.0.0-hotfix-3-win-mac',
+		'shockwave-projector-director-11.5.0-mac-mac',
+		'shockwave-projector-director-11.5.0-win-mac',
+		'shockwave-projector-director-11.5.8-mac-mac',
+		'shockwave-projector-director-11.5.8-win-mac',
+		'shockwave-projector-director-11.5.9-mac-mac',
+		'shockwave-projector-director-11.5.9-win-mac',
+		'shockwave-projector-director-12.0.0-mac-mac',
+		'shockwave-projector-director-12.0.0-win-mac'
+	]);
+});
+
+gulp.task('shockpkg-install', gulp.series([
+	'shockpkg-install:update',
+	'shockpkg-install:install-win',
+	'shockpkg-install:install-mac'
+]));
+
+// prepack
+
+gulp.task('prepack', gulp.series([
+	'clean',
+	'build'
+]));
+
+// default
+
+gulp.task('default', gulp.series([
+	'all'
+]));
