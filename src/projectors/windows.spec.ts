@@ -1,4 +1,4 @@
-// tslint:disable:completed-docs
+/* eslint-env jasmine */
 
 import {
 	cleanProjectorDir,
@@ -12,7 +12,6 @@ import {
 	ProjectorWindows
 } from './windows';
 
-// tslint:disable-next-line no-empty-interface
 interface ISample {
 	patchShockwave3dInstalledDisplayDriversSize?: boolean;
 }

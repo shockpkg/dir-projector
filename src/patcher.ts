@@ -1,9 +1,7 @@
-import {
-	readFile as fseReadFile,
-	writeFile as fseWriteFile
-} from 'fs-extra';
+import fse from 'fs-extra';
 
 interface IPatcherPatch {
+
 	/**
 	 * The bytes to find.
 	 */
@@ -18,8 +16,8 @@ interface IPatcherPatch {
 /**
  * Converts a hex string into a series of byte values, with unknowns being null.
  *
- * @param str Hex string
- * @return Bytes and null values.
+ * @param str Hex string.
+ * @returns Bytes and null values.
  */
 function patchHexToBytes(str: string) {
 	return (str.replace(/[\s\r\n]/g, '').match(/.{1,2}/g) || []).map(s => {
@@ -30,6 +28,9 @@ function patchHexToBytes(str: string) {
 	});
 }
 
+/* eslint-disable no-multi-spaces */
+/* eslint-disable line-comment-position */
+/* eslint-disable no-inline-comments */
 // A list of patch candidates, made to be partially position independant.
 // Basically these patches just increase the temporary buffer sizes.
 // Enough to provide amply room for anything that should be in the registry.
@@ -105,6 +106,9 @@ const patchWindowsS3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
 		].join(' '))
 	}
 ];
+/* eslint-enable no-multi-spaces */
+/* eslint-enable line-comment-position */
+/* eslint-enable no-inline-comments */
 
 /**
  * Patch data buffer once.
@@ -176,9 +180,9 @@ async function patchFileOnce(
 	candidates: IPatcherPatch[],
 	name: string
 ) {
-	const data = await fseReadFile(file);
+	const data = await fse.readFile(file);
 	patchDataOnce(data, candidates, name);
-	await fseWriteFile(file, data);
+	await fse.writeFile(file, data);
 }
 
 /**

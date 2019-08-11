@@ -1,4 +1,10 @@
-// tslint:disable:completed-docs
+/* eslint-env jasmine */
+/* eslint import/no-extraneous-dependencies: ["error", {devDependencies: true}] */
+/* eslint-disable jsdoc/require-jsdoc */
+
+import {
+	join as pathJoin
+} from 'path';
 
 import {
 	Manager
@@ -7,9 +13,6 @@ import {
 	ensureDir as fseEnsureDir,
 	remove as fseRemove
 } from 'fs-extra';
-import {
-	join as pathJoin
-} from 'path';
 
 import {
 	infoPlistReplace,
@@ -23,6 +26,7 @@ export const platformIsWindows = (
 	(process.platform as string) === 'win64'
 );
 
+// eslint-disable-next-line no-process-env
 export const envFastTest = process.env.DIR_PROJECTOR_FAST_TEST || null;
 
 export function shouldTest(name: string) {
@@ -37,7 +41,9 @@ export function fixtureFile(name: string) {
 }
 
 export async function getPackageFile(pkg: string) {
-	return (new Manager()).with(manager => manager.packageInstallFile(pkg));
+	return (new Manager()).with(
+		async manager => manager.packageInstallFile(pkg)
+	);
 }
 
 export async function cleanProjectorDir(...path: string[]) {

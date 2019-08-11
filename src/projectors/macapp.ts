@@ -1,9 +1,10 @@
 import {
-	Entry
-} from '@shockpkg/archive-files';
-import {
 	join as pathJoin
 } from 'path';
+
+import {
+	Entry
+} from '@shockpkg/archive-files';
 
 import {
 	IProjectorOptions,
@@ -20,66 +21,67 @@ import {
 } from '../util';
 
 export interface IProjectorMacAppOptions extends IProjectorOptions {
+
 	/**
 	 * Binary name, also renames rsrc and icns.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	binaryName?: string | null;
 
 	/**
 	 * Intel binary package, not universal binary.
 	 *
-	 * @defaultValue false
+	 * @default false
 	 */
 	intel?: boolean;
 
 	/**
 	 * Icon file.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	iconFile?: string | null;
 
 	/**
 	 * Icon data.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	iconData?: Buffer | null;
 
 	/**
 	 * Info.plist file.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	infoPlistFile?: string | null;
 
 	/**
 	 * Info.plist data.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	infoPlistData?: Buffer | null;
 
 	/**
 	 * PkgInfo file.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	pkgInfoFile?: string | null;
 
 	/**
 	 * PkgInfo data.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	pkgInfoData?: Buffer | null;
 
 	/**
 	 * Nest Xtras at *.app/Contents/xtras.
 	 *
-	 * @defaultValue false
+	 * @default false
 	 */
 	nestXtrasContents?: boolean;
 }
@@ -93,63 +95,63 @@ export class ProjectorMacApp extends Projector {
 	/**
 	 * Binary name.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public binaryName: string | null;
 
 	/**
 	 * Intel binary package, not universal binary.
 	 *
-	 * @defaultValue false
+	 * @default false
 	 */
 	public intel: boolean;
 
 	/**
 	 * Icon file.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public iconFile: string | null;
 
 	/**
 	 * Icon data.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public iconData: Buffer | null;
 
 	/**
 	 * Info.plist file.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public infoPlistFile: string | null;
 
 	/**
 	 * Info.plist data.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public infoPlistData: string | string[] | Buffer | null;
 
 	/**
 	 * PkgInfo file.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public pkgInfoFile: string | null;
 
 	/**
 	 * PkgInfo data.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public pkgInfoData: string | Buffer | null;
 
 	/**
 	 * Nest Xtras at *.app/Contents/xtras.
 	 *
-	 * @defaultValue false
+	 * @default false
 	 */
 	public nestXtrasContents: boolean;
 
@@ -169,6 +171,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Projector file extension.
+	 *
+	 * @returns File extension.
 	 */
 	public get projectorExtension() {
 		return '.app';
@@ -176,6 +180,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Config file newline characters.
+	 *
+	 * @returns Newline characters.
 	 */
 	public get configNewline() {
 		return '\n';
@@ -183,6 +189,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Config file newline characters.
+	 *
+	 * @returns Newline characters.
 	 */
 	public get lingoNewline() {
 		return '\n';
@@ -190,6 +198,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Splash image file extension.
+	 *
+	 * @returns File extension.
 	 */
 	public get splashImageExtension() {
 		return '.pict';
@@ -197,6 +207,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * If icon is specified.
+	 *
+	 * @returns Has icon.
 	 */
 	public get hasIcon() {
 		return !!(this.iconData || this.iconFile);
@@ -204,6 +216,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * If Info.plist is specified.
+	 *
+	 * @returns Has Info.plist.
 	 */
 	public get hasInfoPlist() {
 		return !!(this.infoPlistData || this.infoPlistFile);
@@ -211,6 +225,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * If PkgInfo is specified.
+	 *
+	 * @returns Has PkgInfo.
 	 */
 	public get hasPkgInfo() {
 		return !!(this.pkgInfoData || this.pkgInfoFile);
@@ -218,6 +234,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get the Projector Resources directory name.
+	 *
+	 * @returns Directory name.
 	 */
 	public get projectorResourcesDirectoryName() {
 		return this.intel ? 'Projector Intel Resources' : 'Projector Resources';
@@ -225,6 +243,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app binary name.
+	 *
+	 * @returns File name.
 	 */
 	public get appBinaryName() {
 		return this.appBinaryNameCustom || this.appBinaryNameDefault;
@@ -232,6 +252,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app binary name, default.
+	 *
+	 * @returns File name.
 	 */
 	public get appBinaryNameDefault() {
 		return 'Projector';
@@ -239,6 +261,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app binary name, custom.
+	 *
+	 * @returns File name.
 	 */
 	public get appBinaryNameCustom() {
 		return this.binaryName;
@@ -246,6 +270,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app icon name.
+	 *
+	 * @returns File name.
 	 */
 	public get appIconName() {
 		return this.appIconNameCustom || this.appIconNameDefault;
@@ -253,6 +279,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app icon name, default.
+	 *
+	 * @returns File name.
 	 */
 	public get appIconNameDefault() {
 		return 'projector.icns';
@@ -260,6 +288,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app icon name, custom.
+	 *
+	 * @returns File name.
 	 */
 	public get appIconNameCustom() {
 		const n = this.binaryName;
@@ -268,6 +298,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app rsrc name.
+	 *
+	 * @returns File name.
 	 */
 	public get appRsrcName() {
 		return this.appRsrcNameCustom || this.appRsrcNameDefault;
@@ -275,6 +307,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app rsrc name, default.
+	 *
+	 * @returns File name.
 	 */
 	public get appRsrcNameDefault() {
 		return 'Projector.rsrc';
@@ -282,6 +316,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app rsrc name, custom.
+	 *
+	 * @returns File name.
 	 */
 	public get appRsrcNameCustom() {
 		const n = this.binaryName;
@@ -290,6 +326,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app Info.plist path.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathInfoPlist() {
 		return 'Contents/Info.plist';
@@ -297,6 +335,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app PkgInfo path.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathPkgInfo() {
 		return 'Contents/PkgInfo';
@@ -304,6 +344,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app Frameworks path.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathFrameworks() {
 		return 'Contents/Frameworks';
@@ -311,6 +353,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app Xtras path.
+	 *
+	 * @returns Directory path.
 	 */
 	public get appPathXtras() {
 		return `Contents/${this.xtrasDirectoryName}`;
@@ -318,6 +362,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app binary path.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathBinary() {
 		return this.appPathBinaryCustom || this.appPathBinaryDefault;
@@ -325,6 +371,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app binary path, default.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathBinaryDefault() {
 		return `Contents/MacOS/${this.appBinaryNameDefault}`;
@@ -332,6 +380,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app binary path, custom.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathBinaryCustom() {
 		const n = this.appBinaryNameCustom;
@@ -340,6 +390,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app icon path.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathIcon() {
 		return this.appPathIconCustom || this.appPathIconDefault;
@@ -347,6 +399,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app icon path, default.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathIconDefault() {
 		return `Contents/Resources/${this.appIconNameDefault}`;
@@ -354,6 +408,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app icon path, custom.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathIconCustom() {
 		const n = this.appIconNameCustom;
@@ -362,6 +418,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app rsrc path.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathRsrc() {
 		return this.appPathRsrcCustom || this.appPathRsrcDefault;
@@ -369,6 +427,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app rsrc path, default.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathRsrcDefault() {
 		return `Contents/Resources/${this.appRsrcNameDefault}`;
@@ -376,6 +436,8 @@ export class ProjectorMacApp extends Projector {
 
 	/**
 	 * Get app rsrc path, custom.
+	 *
+	 * @returns File path.
 	 */
 	public get appPathRsrcCustom() {
 		const n = this.appRsrcNameCustom;
@@ -385,7 +447,7 @@ export class ProjectorMacApp extends Projector {
 	/**
 	 * Get icon data if any specified, from data or file.
 	 *
-	 * @return Icon data or null.
+	 * @returns Icon data or null.
 	 */
 	public async getIconData() {
 		return this._dataFromBufferOrFile(
@@ -397,7 +459,7 @@ export class ProjectorMacApp extends Projector {
 	/**
 	 * Get Info.plist data if any specified, from data or file.
 	 *
-	 * @return Info.plist data or null.
+	 * @returns Info.plist data or null.
 	 */
 	public async getInfoPlistData() {
 		return this._dataFromValueOrFile(
@@ -411,7 +473,7 @@ export class ProjectorMacApp extends Projector {
 	/**
 	 * Get PkgInfo data if any specified, from data or file.
 	 *
-	 * @return PkgInfo data or null.
+	 * @returns PkgInfo data or null.
 	 */
 	public async getPkgInfoData() {
 		return this._dataFromValueOrFile(
@@ -426,7 +488,7 @@ export class ProjectorMacApp extends Projector {
 	 * Get the Xtras path.
 	 *
 	 * @param name Save name.
-	 * @return Xtras path.
+	 * @returns Xtras path.
 	 */
 	public getXtrasPath(name: string) {
 		if (this.nestXtrasContents) {
@@ -439,7 +501,7 @@ export class ProjectorMacApp extends Projector {
 	 * Get the icon path.
 	 *
 	 * @param name Save name.
-	 * @return Icon path.
+	 * @returns Icon path.
 	 */
 	public getIconPath(name: string) {
 		return `${name}/${this.appPathIcon}`;
@@ -449,7 +511,7 @@ export class ProjectorMacApp extends Projector {
 	 * Get the Info.plist path.
 	 *
 	 * @param name Save name.
-	 * @return Icon path.
+	 * @returns Icon path.
 	 */
 	public getInfoPlistPath(name: string) {
 		return `${name}/${this.appPathInfoPlist}`;
@@ -459,7 +521,7 @@ export class ProjectorMacApp extends Projector {
 	 * Get the PkgInfo path.
 	 *
 	 * @param name Save name.
-	 * @return Icon path.
+	 * @returns Icon path.
 	 */
 	public getPkgInfoPath(name: string) {
 		return `${name}/${this.appPathPkgInfo}`;
@@ -470,10 +532,9 @@ export class ProjectorMacApp extends Projector {
 	 *
 	 * @param xml Plist code.
 	 * @param name Application name.
-	 * @return Updated XML.
+	 * @returns Updated XML.
 	 */
 	public updateInfoPlistCode(xml: string, name: string) {
-		// tslint:disable-next-line no-this-assignment
 		const {
 			appBinaryNameCustom,
 			appIconNameCustom
@@ -524,7 +585,6 @@ export class ProjectorMacApp extends Projector {
 	 * @param name Save name.
 	 */
 	protected async _writeSkeleton(path: string, name: string) {
-		// tslint:disable-next-line no-this-assignment
 		const {
 			hasIcon,
 			hasInfoPlist,

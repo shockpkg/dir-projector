@@ -1,11 +1,12 @@
 import {
-	Entry,
-	fsWalk
-} from '@shockpkg/archive-files';
-import {
 	basename as pathBasename,
 	join as pathJoin
 } from 'path';
+
+import {
+	Entry,
+	fsWalk
+} from '@shockpkg/archive-files';
 
 import {
 	patchWindowsS3dInstalledDisplayDriversSize
@@ -26,6 +27,7 @@ import {
 } from '../util';
 
 export interface IProjectorWindowsOptions extends IProjectorOptions {
+
 	/**
 	 * Patch the Shockave 3D Xtra to have a larger buffer to avoid a crash.
 	 * The buffer for resolving InstalledDisplayDrivers to a path is small.
@@ -33,35 +35,35 @@ export interface IProjectorWindowsOptions extends IProjectorOptions {
 	 * The value is now supposed to hold full paths on modern Windows.
 	 * In particular, Nvidia drivers which do this need this patch.
 	 *
-	 * @defaultValue false
+	 * @default false
 	 */
 	patchShockwave3dInstalledDisplayDriversSize?: boolean;
 
 	/**
 	 * Icon file, requires Windows or Wine.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	iconFile?: string | null;
 
 	/**
 	 * Version strings, requires Windows or Wine.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	fileVersion?: string | null;
 
 	/**
 	 * Product version, requires Windows or Wine.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	productVersion?: string | null;
 
 	/**
 	 * Version strings, requires Windows or Wine.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	versionStrings?: IRceditOptionsVersionStrings | null;
 }
@@ -79,35 +81,35 @@ export class ProjectorWindows extends Projector {
 	 * The value is now supposed to hold full paths on modern Windows.
 	 * In particular, Nvidia drivers which do this need this patch.
 	 *
-	 * @defaultValue false
+	 * @default false
 	 */
 	public patchShockwave3dInstalledDisplayDriversSize: boolean;
 
 	/**
 	 * Icon file, requires Windows or Wine.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public iconFile: string | null;
 
 	/**
 	 * Version strings, requires Windows or Wine.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public fileVersion: string | null;
 
 	/**
 	 * Product version, requires Windows or Wine.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public productVersion: string | null;
 
 	/**
 	 * Version strings, requires Windows or Wine.
 	 *
-	 * @defaultValue null
+	 * @default null
 	 */
 	public versionStrings: IRceditOptionsVersionStrings | null;
 
@@ -125,6 +127,8 @@ export class ProjectorWindows extends Projector {
 
 	/**
 	 * Projector file extension.
+	 *
+	 * @returns File extension.
 	 */
 	public get projectorExtension() {
 		return '.exe';
@@ -132,6 +136,8 @@ export class ProjectorWindows extends Projector {
 
 	/**
 	 * Config file newline characters.
+	 *
+	 * @returns Newline characters.
 	 */
 	public get configNewline() {
 		return '\r\n';
@@ -139,6 +145,8 @@ export class ProjectorWindows extends Projector {
 
 	/**
 	 * Config file newline characters.
+	 *
+	 * @returns Newline characters.
 	 */
 	public get lingoNewline() {
 		return '\r\n';
@@ -146,6 +154,8 @@ export class ProjectorWindows extends Projector {
 
 	/**
 	 * Newline characters.
+	 *
+	 * @returns Newline characters.
 	 */
 	public get newline() {
 		return '\r\n';
@@ -153,6 +163,8 @@ export class ProjectorWindows extends Projector {
 
 	/**
 	 * Splash image file extension.
+	 *
+	 * @returns File extension.
 	 */
 	public get splashImageExtension() {
 		return '.BMP';
@@ -160,6 +172,8 @@ export class ProjectorWindows extends Projector {
 
 	/**
 	 * Get the SKL name.
+	 *
+	 * @returns File name.
 	 */
 	public get sklName() {
 		return 'Projec32.skl';
@@ -185,7 +199,6 @@ export class ProjectorWindows extends Projector {
 	 * @param name Save name.
 	 */
 	protected async _writeSkeleton(path: string, name: string) {
-		// tslint:disable-next-line no-this-assignment
 		const {
 			shockwave,
 			sklName,
@@ -353,7 +366,6 @@ export class ProjectorWindows extends Projector {
 	 * @param name Save name.
 	 */
 	protected async _updateResources(path: string, name: string) {
-		// tslint:disable-next-line no-this-assignment
 		const {
 			iconFile,
 			fileVersion,
