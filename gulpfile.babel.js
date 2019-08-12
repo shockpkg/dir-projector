@@ -20,7 +20,7 @@ import del from 'del';
 const readFile = util.promisify(fs.readFile);
 const pipeline = util.promisify(stream.pipeline);
 
-export const platformIsMac = process.platform === 'darwin';
+const platformIsMac = process.platform === 'darwin';
 
 async function exec(cmd, args = []) {
 	await execa(cmd, args, {
