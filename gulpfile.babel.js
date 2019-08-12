@@ -20,6 +20,8 @@ import del from 'del';
 const readFile = util.promisify(fs.readFile);
 const pipeline = util.promisify(stream.pipeline);
 
+export const platformIsMac = process.platform === 'darwin';
+
 async function exec(cmd, args = []) {
 	await execa(cmd, args, {
 		preferLocal: true,
@@ -287,6 +289,12 @@ gulp.task('shockpkg-install', gulp.series([
 	'shockpkg-install:install-win',
 	'shockpkg-install:install-mac'
 ]));
+
+gulp.task('shockpkg-install-ci', gulp.series([
+	'shockpkg-install:update',
+	'shockpkg-install:install-win',
+	platformIsMac ? 'shockpkg-install:install-mac' : null
+].filter(Boolean)));
 
 // prepack
 
