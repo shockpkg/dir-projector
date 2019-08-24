@@ -23,13 +23,22 @@ const samples: {[index: string]: ISample} = shouldTest('windows') ? {
 	'shockwave-projector-director-7.0.2-win-win': {},
 	'shockwave-projector-director-8.0.0-trial-win-win': {},
 	'shockwave-projector-director-8.0.0-win-win': {},
+	'shockwave-projector-director-8.5.0-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
 	'shockwave-projector-director-8.5.0-trial-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-8.5.1-win-win': {
 		patchShockwave3dInstalledDisplayDriversSize: true
 	},
 	'shockwave-projector-director-8.5.1-trial-win-win': {
 		patchShockwave3dInstalledDisplayDriversSize: true
 	},
 	'shockwave-projector-director-9.0.0-trial-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
+	'shockwave-projector-director-10.0.0-mac-win': {
 		patchShockwave3dInstalledDisplayDriversSize: true
 	},
 	'shockwave-projector-director-10.0.0-win-win': {
