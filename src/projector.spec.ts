@@ -1,6 +1,3 @@
-/* eslint-env jasmine */
-/* eslint-disable max-classes-per-file */
-
 import {
 	IProjectorOptions,
 	Projector
