@@ -33,6 +33,9 @@ const samples: {[index: string]: ISample} = shouldTest('windows') ? {
 	'shockwave-projector-director-8.5.1-trial-win-win': {
 		patchShockwave3dInstalledDisplayDriversSize: true
 	},
+	'shockwave-projector-director-9.0.0-win-win': {
+		patchShockwave3dInstalledDisplayDriversSize: true
+	},
 	'shockwave-projector-director-9.0.0-trial-win-win': {
 		patchShockwave3dInstalledDisplayDriversSize: true
 	},

@@ -241,6 +241,7 @@ gulp.task('shockpkg-install:install-win', async () => {
 		'shockwave-projector-director-8.5.0-trial-win-win',
 		'shockwave-projector-director-8.5.1-win-win',
 		'shockwave-projector-director-8.5.1-trial-win-win',
+		'shockwave-projector-director-9.0.0-win-win',
 		'shockwave-projector-director-9.0.0-trial-win-win',
 		'shockwave-projector-director-10.0.0-mac-win',
 		'shockwave-projector-director-10.0.0-win-win',
