@@ -13,14 +13,14 @@ matrix:
     node_js: v10.0.0
 
   - os: linux
-    node_js: v12.9.1
+    node_js: v13.2.0
 
   - os: osx
     osx_image: xcode10.2
-    node_js: v12.9.1
+    node_js: v13.2.0
 
   - os: windows
-    node_js: v12.9.1
+    node_js: v13.2.0
 
 script:
 - npm run shockpkg-install-ci
