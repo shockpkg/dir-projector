@@ -76,7 +76,7 @@ export interface IProjectorMacAppOptions extends IProjectorOptions {
 	 *
 	 * @default null
 	 */
-	pkgInfoData?: Buffer | null;
+	pkgInfoData?: string | Buffer | null;
 
 	/**
 	 * Nest Xtras at *.app/Contents/xtras.
