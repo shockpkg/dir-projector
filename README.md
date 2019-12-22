@@ -18,11 +18,7 @@ Creates Shockwave Director projectors from a projector skeleton.
 
 Takes either a directory containing a skeleton or a shockpkg projector package file.
 
-Certain features may only work on certain platforms.
-
 Reading DMG projector packages is only supported on MacOS.
-
-Features that modify Windows EXE resources requires either Windows or Wine in the path.
 
 Currently only flat projectors are supported, not the kind that Director makes where everything is appended to the main binary in some format, and extracted to a temporary directory when run.
 
