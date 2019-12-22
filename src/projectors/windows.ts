@@ -7,6 +7,8 @@ import {
 	Entry,
 	fsWalk
 } from '@shockpkg/archive-files';
+import * as resedit from 'resedit';
+import fse from 'fs-extra';
 
 import {
 	patchWindowsS3dInstalledDisplayDriversSize
@@ -18,13 +20,27 @@ import {
 import {
 	defaultFalse,
 	defaultNull,
+	bufferToArrayBuffer,
 	entryIsEmptyResourceFork,
-	IRceditOptions,
-	IRceditOptionsVersionStrings,
 	pathRelativeBase,
-	pathRelativeBaseMatch,
-	rcedit
+	pathRelativeBaseMatch
 } from '../util';
+
+const ResEditNtExecutable =
+	resedit.NtExecutable ||
+	(resedit as any).default.NtExecutable;
+
+const ResEditNtExecutableResource =
+	resedit.NtExecutableResource ||
+	(resedit as any).default.NtExecutableResource;
+
+const ResEditResource =
+	resedit.Resource ||
+	(resedit as any).default.Resource;
+
+const ResEditData =
+	resedit.Data ||
+	(resedit as any).default.Data;
 
 export interface IProjectorWindowsOptions extends IProjectorOptions {
 
@@ -40,32 +56,39 @@ export interface IProjectorWindowsOptions extends IProjectorOptions {
 	patchShockwave3dInstalledDisplayDriversSize?: boolean;
 
 	/**
-	 * Icon file, requires Windows or Wine.
+	 * Icon file.
 	 *
 	 * @default null
 	 */
 	iconFile?: string | null;
 
 	/**
-	 * Version strings, requires Windows or Wine.
+	 * Icon data.
+	 *
+	 * @default null
+	 */
+	iconData?: Buffer | null;
+
+	/**
+	 * Version strings.
 	 *
 	 * @default null
 	 */
 	fileVersion?: string | null;
 
 	/**
-	 * Product version, requires Windows or Wine.
+	 * Product version.
 	 *
 	 * @default null
 	 */
 	productVersion?: string | null;
 
 	/**
-	 * Version strings, requires Windows or Wine.
+	 * Version strings.
 	 *
 	 * @default null
 	 */
-	versionStrings?: IRceditOptionsVersionStrings | null;
+	versionStrings?: {[key: string]: string} | null;
 }
 
 /**
@@ -86,37 +109,45 @@ export class ProjectorWindows extends Projector {
 	public patchShockwave3dInstalledDisplayDriversSize: boolean;
 
 	/**
-	 * Icon file, requires Windows or Wine.
+	 * Icon file.
 	 *
 	 * @default null
 	 */
 	public iconFile: string | null;
 
 	/**
-	 * Version strings, requires Windows or Wine.
+	 * Icon data.
+	 *
+	 * @default null
+	 */
+	public iconData: Buffer | null;
+
+	/**
+	 * Version strings.
 	 *
 	 * @default null
 	 */
 	public fileVersion: string | null;
 
 	/**
-	 * Product version, requires Windows or Wine.
+	 * Product version.
 	 *
 	 * @default null
 	 */
 	public productVersion: string | null;
 
 	/**
-	 * Version strings, requires Windows or Wine.
+	 * Version strings.
 	 *
 	 * @default null
 	 */
-	public versionStrings: IRceditOptionsVersionStrings | null;
+	public versionStrings: {[key: string]: string} | null;
 
 	constructor(options: IProjectorWindowsOptions) {
 		super(options);
 
 		this.iconFile = defaultNull(options.iconFile);
+		this.iconData = defaultNull(options.iconData);
 		this.fileVersion = defaultNull(options.fileVersion);
 		this.productVersion = defaultNull(options.productVersion);
 		this.versionStrings = defaultNull(options.versionStrings);
@@ -177,6 +208,51 @@ export class ProjectorWindows extends Projector {
 	 */
 	public get sklName() {
 		return 'Projec32.skl';
+	}
+
+	/**
+	 * If icon is specified.
+	 *
+	 * @returns Is specified.
+	 */
+	public get hasIcon() {
+		return !!(this.iconData || this.iconFile);
+	}
+
+	/**
+	 * Get icon data if any specified, from data or file.
+	 *
+	 * @returns Icon data or null.
+	 */
+	public async getIconData() {
+		return this._dataFromBufferOrFile(
+			this.iconData,
+			this.iconFile
+		);
+	}
+
+	/**
+	 * Get all version strings.
+	 *
+	 * @returns Verion strings.
+	 */
+	public getVersionStrings() {
+		const {fileVersion, productVersion, versionStrings} = this;
+		if (
+			fileVersion === null &&
+			productVersion === null &&
+			versionStrings === null
+		) {
+			return null;
+		}
+		const values = {...(versionStrings || {})};
+		if (fileVersion !== null) {
+			values.FileVersion = fileVersion;
+		}
+		if (productVersion !== null) {
+			values.ProductVersion = productVersion;
+		}
+		return values;
 	}
 
 	/**
@@ -366,42 +442,52 @@ export class ProjectorWindows extends Projector {
 	 * @param name Save name.
 	 */
 	protected async _updateResources(path: string, name: string) {
-		const {
-			iconFile,
-			fileVersion,
-			productVersion,
-			versionStrings
-		} = this;
+		const versionStrings = this.getVersionStrings();
+		const iconData = await this.getIconData();
 
-		const options: IRceditOptions = {};
-		let optionsSet = false;
-
-		if (iconFile) {
-			options.iconPath = iconFile;
-			optionsSet = true;
-		}
-
-		if (fileVersion !== null) {
-			options.fileVersion = fileVersion;
-			optionsSet = true;
-		}
-
-		if (productVersion !== null) {
-			options.productVersion = productVersion;
-			optionsSet = true;
-		}
-
-		if (versionStrings !== null) {
-			options.versionStrings = versionStrings;
-			optionsSet = true;
-		}
-
-		// Do not update if no changes are specified.
-		if (!optionsSet) {
+		// Skip if nothing to be changed.
+		if (!iconData && !versionStrings) {
 			return;
 		}
 
+		// Read EXE file and parse resources.
 		const file = pathJoin(path, name);
-		await rcedit(file, options);
+		const exe = ResEditNtExecutable.from(bufferToArrayBuffer(
+			await fse.readFile(file)
+		));
+		const res = ResEditNtExecutableResource.from(exe);
+
+		// Replace all the icons in all icon groups.
+		if (iconData) {
+			const ico = ResEditData.IconFile.from(
+				bufferToArrayBuffer(iconData)
+			);
+			for (const iconGroup of ResEditResource.IconGroupEntry.fromEntries(
+				res.entries
+			)) {
+				ResEditResource.IconGroupEntry.replaceIconsForResource(
+					res.entries,
+					iconGroup.id,
+					iconGroup.lang,
+					ico.icons.map(icon => icon.data)
+				);
+			}
+		}
+
+		// Update strings if present for all the languages.
+		if (versionStrings) {
+			for (const versionInfo of ResEditResource.VersionInfo.fromEntries(
+				res.entries
+			)) {
+				for (const language of versionInfo.getAvailableLanguages()) {
+					versionInfo.setStringValues(language, versionStrings);
+				}
+				versionInfo.outputToResourceEntries(res.entries);
+			}
+		}
+
+		// Update resources and write EXE file.
+		res.outputResource(exe);
+		await fse.writeFile(file, Buffer.from(exe.generate()));
 	}
 }

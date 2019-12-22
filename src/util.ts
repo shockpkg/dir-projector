@@ -11,10 +11,20 @@ import sax from 'sax';
 const decodeXML = entities.decodeXML || (entities as any).default.decodeXML;
 const encodeXML = entities.encodeXML || (entities as any).default.encodeXML;
 
+/**
+ * Versions strings passed to rcedit.
+ *
+ * @deprecated No longer used in this package.
+ */
 export interface IRceditOptionsVersionStrings {
 	[key: string]: string;
 }
 
+/**
+ * Options for rcedit.
+ *
+ * @deprecated No longer used in this package.
+ */
 export interface IRceditOptions {
 
 	/**
@@ -348,11 +358,23 @@ export function infoPlistRead(
 }
 
 /**
+ * Get ArrayBuffer from Buffer.
+ *
+ * @param buffer Buffer instance.
+ * @returns ArrayBuffer copy.
+ */
+export function bufferToArrayBuffer(buffer: Buffer) {
+	const {byteOffset, byteLength} = buffer;
+	return buffer.buffer.slice(byteOffset, byteOffset + byteLength);
+}
+
+/**
  * Uses rcedit to edit the resources of a Windows EXE.
  * Requires either Windows or wine in the path.
  *
  * @param path File path.
  * @param options Options object.
+ * @deprecated No longer used in this package.
  */
 export async function rcedit(
 	path: string,

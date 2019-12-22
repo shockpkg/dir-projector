@@ -2,7 +2,6 @@ import {
 	cleanProjectorDir,
 	fixtureFile,
 	getPackageFile,
-	platformIsWindows,
 	shouldTest
 } from '../util.spec';
 
@@ -202,21 +201,19 @@ describe('projectors/windows', () => {
 					})).write(dir, 'application.exe');
 				});
 
-				if (platformIsWindows) {
-					it('rcedit', async () => {
-						const dir = await getDir('rcedit');
-						await (new ProjectorWindows({
-							skeleton: await getSkeleton(),
-							movieFile: fixtureFile('dir7.dir'),
-							movieName: 'movie.dir',
-							configFile: fixtureFile('config.ini.crlf.bin'),
-							iconFile: fixtureFile('icon.ico'),
-							fileVersion,
-							productVersion,
-							versionStrings
-						})).write(dir, 'application.exe');
-					});
-				}
+				it('resedit', async () => {
+					const dir = await getDir('resedit');
+					await (new ProjectorWindows({
+						skeleton: await getSkeleton(),
+						movieFile: fixtureFile('dir7.dir'),
+						movieName: 'movie.dir',
+						configFile: fixtureFile('config.ini.crlf.bin'),
+						iconFile: fixtureFile('icon.ico'),
+						fileVersion,
+						productVersion,
+						versionStrings
+					})).write(dir, 'application.exe');
+				});
 
 				it('complex', async () => {
 					const dir = await getDir('complex');
@@ -232,14 +229,10 @@ describe('projectors/windows', () => {
 							'': null
 						},
 						patchShockwave3dInstalledDisplayDriversSize,
-						iconFile: platformIsWindows ?
-							fixtureFile('icon.ico') : null,
-						fileVersion: platformIsWindows ?
-							fileVersion : null,
-						productVersion: platformIsWindows ?
-							productVersion : null,
-						versionStrings: platformIsWindows ?
-							versionStrings : null
+						iconFile: fixtureFile('icon.ico'),
+						fileVersion,
+						productVersion,
+						versionStrings
 					})).write(dir, 'application.exe');
 				});
 			});
