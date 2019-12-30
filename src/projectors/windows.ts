@@ -120,7 +120,7 @@ export class ProjectorWindows extends Projector {
 	 *
 	 * @default null
 	 */
-	public iconData: Buffer | null;
+	public iconData: Readonly<Buffer> | null;
 
 	/**
 	 * Version strings.
@@ -141,9 +141,9 @@ export class ProjectorWindows extends Projector {
 	 *
 	 * @default null
 	 */
-	public versionStrings: {[key: string]: string} | null;
+	public versionStrings: Readonly<{[key: string]: string}> | null;
 
-	constructor(options: IProjectorWindowsOptions) {
+	constructor(options: Readonly<IProjectorWindowsOptions>) {
 		super(options);
 
 		this.iconFile = defaultNull(options.iconFile);

@@ -118,7 +118,7 @@ export class ProjectorMacApp extends Projector {
 	 *
 	 * @default null
 	 */
-	public iconData: Buffer | null;
+	public iconData: Readonly<Buffer> | null;
 
 	/**
 	 * Info.plist file.
@@ -132,7 +132,7 @@ export class ProjectorMacApp extends Projector {
 	 *
 	 * @default null
 	 */
-	public infoPlistData: string | string[] | Buffer | null;
+	public infoPlistData: string | Readonly<string[]> | Readonly<Buffer> | null;
 
 	/**
 	 * PkgInfo file.
@@ -146,7 +146,7 @@ export class ProjectorMacApp extends Projector {
 	 *
 	 * @default null
 	 */
-	public pkgInfoData: string | Buffer | null;
+	public pkgInfoData: string | Readonly<Buffer> | null;
 
 	/**
 	 * Nest Xtras at *.app/Contents/xtras.
@@ -155,7 +155,7 @@ export class ProjectorMacApp extends Projector {
 	 */
 	public nestXtrasContents: boolean;
 
-	constructor(options: IProjectorMacAppOptions = {}) {
+	constructor(options: Readonly<IProjectorMacAppOptions> = {}) {
 		super(options);
 
 		this.binaryName = defaultNull(options.binaryName);

@@ -119,7 +119,7 @@ const patchWindowsS3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
  */
 function patchDataOnce(
 	data: Buffer,
-	candidates: IPatcherPatch[],
+	candidates: Readonly<IPatcherPatch[]>,
 	name: string
 ) {
 	// Search the buffer for patch candidates.
@@ -177,7 +177,7 @@ function patchDataOnce(
  */
 async function patchFileOnce(
 	file: string,
-	candidates: IPatcherPatch[],
+	candidates: Readonly<IPatcherPatch[]>,
 	name: string
 ) {
 	const data = await fse.readFile(file);

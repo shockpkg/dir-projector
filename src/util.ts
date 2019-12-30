@@ -107,7 +107,7 @@ export function defaultTrue<T>(value: T) {
  * @param entry Archive Entry.
  * @returns Is empty resource fork.
  */
-export function entryIsEmptyResourceFork(entry: Entry) {
+export function entryIsEmptyResourceFork(entry: Readonly<Entry>) {
 	return entry.type === PathType.RESOURCE_FORK && !entry.size;
 }
 
@@ -363,7 +363,7 @@ export function infoPlistRead(
  * @param buffer Buffer instance.
  * @returns ArrayBuffer copy.
  */
-export function bufferToArrayBuffer(buffer: Buffer) {
+export function bufferToArrayBuffer(buffer: Readonly<Buffer>) {
 	const {byteOffset, byteLength} = buffer;
 	return buffer.buffer.slice(byteOffset, byteOffset + byteLength);
 }
@@ -378,7 +378,7 @@ export function bufferToArrayBuffer(buffer: Buffer) {
  */
 export async function rcedit(
 	path: string,
-	options: IRceditOptions
+	options: Readonly<IRceditOptions>
 ) {
 	const opts: {[key: string]: any} = {};
 	if (options.iconPath) {

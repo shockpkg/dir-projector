@@ -175,7 +175,7 @@ export abstract class Projector extends Object {
 	 *
 	 * @default null
 	 */
-	public movieData: Buffer | null;
+	public movieData: Readonly<Buffer> | null;
 
 	/**
 	 * Movie name.
@@ -203,7 +203,7 @@ export abstract class Projector extends Object {
 	 *
 	 * @default null
 	 */
-	public configData: string[] | string | Buffer | null;
+	public configData: Readonly<string[]> | string | Readonly<Buffer> | null;
 
 	/**
 	 * Lingo file.
@@ -217,7 +217,7 @@ export abstract class Projector extends Object {
 	 *
 	 * @default null
 	 */
-	public lingoData: string[] | string | Buffer | null;
+	public lingoData: Readonly<string[]> | string | Readonly<Buffer> | null;
 
 	/**
 	 * Splash image file.
@@ -231,14 +231,14 @@ export abstract class Projector extends Object {
 	 *
 	 * @default null
 	 */
-	public splashImageData: Buffer | null;
+	public splashImageData: Readonly<Buffer> | null;
 
 	/**
 	 * Xtras include map.
 	 *
 	 * @default null
 	 */
-	public includeXtras: IIncludeXtras | null;
+	public includeXtras: Readonly<IIncludeXtras> | null;
 
 	/**
 	 * Nest xtras in a Configuration directory.
@@ -254,7 +254,7 @@ export abstract class Projector extends Object {
 	 */
 	public pathToHdiutil: string | null;
 
-	constructor(options: IProjectorOptions = {}) {
+	constructor(options: Readonly<IProjectorOptions> = {}) {
 		super();
 
 		this.skeleton = defaultNull(options.skeleton);
@@ -489,7 +489,7 @@ export abstract class Projector extends Object {
 	 * @returns Best match or null.
 	 */
 	public findIncludeXtrasMappingsBestMatch(
-		mappings: IIncludeXtraMapping[],
+		mappings: Readonly<IIncludeXtraMapping[]>,
 		path: string
 	) {
 		let best: IIncludeXtraMappingBest | null = null;
@@ -519,7 +519,7 @@ export abstract class Projector extends Object {
 	 * @returns Output path or null.
 	 */
 	public includeXtrasMappingsDest(
-		mappings: IIncludeXtraMapping[],
+		mappings: Readonly<IIncludeXtraMapping[]>,
 		path: string
 	) {
 		const best = this.findIncludeXtrasMappingsBestMatch(mappings, path);
@@ -612,7 +612,7 @@ export abstract class Projector extends Object {
 	 * @returns Data buffer.
 	 */
 	protected async _dataFromBufferOrFile(
-		data: Buffer | null,
+		data: Readonly<Buffer> | null,
 		file: string | null
 	) {
 		if (data) {
@@ -634,7 +634,7 @@ export abstract class Projector extends Object {
 	 * @returns Data buffer.
 	 */
 	protected async _dataFromValueOrFile(
-		data: string[] | string | Buffer | null,
+		data: Readonly<string[]> | string | Readonly<Buffer> | null,
 		file: string | null,
 		newline: string | null,
 		encoding: BufferEncoding | null
@@ -650,7 +650,7 @@ export abstract class Projector extends Object {
 			str = data.join(newline);
 		}
 		else {
-			return this._dataFromBufferOrFile(data, file);
+			return this._dataFromBufferOrFile(data as any, file);
 		}
 		if (!encoding) {
 			throw new Error('String data encoding required');
@@ -665,7 +665,7 @@ export abstract class Projector extends Object {
 	 * @param path Output path.
 	 */
 	protected async _maybeWriteFile(
-		data: Buffer | null,
+		data: Readonly<Buffer> | null,
 		path: string
 	) {
 		if (!data) {
