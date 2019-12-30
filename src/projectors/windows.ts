@@ -143,7 +143,7 @@ export class ProjectorWindows extends Projector {
 	 */
 	public versionStrings: Readonly<{[key: string]: string}> | null;
 
-	constructor(options: Readonly<IProjectorWindowsOptions>) {
+	constructor(options: Readonly<IProjectorWindowsOptions> = {}) {
 		super(options);
 
 		this.iconFile = defaultNull(options.iconFile);
