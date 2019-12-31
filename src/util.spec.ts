@@ -5,10 +5,8 @@ import {
 import {
 	Manager
 } from '@shockpkg/core';
-import {
-	ensureDir as fseEnsureDir,
-	remove as fseRemove
-} from 'fs-extra';
+import fse from 'fs-extra';
+import execa from 'execa';
 
 import {
 	infoPlistReplace,
@@ -44,9 +42,20 @@ export async function getPackageFile(pkg: string) {
 
 export async function cleanProjectorDir(...path: string[]) {
 	const dir = pathJoin(specProjectorsPath, ...path);
-	await fseRemove(dir);
-	await fseEnsureDir(dir);
+	await fse.remove(dir);
+	await fse.ensureDir(dir);
 	return dir;
+}
+
+let getInstalledPackagesCache: string[] | null = null;
+export function getInstalledPackagesSync() {
+	if (!getInstalledPackagesCache) {
+		const {stdout} = execa.sync('shockpkg', ['installed'], {
+			preferLocal: true
+		});
+		getInstalledPackagesCache = stdout.trim().split(/[\r\n]+/);
+	}
+	return getInstalledPackagesCache;
 }
 
 const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>';

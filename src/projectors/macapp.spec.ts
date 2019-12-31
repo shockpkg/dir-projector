@@ -3,64 +3,62 @@ import {
 	fixtureFile,
 	getPackageFile,
 	platformIsMac,
-	shouldTest
+	shouldTest,
+	getInstalledPackagesSync
 } from '../util.spec';
 
 import {
 	ProjectorMacApp
 } from './macapp';
 
-interface ISample {
-	nestXtrasContents?: boolean;
-	intel?: boolean;
-}
-
-const doTest = platformIsMac && shouldTest('macapp');
-const samples: {[index: string]: ISample} = doTest ? {
-	'shockwave-projector-director-11.0.0-mac-mac': {},
-	'shockwave-projector-director-11.0.0-win-mac': {},
-	'shockwave-projector-director-11.0.0-hotfix-1-mac-mac': {},
-	'shockwave-projector-director-11.0.0-hotfix-3-mac-mac': {},
-	'shockwave-projector-director-11.0.0-hotfix-3-win-mac': {},
-	'shockwave-projector-director-11.5.0-mac-mac': {
-		nestXtrasContents: true
-	},
-	'shockwave-projector-director-11.5.0-win-mac': {
-		nestXtrasContents: true
-	},
-	'shockwave-projector-director-11.5.8-mac-mac': {
-		nestXtrasContents: true
-	},
-	'shockwave-projector-director-11.5.8-win-mac': {
-		nestXtrasContents: true
-	},
-	'shockwave-projector-director-11.5.9-mac-mac': {
-		nestXtrasContents: true,
-		intel: true
-	},
-	'shockwave-projector-director-11.5.9-win-mac': {
-		nestXtrasContents: true,
-		intel: true
-	},
-	'shockwave-projector-director-12.0.0-mac-mac': {
-		nestXtrasContents: true,
-		intel: true
-	},
-	'shockwave-projector-director-12.0.0-win-mac': {
-		nestXtrasContents: true,
-		intel: true
+function listSamples() {
+	const r = [];
+	for (const name of getInstalledPackagesSync()) {
+		const m = name.match(
+			/^shockwave-projector-director-([\d.]+)-\w+-mac(-zip)?$/
+		);
+		if (!m) {
+			continue;
+		}
+		if (!platformIsMac && m[2] !== '-zip') {
+			continue;
+		}
+		const version = m[1].split('.').map(Number);
+		if (version[0] < 11) {
+			continue;
+		}
+		r.push({
+			name,
+			version,
+			nestXtrasContents: (
+				version[0] > 11 ||
+				(version[0] === 11 && version[1] >= 5)
+			),
+			intel: (
+				version[0] > 11 ||
+				(version[0] === 11 && version[1] >= 5 && version[2] >= 9)
+			)
+		});
 	}
-} : {};
+	return r;
+}
 
 describe('projectors/macapp', () => {
 	describe('ProjectorMacApp', () => {
-		for (const pkg of Object.keys(samples)) {
-			const o = samples[pkg];
-			const getDir = async (d: string) =>
-				cleanProjectorDir('projectors', 'macapp', pkg, d);
-			const getSkeleton = async () => getPackageFile(pkg);
+		if (!shouldTest('macapp')) {
+			return;
+		}
 
-			describe(pkg, () => {
+		for (const {
+			name,
+			nestXtrasContents,
+			intel
+		} of listSamples()) {
+			const getDir = async (d: string) =>
+				cleanProjectorDir('projectors', 'macapp', name, d);
+			const getSkeleton = async () => getPackageFile(name);
+
+			describe(name, () => {
 				it('simple', async () => {
 					const dir = await getDir('simple');
 					await (new ProjectorMacApp({
@@ -148,7 +146,7 @@ describe('projectors/macapp', () => {
 					})).write(dir, 'application.app');
 				});
 
-				if (o.nestXtrasContents) {
+				if (nestXtrasContents) {
 					it('nestXtrasContents', async () => {
 						const dir = await getDir('nestXtrasContents');
 						await (new ProjectorMacApp({
@@ -164,7 +162,7 @@ describe('projectors/macapp', () => {
 					});
 				}
 
-				if (o.intel) {
+				if (intel) {
 					it('intel', async () => {
 						const dir = await getDir('intel');
 						await (new ProjectorMacApp({

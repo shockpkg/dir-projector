@@ -2,100 +2,38 @@ import {
 	cleanProjectorDir,
 	fixtureFile,
 	getPackageFile,
-	shouldTest
+	shouldTest,
+	getInstalledPackagesSync
 } from '../util.spec';
 
 import {
 	ProjectorWindows
 } from './windows';
 
-interface ISample {
-	patchShockwave3dInstalledDisplayDriversSize?: boolean;
-}
-
-const samples: {[index: string]: ISample} = shouldTest('windows') ? {
-	'shockwave-projector-director-7.0.0-win-win': {},
-	'shockwave-projector-director-7.0.2-2-win-win': {},
-	'shockwave-projector-director-7.0.2-trial-win-win': {},
-	'shockwave-projector-director-7.0.2-win-win': {},
-	'shockwave-projector-director-8.0.0-trial-win-win': {},
-	'shockwave-projector-director-8.0.0-win-win': {},
-	'shockwave-projector-director-8.5.0-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-8.5.0-trial-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-8.5.1-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-8.5.1-trial-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-9.0.0-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-9.0.0-trial-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-10.0.0-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-10.0.0-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-10.1.0-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-10.1.0-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-10.1.1-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-10.1.1-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.0.0-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.0.0-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.0.0-hotfix-1-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.0.0-hotfix-3-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.0.0-hotfix-3-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.5.0-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.5.0-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.5.8-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.5.8-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.5.9-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-11.5.9-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-12.0.0-mac-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
-	},
-	'shockwave-projector-director-12.0.0-win-win': {
-		patchShockwave3dInstalledDisplayDriversSize: true
+function listSamples() {
+	const r = [];
+	for (const name of getInstalledPackagesSync()) {
+		const m = name.match(
+			/^shockwave-projector-director-([\d.]+)-\w+-win$/
+		);
+		if (!m) {
+			continue;
+		}
+		const version = m[1].split('.').map(Number);
+		if (version[0] < 7) {
+			continue;
+		}
+		r.push({
+			name,
+			version,
+			patchShockwave3dInstalledDisplayDriversSize: (
+				version[0] > 8 ||
+				(version[0] === 8 && version[1] >= 5)
+			)
+		});
 	}
-} : {};
+	return r;
+}
 
 const fileVersion = '3.14.15.92';
 const productVersion = '3.1.4.1';
@@ -112,15 +50,19 @@ const versionStrings = {
 
 describe('projectors/windows', () => {
 	describe('ProjectorWindows', () => {
-		for (const pkg of Object.keys(samples)) {
-			const o = samples[pkg];
-			const patchShockwave3dInstalledDisplayDriversSize =
-				o.patchShockwave3dInstalledDisplayDriversSize || false;
-			const getDir = async (d: string) =>
-				cleanProjectorDir('projectors', 'windows', pkg, d);
-			const getSkeleton = async () => getPackageFile(pkg);
+		if (!shouldTest('windows')) {
+			return;
+		}
 
-			describe(pkg, () => {
+		for (const {
+			name,
+			patchShockwave3dInstalledDisplayDriversSize
+		} of listSamples()) {
+			const getDir = async (d: string) =>
+				cleanProjectorDir('projectors', 'windows', name, d);
+			const getSkeleton = async () => getPackageFile(name);
+
+			describe(name, () => {
 				it('simple', async () => {
 					const dir = await getDir('simple');
 					await (new ProjectorWindows({
