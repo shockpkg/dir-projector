@@ -112,6 +112,16 @@ export function entryIsEmptyResourceFork(entry: Readonly<Entry>) {
 }
 
 /**
+ * Trim dot flash from head of path.
+ *
+ * @param path Path string.
+ * @returns Trimmed path.
+ */
+export function trimDotSlash(path: string) {
+	return path.replace(/^(\.\/)+/, '');
+}
+
+/**
  * Find path relative from base, if base matches.
  *
  * @param path Path to match against.
@@ -124,8 +134,8 @@ export function pathRelativeBase(
 	start: string,
 	nocase = false
 ) {
-	const p = nocase ? path.toLowerCase() : path;
-	const s = nocase ? start.toLowerCase() : start;
+	const p = trimDotSlash(nocase ? path.toLowerCase() : path);
+	const s = trimDotSlash(nocase ? start.toLowerCase() : start);
 	if (p === s) {
 		return '';
 	}
@@ -148,15 +158,7 @@ export function pathRelativeBaseMatch(
 	start: string,
 	nocase = false
 ) {
-	const p = nocase ? path.toLowerCase() : path;
-	const s = nocase ? start.toLowerCase() : start;
-	if (p === s) {
-		return true;
-	}
-	if (p.startsWith(`${s}/`)) {
-		return true;
-	}
-	return false;
+	return pathRelativeBase(path, start, nocase) !== null;
 }
 
 /**
