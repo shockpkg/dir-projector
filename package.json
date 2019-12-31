@@ -18,8 +18,7 @@
 		"node": ">=10.0.0"
 	},
 	"scripts": {
-		"shockpkg-install": "gulp shockpkg-install",
-		"shockpkg-install-ci": "gulp shockpkg-install-ci",
+		"shockpkg": "shockpkg",
 		"clean": "gulp clean",
 		"lint": "gulp lint",
 		"build": "gulp build",
