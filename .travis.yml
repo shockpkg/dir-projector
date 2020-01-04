@@ -126,7 +126,7 @@ matrix:
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_WIN_LIN"
 
 script:
-- npm run shockpkg -- update
+- npm run shockpkg -- update --summary
 - npm run shockpkg -- install $SHOCKPKG_PACKAGES
 - npm run clean
 - npm run lint
