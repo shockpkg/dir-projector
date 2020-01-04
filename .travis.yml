@@ -101,7 +101,6 @@ matrix:
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_WIN_LIN"
 
   - os: osx
-    osx_image: xcode10.2
     node_js: v10.0.0
     env:
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_MAC"
@@ -117,7 +116,6 @@ matrix:
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_WIN_LIN"
 
   - os: osx
-    osx_image: xcode10.2
     node_js: v13.5.0
     env:
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_MAC"
