@@ -80,7 +80,7 @@ export interface IProjectorOptions {
 	movieName?: string | null;
 
 	/**
-	 * Movie data.
+	 * Make a Shockwave projector.
 	 *
 	 * @default false
 	 */
