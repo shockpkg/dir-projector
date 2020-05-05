@@ -1,172 +1,119 @@
 import {
-	join as pathJoin
+	join as pathJoin,
+	basename
 } from 'path';
 
+import fse from 'fs-extra';
 import {
+	PathType,
 	Entry
 } from '@shockpkg/archive-files';
+import {
+	Plist
+} from '@shockpkg/plist-dom';
 
 import {
-	IProjectorOptions,
-	Projector
-} from '../projector';
-import {
-	defaultFalse,
-	defaultNull,
-	entryIsEmptyResourceFork,
-	infoPlistReplace,
 	pathRelativeBase,
 	pathRelativeBaseMatch,
-	plistStringTagEncode
-} from '../util';
-
-export interface IProjectorMacAppOptions extends IProjectorOptions {
-
-	/**
-	 * Binary name, also renames rsrc and icns.
-	 *
-	 * @default null
-	 */
-	binaryName?: string | null;
-
-	/**
-	 * Intel binary package, not universal binary.
-	 *
-	 * @default false
-	 */
-	intel?: boolean;
-
-	/**
-	 * Icon file.
-	 *
-	 * @default null
-	 */
-	iconFile?: string | null;
-
-	/**
-	 * Icon data.
-	 *
-	 * @default null
-	 */
-	iconData?: Buffer | null;
-
-	/**
-	 * Info.plist file.
-	 *
-	 * @default null
-	 */
-	infoPlistFile?: string | null;
-
-	/**
-	 * Info.plist data.
-	 *
-	 * @default null
-	 */
-	infoPlistData?: Buffer | null;
-
-	/**
-	 * PkgInfo file.
-	 *
-	 * @default null
-	 */
-	pkgInfoFile?: string | null;
-
-	/**
-	 * PkgInfo data.
-	 *
-	 * @default null
-	 */
-	pkgInfoData?: string | Buffer | null;
-
-	/**
-	 * Nest Xtras at *.app/Contents/xtras.
-	 *
-	 * @default false
-	 */
-	nestXtrasContents?: boolean;
-}
+	trimExtension
+} from '../../util';
+import {
+	plistRead,
+	plistParse,
+	infoPlistBundleExecutableSet,
+	infoPlistBundleIconFileSet,
+	infoPlistBundleNameSet
+} from '../../util/mac';
+import {
+	ProjectorMac
+} from '../mac';
 
 /**
  * ProjectorMacApp constructor.
  *
- * @param options Options object.
+ * @param path Output path.
  */
-export class ProjectorMacApp extends Projector {
+export class ProjectorMacApp extends ProjectorMac {
 	/**
 	 * Binary name.
 	 *
 	 * @default null
 	 */
-	public binaryName: string | null;
+	public binaryName: string | null = null;
 
 	/**
 	 * Intel binary package, not universal binary.
 	 *
 	 * @default false
 	 */
-	public intel: boolean;
+	public intel = false;
 
 	/**
 	 * Icon file.
 	 *
 	 * @default null
 	 */
-	public iconFile: string | null;
+	public iconFile: string | null = null;
 
 	/**
 	 * Icon data.
 	 *
 	 * @default null
 	 */
-	public iconData: Readonly<Buffer> | null;
+	public iconData: Readonly<Buffer> | null = null;
 
 	/**
 	 * Info.plist file.
-	 *
-	 * @default null
+	 * Currently only supports XML plist.
 	 */
-	public infoPlistFile: string | null;
+	public infoPlistFile: string | null = null;
 
 	/**
 	 * Info.plist data.
-	 *
-	 * @default null
+	 * Currently only supports XML plist.
 	 */
-	public infoPlistData: string | Readonly<string[]> | Readonly<Buffer> | null;
+	public infoPlistData: (
+		string | Readonly<string[]> | Readonly<Buffer> | null
+	) = null;
+
+	/**
+	 * Info.plist document.
+	 */
+	public infoPlistDocument: Plist | null = null;
 
 	/**
 	 * PkgInfo file.
 	 *
 	 * @default null
 	 */
-	public pkgInfoFile: string | null;
+	public pkgInfoFile: string | null = null;
 
 	/**
 	 * PkgInfo data.
 	 *
 	 * @default null
 	 */
-	public pkgInfoData: string | Readonly<Buffer> | null;
+	public pkgInfoData: string | Readonly<Buffer> | null = null;
+
+	/**
+	 * Update the bundle name in Info.plist.
+	 * Possible values:
+	 * - false: Leave untouched.
+	 * - true: Output name.
+	 * - null: Remove value.
+	 * - string: Custom value.
+	 */
+	public bundleName: boolean | string | null = false;
 
 	/**
 	 * Nest Xtras at *.app/Contents/xtras.
 	 *
 	 * @default false
 	 */
-	public nestXtrasContents: boolean;
+	public nestXtrasContents = false;
 
-	constructor(options: Readonly<IProjectorMacAppOptions> = {}) {
-		super(options);
-
-		this.binaryName = defaultNull(options.binaryName);
-		this.intel = defaultFalse(options.intel);
-		this.iconFile = defaultNull(options.iconFile);
-		this.iconData = defaultNull(options.iconData);
-		this.infoPlistFile = defaultNull(options.infoPlistFile);
-		this.infoPlistData = defaultNull(options.infoPlistData);
-		this.pkgInfoFile = defaultNull(options.pkgInfoFile);
-		this.pkgInfoData = defaultNull(options.pkgInfoData);
-		this.nestXtrasContents = defaultFalse(options.nestXtrasContents);
+	constructor(path: string) {
+		super(path);
 	}
 
 	/**
@@ -174,7 +121,7 @@ export class ProjectorMacApp extends Projector {
 	 *
 	 * @returns File extension.
 	 */
-	public get projectorExtension() {
+	public get extension() {
 		return '.app';
 	}
 
@@ -194,15 +141,6 @@ export class ProjectorMacApp extends Projector {
 	 */
 	public get lingoNewline() {
 		return '\n';
-	}
-
-	/**
-	 * Splash image file extension.
-	 *
-	 * @returns File extension.
-	 */
-	public get splashImageExtension() {
-		return '.pict';
 	}
 
 	/**
@@ -242,15 +180,6 @@ export class ProjectorMacApp extends Projector {
 	}
 
 	/**
-	 * Get app binary name.
-	 *
-	 * @returns File name.
-	 */
-	public get appBinaryName() {
-		return this.appBinaryNameCustom || this.appBinaryNameDefault;
-	}
-
-	/**
 	 * Get app binary name, default.
 	 *
 	 * @returns File name.
@@ -269,12 +198,12 @@ export class ProjectorMacApp extends Projector {
 	}
 
 	/**
-	 * Get app icon name.
+	 * Get app binary name.
 	 *
 	 * @returns File name.
 	 */
-	public get appIconName() {
-		return this.appIconNameCustom || this.appIconNameDefault;
+	public get appBinaryName() {
+		return this.appBinaryNameCustom || this.appBinaryNameDefault;
 	}
 
 	/**
@@ -297,12 +226,12 @@ export class ProjectorMacApp extends Projector {
 	}
 
 	/**
-	 * Get app rsrc name.
+	 * Get app icon name.
 	 *
 	 * @returns File name.
 	 */
-	public get appRsrcName() {
-		return this.appRsrcNameCustom || this.appRsrcNameDefault;
+	public get appIconName() {
+		return this.appIconNameCustom || this.appIconNameDefault;
 	}
 
 	/**
@@ -322,6 +251,15 @@ export class ProjectorMacApp extends Projector {
 	public get appRsrcNameCustom() {
 		const n = this.binaryName;
 		return n ? `${n}.rsrc` : null;
+	}
+
+	/**
+	 * Get app rsrc name.
+	 *
+	 * @returns File name.
+	 */
+	public get appRsrcName() {
+		return this.appRsrcNameCustom || this.appRsrcNameDefault;
 	}
 
 	/**
@@ -357,16 +295,7 @@ export class ProjectorMacApp extends Projector {
 	 * @returns Directory path.
 	 */
 	public get appPathXtras() {
-		return `Contents/${this.xtrasDirectoryName}`;
-	}
-
-	/**
-	 * Get app binary path.
-	 *
-	 * @returns File path.
-	 */
-	public get appPathBinary() {
-		return this.appPathBinaryCustom || this.appPathBinaryDefault;
+		return `Contents/${this.xtrasName}`;
 	}
 
 	/**
@@ -389,12 +318,12 @@ export class ProjectorMacApp extends Projector {
 	}
 
 	/**
-	 * Get app icon path.
+	 * Get app binary path.
 	 *
 	 * @returns File path.
 	 */
-	public get appPathIcon() {
-		return this.appPathIconCustom || this.appPathIconDefault;
+	public get appPathBinary() {
+		return this.appPathBinaryCustom || this.appPathBinaryDefault;
 	}
 
 	/**
@@ -417,12 +346,12 @@ export class ProjectorMacApp extends Projector {
 	}
 
 	/**
-	 * Get app rsrc path.
+	 * Get app icon path.
 	 *
 	 * @returns File path.
 	 */
-	public get appPathRsrc() {
-		return this.appPathRsrcCustom || this.appPathRsrcDefault;
+	public get appPathIcon() {
+		return this.appPathIconCustom || this.appPathIconDefault;
 	}
 
 	/**
@@ -445,29 +374,103 @@ export class ProjectorMacApp extends Projector {
 	}
 
 	/**
+	 * Get app rsrc path.
+	 *
+	 * @returns File path.
+	 */
+	public get appPathRsrc() {
+		return this.appPathRsrcCustom || this.appPathRsrcDefault;
+	}
+
+	/**
+	 * Get the icon path.
+	 *
+	 * @returns Icon path.
+	 */
+	public get iconPath() {
+		return pathJoin(this.path, this.appPathIcon);
+	}
+
+	/**
+	 * Get the Info.plist path.
+	 *
+	 * @returns Info.plist path.
+	 */
+	public get infoPlistPath() {
+		return pathJoin(this.path, this.appPathInfoPlist);
+	}
+
+	/**
+	 * Get the PkgInfo path.
+	 *
+	 * @returns PkgInfo path.
+	 */
+	public get pkgInfoPath() {
+		return pathJoin(this.path, this.appPathPkgInfo);
+	}
+
+	/**
+	 * Get the binary path.
+	 *
+	 * @returns Binary path.
+	 */
+	public get binaryPath() {
+		return pathJoin(this.path, this.appPathBinary);
+	}
+
+	/**
+	 * Get outout Xtras path.
+	 *
+	 * @returns Output path.
+	 */
+	public get xtrasPath() {
+		if (this.nestXtrasContents) {
+			return `${this.path}/${this.appPathXtras}`;
+		}
+		return super.xtrasPath;
+	}
+
+	/**
 	 * Get icon data if any specified, from data or file.
 	 *
 	 * @returns Icon data or null.
 	 */
 	public async getIconData() {
-		return this._dataFromBufferOrFile(
-			this.iconData,
-			this.iconFile
-		);
+		const {iconData, iconFile} = this;
+		return iconData || (iconFile ? fse.readFile(iconFile) : null);
 	}
 
 	/**
-	 * Get Info.plist data if any specified, from data or file.
+	 * Get Info.plist data if any specified, document, data, or file.
 	 *
 	 * @returns Info.plist data or null.
 	 */
-	public async getInfoPlistData() {
-		return this._dataFromValueOrFile(
-			this.infoPlistData,
-			this.infoPlistFile,
-			'\n',
-			'utf8'
-		);
+	public async getInfoPlistDocument() {
+		const {
+			infoPlistDocument,
+			infoPlistData,
+			infoPlistFile
+		} = this;
+		let xml;
+		if (infoPlistDocument) {
+			xml = infoPlistDocument.toXml();
+		}
+		else if (typeof infoPlistData === 'string') {
+			xml = infoPlistData;
+		}
+		else if (Array.isArray(infoPlistData)) {
+			xml = infoPlistData.join('\n');
+		}
+		else if (infoPlistData) {
+			xml = (infoPlistData as Readonly<Buffer>).toString('utf8');
+		}
+		else if (infoPlistFile) {
+			xml = await fse.readFile(infoPlistFile, 'utf8');
+		}
+		else {
+			return null;
+		}
+		return plistParse(xml);
 	}
 
 	/**
@@ -476,116 +479,34 @@ export class ProjectorMacApp extends Projector {
 	 * @returns PkgInfo data or null.
 	 */
 	public async getPkgInfoData() {
-		return this._dataFromValueOrFile(
-			this.pkgInfoData,
-			this.pkgInfoFile,
-			null,
-			'ascii'
-		);
-	}
-
-	/**
-	 * Get the Xtras path.
-	 *
-	 * @param name Save name.
-	 * @returns Xtras path.
-	 */
-	public getXtrasPath(name: string) {
-		if (this.nestXtrasContents) {
-			return `${name}/${this.appPathXtras}`;
+		const {pkgInfoData, pkgInfoFile} = this;
+		if (typeof pkgInfoData === 'string') {
+			return Buffer.from(pkgInfoData, 'ascii');
 		}
-		return super.getXtrasPath(name);
+		return pkgInfoData || (pkgInfoFile ? fse.readFile(pkgInfoFile) : null);
 	}
 
 	/**
-	 * Get the icon path.
+	 * Get configured bundle name, or null to remove.
 	 *
-	 * @param name Save name.
-	 * @returns Icon path.
+	 * @returns New name or null.
 	 */
-	public getIconPath(name: string) {
-		return `${name}/${this.appPathIcon}`;
-	}
-
-	/**
-	 * Get the Info.plist path.
-	 *
-	 * @param name Save name.
-	 * @returns Icon path.
-	 */
-	public getInfoPlistPath(name: string) {
-		return `${name}/${this.appPathInfoPlist}`;
-	}
-
-	/**
-	 * Get the PkgInfo path.
-	 *
-	 * @param name Save name.
-	 * @returns Icon path.
-	 */
-	public getPkgInfoPath(name: string) {
-		return `${name}/${this.appPathPkgInfo}`;
-	}
-
-	/**
-	 * Update XML code with customized variables.
-	 *
-	 * @param xml Plist code.
-	 * @param name Application name.
-	 * @returns Updated XML.
-	 */
-	public updateInfoPlistCode(xml: string, name: string) {
-		const {
-			appBinaryNameCustom,
-			appIconNameCustom
-		} = this;
-
-		if (appBinaryNameCustom) {
-			xml = infoPlistReplace(
-				xml,
-				'CFBundleExecutable',
-				plistStringTagEncode(appBinaryNameCustom)
-			);
-		}
-		if (appIconNameCustom) {
-			xml = infoPlistReplace(
-				xml,
-				'CFBundleIconFile',
-				plistStringTagEncode(appIconNameCustom)
-			);
-		}
-		xml = infoPlistReplace(
-			xml,
-			'CFBundleName',
-			plistStringTagEncode(this.getProjectorNameNoExtension(name))
-		);
-
-		return xml;
-	}
-
-	/**
-	 * Write out the projector.
-	 *
-	 * @param path Save path.
-	 * @param name Save name.
-	 */
-	public async write(path: string, name: string) {
-		await super.write(path, name);
-
-		await this._writeIcon(path, name);
-		await this._writePkgInfo(path, name);
-		await this._writeInfoPlist(path, name);
-		await this._updateInfoPlist(path, name);
+	public getBundleName() {
+		const {bundleName} = this;
+		return bundleName === true ?
+			trimExtension(basename(this.path), this.extension, true) :
+			bundleName;
 	}
 
 	/**
 	 * Write the projector skeleton from archive.
 	 *
-	 * @param path Save path.
-	 * @param name Save name.
+	 * @param skeleton Skeleton path.
 	 */
-	protected async _writeSkeleton(path: string, name: string) {
+	protected async _writeSkeleton(skeleton: string) {
 		const {
+			path,
+
 			hasIcon,
 			hasInfoPlist,
 			hasPkgInfo,
@@ -604,12 +525,12 @@ export class ProjectorMacApp extends Projector {
 			appPathRsrcDefault,
 			appPathRsrcCustom,
 
-			xtrasDirectoryName,
+			xtrasName,
+			xtrasPath,
 
 			projectorResourcesDirectoryName
 		} = this;
 
-		const xtrasPath = this.getXtrasPath(name);
 		const xtrasMappings = this.getIncludeXtrasMappings();
 
 		let foundProjectorResourcesDirectory = false;
@@ -625,7 +546,7 @@ export class ProjectorMacApp extends Projector {
 			// Check if Xtras path.
 			const xtrasRel = pathRelativeBase(
 				entry.volumePath,
-				xtrasDirectoryName,
+				xtrasName,
 				true
 			);
 			if (xtrasRel === null) {
@@ -642,7 +563,7 @@ export class ProjectorMacApp extends Projector {
 				return true;
 			}
 
-			await entry.extract(pathJoin(path, xtrasPath, dest));
+			await entry.extract(pathJoin(xtrasPath, dest));
 			return true;
 		};
 
@@ -744,14 +665,13 @@ export class ProjectorMacApp extends Projector {
 				}
 			}
 
-			await entry.extract(pathJoin(path, name, dest));
+			await entry.extract(pathJoin(path, dest));
 			return true;
 		};
 
-		const archive = await this.getSkeletonArchive();
+		const archive = await this.getSkeletonArchive(skeleton);
 		await archive.read(async entry => {
-			// Skip empty resource forks (every file in DMG).
-			if (entryIsEmptyResourceFork(entry)) {
+			if (entry.type === PathType.RESOURCE_FORK) {
 				return;
 			}
 
@@ -802,76 +722,93 @@ export class ProjectorMacApp extends Projector {
 		}
 
 		if (!foundXtras) {
-			throw new Error(`Failed to locate: ${xtrasDirectoryName}`);
+			throw new Error(`Failed to locate: ${xtrasName}`);
 		}
+	}
+
+	/**
+	 * Modify the projector skeleton.
+	 */
+	protected async _modifySkeleton() {
+		await this._writeIcon();
+		await this._writePkgInfo();
+		await this._updateInfoPlist();
 	}
 
 	/**
 	 * Write out the projector icon file.
-	 *
-	 * @param path Save path.
-	 * @param name Save name.
 	 */
-	protected async _writeIcon(path: string, name: string) {
-		await this._maybeWriteFile(
-			await this.getIconData(),
-			pathJoin(path, this.getIconPath(name))
-		);
+	protected async _writeIcon() {
+		const data = await this.getIconData();
+		if (data) {
+			await fse.outputFile(this.iconPath, data);
+		}
 	}
 
 	/**
 	 * Write out the projector PkgInfo file.
-	 *
-	 * @param path Save path.
-	 * @param name Save name.
 	 */
-	protected async _writePkgInfo(path: string, name: string) {
-		await this._maybeWriteFile(
-			await this.getPkgInfoData(),
-			pathJoin(path, this.getPkgInfoPath(name))
-		);
-	}
-
-	/**
-	 * Write out the projector Info.plist file.
-	 *
-	 * @param path Save path.
-	 * @param name Save name.
-	 */
-	protected async _writeInfoPlist(path: string, name: string) {
-		await this._maybeWriteFile(
-			await this.getInfoPlistData(),
-			pathJoin(path, this.getInfoPlistPath(name))
-		);
-	}
-
-	/**
-	 * Update the projector Info.plist file fields.
-	 *
-	 * @param path Save path.
-	 * @param name Save name.
-	 */
-	protected async _updateInfoPlist(path: string, name: string) {
-		const file = pathJoin(path, this.getInfoPlistPath(name));
-		let data = await this._dataFromBufferOrFile(null, file);
-		if (!data) {
-			throw new Error('Failed to read Info.plist or updating');
+	protected async _writePkgInfo() {
+		const data = await this.getPkgInfoData();
+		if (data) {
+			await fse.outputFile(this.pkgInfoPath, data);
 		}
+	}
 
-		// Decode buffer, and update.
-		const xmlOriginal = data.toString('utf8');
-		const xml = this.updateInfoPlistCode(xmlOriginal, name);
-
-		// If unchanged, all done.
-		if (xml === xmlOriginal) {
+	/**
+	 * Update the projector Info.plist if needed.
+	 */
+	protected async _updateInfoPlist() {
+		const customPlist = await this.getInfoPlistDocument();
+		const bundleName = this.getBundleName();
+		const {
+			appBinaryNameCustom,
+			appIconNameCustom
+		} = this;
+		if (!(
+			customPlist ||
+			appIconNameCustom ||
+			appBinaryNameCustom ||
+			bundleName !== false
+		)) {
 			return;
 		}
 
-		// Encode data and write.
-		data = Buffer.from(xml, 'utf8');
-		await this._maybeWriteFile(
-			data,
-			pathJoin(path, this.getInfoPlistPath(name))
-		);
+		// Use a custom plist or the existing one.
+		const plist = customPlist || (await this._readInfoPlist());
+
+		// Update values.
+		if (appIconNameCustom) {
+			infoPlistBundleIconFileSet(plist, appIconNameCustom);
+		}
+		if (appBinaryNameCustom) {
+			infoPlistBundleExecutableSet(plist, appBinaryNameCustom);
+		}
+		if (bundleName !== false) {
+			infoPlistBundleNameSet(plist, bundleName);
+		}
+
+		// Write out the plist.
+		await this._writeInfoPlist(plist);
+	}
+
+	/**
+	 * Read the projector Info.plist file.
+	 *
+	 * @returns Plist document.
+	 */
+	protected async _readInfoPlist() {
+		return plistRead(this.infoPlistPath);
+	}
+
+	/**
+	 * Write the projector Info.plist file.
+	 *
+	 * @param plist Plist document.
+	 */
+	protected async _writeInfoPlist(plist: Plist) {
+		const path = this.infoPlistPath;
+		await fse.remove(path);
+		await fse.outputFile(path, plist.toXml(), 'utf8');
 	}
 }

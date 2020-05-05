@@ -1,5 +1,10 @@
 import {
-	IProjectorOptions,
+	join as pathJoin
+} from 'path';
+
+import fse from 'fs-extra';
+
+import {
 	Projector
 } from './projector';
 import {
@@ -7,12 +12,14 @@ import {
 	fixtureFile
 } from './util.spec';
 
-class ProjectorDummyWindows extends Projector {
-	constructor(options: IProjectorOptions = {}) {
-		super(options);
+const getDir = async (d: string) => cleanProjectorDir('dummy', d);
+
+export class ProjectorDummy extends Projector {
+	constructor(path: string) {
+		super(path);
 	}
 
-	public get projectorExtension() {
+	public get extension() {
 		return '.exe';
 	}
 
@@ -28,117 +35,71 @@ class ProjectorDummyWindows extends Projector {
 		return '.BMP';
 	}
 
-	protected async _writeSkeleton(path: string, name: string) {
+	protected async _writeSkeleton(skeleton: string) {
+		// Do nothing.
+	}
+
+	protected async _modifySkeleton() {
 		// Do nothing.
 	}
 }
-
-class ProjectorDummyMac extends Projector {
-	constructor(options: IProjectorOptions = {}) {
-		super(options);
-	}
-
-	public get projectorExtension() {
-		return '.app';
-	}
-
-	public get configNewline() {
-		return '\n';
-	}
-
-	public get lingoNewline() {
-		return '\n';
-	}
-
-	public get splashImageExtension() {
-		return '.pict';
-	}
-
-	protected async _writeSkeleton(path: string, name: string) {
-		// Do nothing.
-	}
-}
-
-const classes = [
-	{
-		Projector: ProjectorDummyWindows,
-		name: 'ProjectorDummyWindows',
-		platform: 'windows',
-		config: 'config.ini.crlf.bin',
-		splash: 'splash.bmp',
-		lingo: 'lingo.ini.crlf.bin'
-	},
-	{
-		Projector: ProjectorDummyMac,
-		name: 'ProjectorDummyMac',
-		platform: 'mac',
-		config: 'config.ini.lf.bin',
-		splash: 'splash.pict',
-		lingo: 'lingo.ini.lf.bin'
-	}
-];
 
 describe('projector', () => {
-	for (const o of classes) {
-		const getDir = async (d: string) =>
-			cleanProjectorDir('dummy', o.platform, d);
+	describe('ProjectorDummy', () => {
+		it('simple', async () => {
+			const dir = await getDir('simple');
+			const dest = pathJoin(dir, 'application.exe');
 
-		describe(o.name, () => {
-			it('simple', async () => {
-				const dir = await getDir('simple');
-				const projector = new o.Projector({
-					movieFile: fixtureFile('dir7.dir'),
-					movieName: 'movie.dir',
-					configFile: fixtureFile(o.config)
-				});
-				await projector.write(
-					dir,
-					`application${projector.projectorExtension}`
-				);
-			});
+			const p = new ProjectorDummy(dest);
+			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
 
-			it('lingo', async () => {
-				const dir = await getDir('lingo');
-				const projector = new o.Projector({
-					movieFile: fixtureFile('dir7.dir'),
-					movieName: 'movie.dir',
-					configFile: fixtureFile(o.config),
-					lingoFile: fixtureFile(o.lingo)
-				});
-				await projector.write(
-					dir,
-					`application${projector.projectorExtension}`
-				);
-			});
-
-			it('splash', async () => {
-				const dir = await getDir('splash');
-				const projector = new o.Projector({
-					movieFile: fixtureFile('dir7.dir'),
-					movieName: 'movie.dir',
-					configFile: fixtureFile(o.config),
-					splashImageFile: fixtureFile(o.splash)
-				});
-				await projector.write(
-					dir,
-					`application${projector.projectorExtension}`
-				);
-			});
-
-			it('complex', async () => {
-				const dir = await getDir('complex');
-				const projector = new o.Projector({
-					movieFile: fixtureFile('dir7.dir'),
-					movieName: 'movie.dir',
-					configFile: fixtureFile(o.config),
-					lingoFile: fixtureFile(o.lingo),
-					splashImageFile: fixtureFile(o.splash)
-				});
-				await projector.write(
-					dir,
-					`application${projector.projectorExtension}`
-				);
-			});
+			await fse.copyFile(
+				fixtureFile('dir7.dir'),
+				pathJoin(dir, 'movie.dir')
+			);
 		});
-	}
+
+		it('lingo', async () => {
+			const dir = await getDir('lingo');
+			const dest = pathJoin(dir, 'application.exe');
+
+			const p = new ProjectorDummy(dest);
+			p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
+			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
+
+			await fse.copyFile(
+				fixtureFile('dir7.dir'),
+				pathJoin(dir, 'movie.dir')
+			);
+		});
+
+		it('splash', async () => {
+			const dir = await getDir('splash');
+			const dest = pathJoin(dir, 'application.exe');
+
+			const p = new ProjectorDummy(dest);
+			p.splashImageFile = fixtureFile('splash.bmp');
+			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
+
+			await fse.copyFile(
+				fixtureFile('dir7.dir'),
+				pathJoin(dir, 'movie.dir')
+			);
+		});
+
+		it('complex', async () => {
+			const dir = await getDir('complex');
+			const dest = pathJoin(dir, 'application.exe');
+
+			const p = new ProjectorDummy(dest);
+			p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
+			p.splashImageFile = fixtureFile('splash.bmp');
+			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
+
+			await fse.copyFile(
+				fixtureFile('dir7.dir'),
+				pathJoin(dir, 'movie.dir')
+			);
+		});
+	});
 });

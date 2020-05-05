@@ -1,4 +1,212 @@
+import {
+	signatureGet,
+	signatureSet
+} from 'portable-executable-signature';
+import * as resedit from 'resedit';
 import fse from 'fs-extra';
+
+import {
+	bufferToArrayBuffer,
+	launcher
+} from '../util';
+
+const ResEditNtExecutable =
+	resedit.NtExecutable ||
+	(resedit as any).default.NtExecutable;
+
+const ResEditNtExecutableResource =
+	resedit.NtExecutableResource ||
+	(resedit as any).default.NtExecutableResource;
+
+const ResEditResource =
+	resedit.Resource ||
+	(resedit as any).default.Resource;
+
+const ResEditData =
+	resedit.Data ||
+	(resedit as any).default.Data;
+
+export interface IPeResourceReplace {
+
+	/**
+	 * Replace icons if not null.
+	 *
+	 * @default null
+	 */
+	iconData?: Readonly<Buffer> | null;
+
+	/**
+	 * Replace version strings if not null.
+	 *
+	 * @default null
+	 */
+	versionStrings?: Readonly<{[key: string]: string}> | null;
+
+	/**
+	 * If true remove signature if present.
+	 *
+	 * @default false
+	 */
+	removeSignature?: boolean | null;
+}
+
+/**
+ * Replace resources in Windows PE file.
+ *
+ * @param path File path.
+ * @param options Replacement options.
+ */
+export async function peResourceReplace(
+	path: string,
+	options: Readonly<IPeResourceReplace>
+) {
+	const {
+		iconData,
+		versionStrings,
+		removeSignature
+	} = options;
+
+	// Read EXE file and remove signature if present.
+	const exeOriginal = await fse.readFile(path);
+	const signedData = removeSignature ? null : signatureGet(exeOriginal);
+	let exeData = signatureSet(exeOriginal, null, true, true);
+
+	// Parse resources.
+	const exe = ResEditNtExecutable.from(exeData);
+	const res = ResEditNtExecutableResource.from(exe);
+
+	// Replace all the icons in all icon groups.
+	if (iconData) {
+		const ico = ResEditData.IconFile.from(
+			bufferToArrayBuffer(iconData)
+		);
+		for (const iconGroup of ResEditResource.IconGroupEntry.fromEntries(
+			res.entries
+		)) {
+			ResEditResource.IconGroupEntry.replaceIconsForResource(
+				res.entries,
+				iconGroup.id,
+				iconGroup.lang,
+				ico.icons.map(icon => icon.data)
+			);
+		}
+	}
+
+	// Update strings if present for all the languages.
+	if (versionStrings) {
+		for (const versionInfo of ResEditResource.VersionInfo.fromEntries(
+			res.entries
+		)) {
+			// Get all the languages, not just available languages.
+			const languages = versionInfo.getAllLanguagesForStringValues();
+			for (const language of languages) {
+				versionInfo.setStringValues(language, versionStrings);
+			}
+			versionInfo.outputToResourceEntries(res.entries);
+		}
+	}
+
+	// Update resources.
+	res.outputResource(exe);
+	exeData = exe.generate();
+
+	// Add back signature if not removing.
+	if (signedData) {
+		exeData = signatureSet(exeData, signedData, true, true);
+	}
+
+	// Write updated EXE file.
+	await fse.writeFile(path, Buffer.from(exeData));
+}
+
+/**
+ * Get Windows launcher for the specified type.
+ *
+ * @param type Executable type.
+ * @param resources File to optionally copy resources from.
+ * @returns Launcher data.
+ */
+export async function windowsLauncher(
+	type: 'i686' | 'x86_64',
+	resources: string | null = null
+) {
+	let data;
+	switch (type) {
+		case 'i686': {
+			data = await launcher('windows-i686');
+			break;
+		}
+		case 'x86_64': {
+			data = await launcher('windows-x86_64');
+			break;
+		}
+		default: {
+			throw new Error(`Invalid type: ${type}`);
+		}
+	}
+
+	// Check if copying resources.
+	if (!resources) {
+		return data;
+	}
+
+	// Remove signature if present.
+	const signedData = signatureGet(data);
+	let exeData = signatureSet(data, null, true, true);
+
+	// Read resources from file.
+	const res = ResEditNtExecutableResource.from(
+		ResEditNtExecutable.from(
+			await fse.readFile(resources),
+			{
+				ignoreCert: true
+			}
+		)
+	);
+
+	// Find the first icon group for each language.
+	const resIconGroups = new Map();
+	for (const iconGroup of ResEditResource.IconGroupEntry.fromEntries(
+		res.entries
+	)) {
+		const known = resIconGroups.get(iconGroup.lang) || null;
+		if (!known || iconGroup.id < known.id) {
+			resIconGroups.set(iconGroup.lang, iconGroup);
+		}
+	}
+
+	// List the groups and icons to be kept.
+	const iconGroups = new Set();
+	const iconDatas = new Set();
+	for (const [, group] of resIconGroups) {
+		iconGroups.add(group.id);
+		for (const icon of group.icons) {
+			iconDatas.add(icon.iconID);
+		}
+	}
+
+	// Filter out the resources to keep.
+	const typeVersionInfo = 16;
+	const typeIcon = 3;
+	const typeIconGroup = 14;
+	res.entries = res.entries.filter(entry => (
+		entry.type === typeVersionInfo ||
+		(entry.type === typeIcon && iconDatas.has(entry.id)) ||
+		(entry.type === typeIconGroup && iconGroups.has(entry.id))
+	));
+
+	// Apply resources to launcher.
+	const exe = ResEditNtExecutable.from(exeData);
+	res.outputResource(exe);
+	exeData = exe.generate();
+
+	// Add back signature if one present.
+	if (signedData) {
+		exeData = signatureSet(exeData, signedData, true, true);
+	}
+
+	return Buffer.from(exeData);
+}
 
 interface IPatcherPatch {
 
@@ -36,7 +244,7 @@ function patchHexToBytes(str: string) {
 // Enough to provide amply room for anything that should be in the registry.
 // Sizes 0x10000 for ASCII, and 0x20000 for WCHAR.
 // Not enough room to calculate the correct size, and use it directly.
-const patchWindowsS3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
+const patchShockwave3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
 	// director-8.5.0 - director-11.0.0-hotfix-1:
 	{
 		find: patchHexToBytes([
@@ -190,12 +398,12 @@ async function patchFileOnce(
  *
  * @param file File path.
  */
-export async function patchWindowsS3dInstalledDisplayDriversSize(
+export async function windowsPatchShockwave3dInstalledDisplayDriversSize(
 	file: string
 ) {
 	await patchFileOnce(
 		file,
-		patchWindowsS3dInstalledDisplayDriversSizePatches,
+		patchShockwave3dInstalledDisplayDriversSizePatches,
 		'Windows Shockwave 3D InstalledDisplayDrivers Size'
 	);
 }

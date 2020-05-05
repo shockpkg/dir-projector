@@ -1,5 +1,6 @@
 import {
-	join as pathJoin
+	join as pathJoin,
+	dirname
 } from 'path';
 
 import {
@@ -11,8 +12,6 @@ import {
 import fse from 'fs-extra';
 
 import {
-	defaultFalse,
-	defaultNull,
 	pathRelativeBase,
 	trimExtension
 } from './util';
@@ -49,230 +48,79 @@ export interface IIncludeXtras {
 	[key: string]: string | null;
 }
 
-export interface IProjectorOptions {
-
-	/**
-	 * Skeleton file or directory.
-	 *
-	 * @default null
-	 */
-	skeleton?: string | null;
-
-	/**
-	 * Movie file.
-	 *
-	 * @default null
-	 */
-	movieFile?: string | null;
-
-	/**
-	 * Movie data.
-	 *
-	 * @default null
-	 */
-	movieData?: Buffer | null;
-
-	/**
-	 * Movie name.
-	 *
-	 * @default null
-	 */
-	movieName?: string | null;
-
+/**
+ * Projector constructor.
+ *
+ * @param path Output path.
+ */
+export abstract class Projector extends Object {
 	/**
 	 * Make a Shockwave projector.
 	 *
 	 * @default false
 	 */
-	shockwave?: boolean;
-
-	/**
-	 * Config file.
-	 *
-	 * @default null
-	 */
-	configFile?: string | null;
-
-	/**
-	 * Config data.
-	 *
-	 * @default null
-	 */
-	configData?: string[] | string | Buffer | null;
-
-	/**
-	 * Lingo file.
-	 *
-	 * @default null
-	 */
-	lingoFile?: string | null;
-
-	/**
-	 * Lingo data.
-	 *
-	 * @default null
-	 */
-	lingoData?: string[] | string | Buffer | null;
+	public shockwave: boolean = false;
 
 	/**
 	 * Splash image file.
 	 *
 	 * @default null
 	 */
-	splashImageFile?: string | null;
+	public splashImageFile: string | null = null;
 
 	/**
 	 * Splash image data.
 	 *
 	 * @default null
 	 */
-	splashImageData?: Buffer | null;
-
-	/**
-	 * Xtras include map.
-	 *
-	 * @default null
-	 */
-	includeXtras?: IIncludeXtras | null;
-
-	/**
-	 * Nest xtras in a Configuration directory.
-	 *
-	 * @default false
-	 */
-	nestXtrasConfiguration?: boolean;
-
-	/**
-	 * Path to hdiutil binary.
-	 *
-	 * @default null
-	 */
-	pathToHdiutil?: string | null;
-}
-
-/**
- * Projector constructor.
- *
- * @param options Options object.
- */
-export abstract class Projector extends Object {
-	/**
-	 * Skeleton file or directory.
-	 *
-	 * @default null
-	 */
-	public skeleton: string | null;
-
-	/**
-	 * Movie file.
-	 *
-	 * @default null
-	 */
-	public movieFile: string | null;
-
-	/**
-	 * Movie data.
-	 *
-	 * @default null
-	 */
-	public movieData: Readonly<Buffer> | null;
-
-	/**
-	 * Movie name.
-	 *
-	 * @default null
-	 */
-	public movieName: string | null;
-
-	/**
-	 * Movie data.
-	 *
-	 * @default false
-	 */
-	public shockwave: boolean;
-
-	/**
-	 * Config file.
-	 *
-	 * @default null
-	 */
-	public configFile: string | null;
-
-	/**
-	 * Config data.
-	 *
-	 * @default null
-	 */
-	public configData: Readonly<string[]> | string | Readonly<Buffer> | null;
+	public splashImageData: Readonly<Buffer> | null = null;
 
 	/**
 	 * Lingo file.
 	 *
 	 * @default null
 	 */
-	public lingoFile: string | null;
+	public lingoFile: string | null = null;
 
 	/**
 	 * Lingo data.
 	 *
 	 * @default null
 	 */
-	public lingoData: Readonly<string[]> | string | Readonly<Buffer> | null;
-
-	/**
-	 * Splash image file.
-	 *
-	 * @default null
-	 */
-	public splashImageFile: string | null;
-
-	/**
-	 * Splash image data.
-	 *
-	 * @default null
-	 */
-	public splashImageData: Readonly<Buffer> | null;
+	public lingoData: (
+		Readonly<string[]> | string | Readonly<Buffer> | null
+	) = null;
 
 	/**
 	 * Xtras include map.
 	 *
 	 * @default null
 	 */
-	public includeXtras: Readonly<IIncludeXtras> | null;
+	public includeXtras: Readonly<IIncludeXtras> | null = null;
 
 	/**
 	 * Nest xtras in a Configuration directory.
 	 *
 	 * @default false
 	 */
-	public nestXtrasConfiguration: boolean;
+	public nestXtrasConfiguration: boolean = false;
 
 	/**
 	 * Path to hdiutil binary.
 	 *
 	 * @default null
 	 */
-	public pathToHdiutil: string | null;
+	public pathToHdiutil: string | null = null;
 
-	constructor(options: Readonly<IProjectorOptions> = {}) {
+	/**
+	 * Output path.
+	 */
+	public readonly path: string;
+
+	constructor(path: string) {
 		super();
 
-		this.skeleton = defaultNull(options.skeleton);
-		this.movieFile = defaultNull(options.movieFile);
-		this.movieData = defaultNull(options.movieData);
-		this.movieName = defaultNull(options.movieName);
-		this.shockwave = defaultFalse(options.shockwave);
-		this.configFile = defaultNull(options.configFile);
-		this.configData = defaultNull(options.configData);
-		this.lingoFile = defaultNull(options.lingoFile);
-		this.lingoData = defaultNull(options.lingoData);
-		this.splashImageFile = defaultNull(options.splashImageFile);
-		this.splashImageData = defaultNull(options.splashImageData);
-		this.includeXtras = defaultNull(options.includeXtras);
-		this.nestXtrasConfiguration = defaultFalse(
-			options.nestXtrasConfiguration
-		);
-		this.pathToHdiutil = defaultNull(options.pathToHdiutil);
+		this.path = path;
 	}
 
 	/**
@@ -316,7 +164,7 @@ export abstract class Projector extends Object {
 	 *
 	 * @returns Directory encoding.
 	 */
-	public get xtrasDirectoryName() {
+	public get xtrasName() {
 		return 'xtras';
 	}
 
@@ -325,33 +173,69 @@ export abstract class Projector extends Object {
 	 *
 	 * @returns Directory encoding.
 	 */
-	public get configurationDirectoryName() {
+	public get configurationName() {
 		return 'Configuration';
 	}
 
 	/**
-	 * Get movie data if any specified, from data or file.
+	 * Name of a projector trimming the extension, case insensitive.
 	 *
-	 * @returns Movie data or null.
+	 * @returns Projector name without extension.
 	 */
-	public async getMovieData() {
-		return this._dataFromBufferOrFile(
-			this.movieData,
-			this.movieFile
-		);
+	public get name() {
+		return trimExtension(dirname(this.path), this.extension, true);
 	}
 
 	/**
-	 * Get config data if any specified, from data or file.
+	 * Config file path.
 	 *
-	 * @returns Config data or null.
+	 * @returns Config path.
 	 */
-	public async getConfigData() {
-		return this._dataFromValueOrFile(
-			this.configData,
-			this.configFile,
-			this.configNewline,
-			this.configEncoding
+	public get configPath() {
+		const base = trimExtension(this.path, this.extension, true);
+		return `${base}${this.configExtension}`;
+	}
+
+	/**
+	 * Splash image file path.
+	 *
+	 * @returns Splash image path.
+	 */
+	public get splashImagePath() {
+		const base = trimExtension(this.path, this.extension, true);
+		return `${base}${this.splashImageExtension}`;
+	}
+
+	/**
+	 * Lingo file path.
+	 *
+	 * @returns Lingo file path.
+	 */
+	public get lingoPath() {
+		return pathJoin(dirname(this.path), this.lingoName);
+	}
+
+	/**
+	 * Get outout Xtras path.
+	 *
+	 * @returns Output path.
+	 */
+	public get xtrasPath() {
+		const cn = this.configurationName;
+		return (this.nestXtrasConfiguration && cn) ?
+			pathJoin(dirname(this.path), cn, this.xtrasName) :
+			pathJoin(dirname(this.path), this.xtrasName);
+	}
+
+	/**
+	 * Get splash image data if any specified, from data or file.
+	 *
+	 * @returns Splash image data or null.
+	 */
+	public async getSplashImageData() {
+		const {splashImageData, splashImageFile} = this;
+		return splashImageData || (
+			splashImageFile ? fse.readFile(splashImageFile) : null
 		);
 	}
 
@@ -361,82 +245,29 @@ export abstract class Projector extends Object {
 	 * @returns Lingo data or null.
 	 */
 	public async getLingoData() {
-		return this._dataFromValueOrFile(
-			this.lingoData,
-			this.lingoFile,
-			this.lingoNewline,
-			this.lingoEncoding
-		);
-	}
-
-	/**
-	 * Get splash image data if any specified, from data or file.
-	 *
-	 * @returns Splash image data or null.
-	 */
-	public async getSplashImageData() {
-		return this._dataFromBufferOrFile(
-			this.splashImageData,
-			this.splashImageFile
-		);
-	}
-
-	/**
-	 * Get the name of a projector trimming the extension, case insensitive.
-	 *
-	 * @param name Projector name.
-	 * @returns Projector name without extension.
-	 */
-	public getProjectorNameNoExtension(name: string) {
-		return trimExtension(name, this.projectorExtension, true);
-	}
-
-	/**
-	 * Get the Xtras path.
-	 *
-	 * @param name Save name.
-	 * @returns Xtras path.
-	 */
-	public getXtrasPath(name: string) {
-		const cdn = this.configurationDirectoryName;
-		return this.nestXtrasConfiguration && cdn ?
-			`${cdn}/${this.xtrasDirectoryName}` :
-			this.xtrasDirectoryName;
-	}
-
-	/**
-	 * Get the config path.
-	 *
-	 * @param name Save name.
-	 * @returns Config path.
-	 */
-	public getConfigPath(name: string) {
-		const n = this.getProjectorNameNoExtension(name);
-		return `${n}${this.configExtension}`;
-	}
-
-	/**
-	 * Get the splash image path.
-	 *
-	 * @param name Save name.
-	 * @returns Config path.
-	 */
-	public getSplashImagePath(name: string) {
-		const n = this.getProjectorNameNoExtension(name);
-		return `${n}${this.splashImageExtension}`;
+		const {lingoData, lingoFile} = this;
+		if (typeof lingoData === 'string') {
+			return Buffer.from(lingoData, this.lingoEncoding);
+		}
+		if (Array.isArray(lingoData)) {
+			return Buffer.from(
+				lingoData.join(this.lingoNewline),
+				this.lingoEncoding
+			);
+		}
+		if (lingoData) {
+			return lingoData as Readonly<Buffer>;
+		}
+		return lingoFile ? fse.readFile(lingoFile) : null;
 	}
 
 	/**
 	 * Get the skeleton file or directory as an Archive instance.
 	 *
+	 * @param skeleton Skeleton path.
 	 * @returns Archive instance.
 	 */
-	public async getSkeletonArchive(): Promise<Archive> {
-		const {skeleton} = this;
-		if (!skeleton) {
-			throw new Error('Projector skeleton not specified');
-		}
-
+	public async getSkeletonArchive(skeleton: string): Promise<Archive> {
 		const stat = await fse.stat(skeleton);
 		if (stat.isDirectory()) {
 			return new ArchiveDir(skeleton);
@@ -534,145 +365,104 @@ export abstract class Projector extends Object {
 	}
 
 	/**
-	 * Write out the projector.
+	 * Write out projector with skeleton and config file.
 	 *
-	 * @param path Save path.
-	 * @param name Save name.
+	 * @param skeleton Skeleton path.
+	 * @param configFile Config file.
 	 */
-	public async write(path: string, name: string) {
-		await this._writeSkeleton(path, name);
-		await this._writeMovie(path, name);
-		await this._writeConfig(path, name);
-		await this._writeSplashImage(path, name);
-		await this._writeLingo(path, name);
+	public async withFile(skeleton: string, configFile: string | null) {
+		const configData = configFile ? await fse.readFile(configFile) : null;
+		await this.withData(skeleton, configData);
 	}
 
 	/**
-	 * Write out the projector movie file.
+	 * Write out projector with skeleton and config data.
 	 *
-	 * @param path Save path.
-	 * @param name Save name.
+	 * @param skeleton Skeleton path.
+	 * @param configData Config data.
 	 */
-	protected async _writeMovie(path: string, name: string) {
-		const data = await this.getMovieData();
-		if (!data) {
-			return;
+	public async withData(
+		skeleton: string,
+		configData: Readonly<string[]> | string | Readonly<Buffer> | null
+	) {
+		await this._checkOutput();
+		await this._writeSkeleton(skeleton);
+		await this._modifySkeleton();
+		await this._writeConfig(configData);
+		await this._writeSplashImage();
+		await this._writeLingo();
+	}
+
+	/**
+	 * Check that output path is valid, else throws.
+	 */
+	protected async _checkOutput() {
+		for (const p of [
+			this.path,
+			this.configPath,
+			this.splashImagePath,
+			this.lingoPath
+		]) {
+			// eslint-disable-next-line no-await-in-loop
+			if (await fse.pathExists(p)) {
+				throw new Error(`Output path already exists: ${p}`);
+			}
 		}
-		const {movieName} = this;
-		if (!movieName) {
-			throw new Error('Cannot write movie data without a movie name');
-		}
-		await fse.writeFile(pathJoin(path, movieName), data);
 	}
 
 	/**
 	 * Write out the projector config file.
 	 *
-	 * @param path Save path.
-	 * @param name Save name.
+	 * @param configData Config data.
 	 */
-	protected async _writeConfig(path: string, name: string) {
-		await this._maybeWriteFile(
-			await this.getConfigData(),
-			pathJoin(path, this.getConfigPath(name))
-		);
+	protected async _writeConfig(
+		configData: Readonly<string[]> | string | Readonly<Buffer> | null
+	) {
+		let data: Readonly<Buffer> | null = null;
+		if (typeof configData === 'string') {
+			data = Buffer.from(configData, this.configEncoding);
+		}
+		else if (Array.isArray(data)) {
+			data = Buffer.from(
+				(configData as string[]).join(this.configNewline),
+				this.configEncoding
+			);
+		}
+		else if (configData) {
+			data = configData as Readonly<Buffer>;
+		}
+
+		if (data) {
+			await fse.outputFile(this.configPath, data);
+		}
 	}
 
 	/**
 	 * Write out the projector splash image file.
-	 *
-	 * @param path Save path.
-	 * @param name Save name.
 	 */
-	protected async _writeSplashImage(path: string, name: string) {
-		await this._maybeWriteFile(
-			await this.getSplashImageData(),
-			pathJoin(path, this.getSplashImagePath(name))
-		);
+	protected async _writeSplashImage() {
+		const data = await this.getSplashImageData();
+		if (data) {
+			await fse.outputFile(this.splashImagePath, data);
+		}
 	}
 
 	/**
 	 * Write out the projector lingo file.
-	 *
-	 * @param path Save path.
-	 * @param name Save name.
 	 */
-	protected async _writeLingo(path: string, name: string) {
-		await this._maybeWriteFile(
-			await this.getLingoData(),
-			pathJoin(path, this.lingoName)
-		);
-	}
-
-	/**
-	 * Get data from buffer or file.
-	 *
-	 * @param data Data buffer.
-	 * @param file File path.
-	 * @returns Data buffer.
-	 */
-	protected async _dataFromBufferOrFile(
-		data: Readonly<Buffer> | null,
-		file: string | null
-	) {
+	protected async _writeLingo() {
+		const data = await this.getLingoData();
 		if (data) {
-			return data;
+			await fse.outputFile(this.lingoPath, data);
 		}
-		if (file) {
-			return fse.readFile(file);
-		}
-		return null;
 	}
 
 	/**
-	 * Get data from value or file.
+	 * Projector file extension.
 	 *
-	 * @param data Data value.
-	 * @param file File path.
-	 * @param newline Newline string.
-	 * @param encoding String encoding.
-	 * @returns Data buffer.
+	 * @returns File extension.
 	 */
-	protected async _dataFromValueOrFile(
-		data: Readonly<string[]> | string | Readonly<Buffer> | null,
-		file: string | null,
-		newline: string | null,
-		encoding: BufferEncoding | null
-	) {
-		let str: string | null = null;
-		if (typeof data === 'string') {
-			str = data;
-		}
-		else if (Array.isArray(data)) {
-			if (newline === null) {
-				throw new Error('New line delimiter required');
-			}
-			str = data.join(newline);
-		}
-		else {
-			return this._dataFromBufferOrFile(data as any, file);
-		}
-		if (!encoding) {
-			throw new Error('String data encoding required');
-		}
-		return Buffer.from(str, encoding);
-	}
-
-	/**
-	 * Maybe write file if data is not null.
-	 *
-	 * @param data Data to maybe write.
-	 * @param path Output path.
-	 */
-	protected async _maybeWriteFile(
-		data: Readonly<Buffer> | null,
-		path: string
-	) {
-		if (!data) {
-			return;
-		}
-		await fse.writeFile(path, data);
-	}
+	public abstract get extension(): string;
 
 	/**
 	 * Splash image file extension.
@@ -682,13 +472,6 @@ export abstract class Projector extends Object {
 	public abstract get splashImageExtension(): string;
 
 	/**
-	 * Projector file extension.
-	 *
-	 * @returns File extension.
-	 */
-	public abstract get projectorExtension(): string;
-
-	/**
 	 * Config file newline characters.
 	 *
 	 * @returns Newline characters.
@@ -696,7 +479,7 @@ export abstract class Projector extends Object {
 	public abstract get configNewline(): string;
 
 	/**
-	 * Config file newline characters.
+	 * Lingo file newline characters.
 	 *
 	 * @returns Newline characters.
 	 */
@@ -705,11 +488,12 @@ export abstract class Projector extends Object {
 	/**
 	 * Write the projector skeleton from archive.
 	 *
-	 * @param path Save path.
-	 * @param name Save name.
+	 * @param skeleton Skeleton path.
 	 */
-	protected abstract async _writeSkeleton(
-		path: string,
-		name: string
-	): Promise<void>;
+	protected abstract async _writeSkeleton(skeleton: string): Promise<void>;
+
+	/**
+	 * Modify the projector skeleton.
+	 */
+	protected abstract async _modifySkeleton(): Promise<void>;
 }

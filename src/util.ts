@@ -1,60 +1,6 @@
-import {
-	Entry,
-	PathType
-} from '@shockpkg/archive-files';
-import * as entities from 'entities';
-// @ts-ignore
-import _rcedit from 'rcedit';
-import sax from 'sax';
+import zlib from 'zlib';
 
-// Handle module loader differences between CJS and ESM.
-const decodeXML = entities.decodeXML || (entities as any).default.decodeXML;
-const encodeXML = entities.encodeXML || (entities as any).default.encodeXML;
-
-/**
- * Versions strings passed to rcedit.
- *
- * @deprecated No longer used in this package.
- */
-export interface IRceditOptionsVersionStrings {
-	[key: string]: string;
-}
-
-/**
- * Options for rcedit.
- *
- * @deprecated No longer used in this package.
- */
-export interface IRceditOptions {
-
-	/**
-	 * Icon path.
-	 *
-	 * @default null
-	 */
-	iconPath?: string | null;
-
-	/**
-	 * File version.
-	 *
-	 * @default null
-	 */
-	fileVersion?: string | null;
-
-	/**
-	 * Product version.
-	 *
-	 * @default null
-	 */
-	productVersion?: string | null;
-
-	/**
-	 * Version strings.
-	 *
-	 * @default null
-	 */
-	versionStrings?: IRceditOptionsVersionStrings | null;
-}
+import {launchers} from './launchers';
 
 /**
  * Default value if value is undefined.
@@ -102,13 +48,21 @@ export function defaultTrue<T>(value: T) {
 }
 
 /**
- * Check if Archive Entry is empty resource fork.
+ * Create return value once.
  *
- * @param entry Archive Entry.
- * @returns Is empty resource fork.
+ * @param create Create function.
+ * @returns Returned value.
  */
-export function entryIsEmptyResourceFork(entry: Readonly<Entry>) {
-	return entry.type === PathType.RESOURCE_FORK && !entry.size;
+export function once<T>(create: () => T): () => T {
+	let called = false;
+	let value: T;
+	return () => {
+		if (!called) {
+			value = create();
+			called = true;
+		}
+		return value;
+	};
 }
 
 /**
@@ -180,186 +134,6 @@ export function trimExtension(
 }
 
 /**
- * Encode string for XML.
- *
- * @param value String value.
- * @returns Escaped string.
- */
-export function xmlEntitiesEncode(value: string) {
-	return encodeXML(value);
-}
-
-/**
- * Decode string for XML.
- *
- * @param value Encoded value.
- * @returns Decoded string.
- */
-export function xmlEntitiesDecode(value: string) {
-	return decodeXML(value);
-}
-
-/**
- * Encode string into plist string tag.
- *
- * @param value String value.
- * @returns Plist string.
- */
-export function plistStringTagEncode(value: string) {
-	return `<string>${xmlEntitiesEncode(value)}</string>`;
-}
-
-/**
- * Decode string from plist string tag.
- *
- * @param xml XML tag.
- * @returns Plain string, or null.
- */
-export function plistStringTagDecode(xml: string) {
-	const start = '<string>';
-	const end = '</string>';
-	if (!xml.startsWith(start) || !xml.endsWith(end)) {
-		return null;
-	}
-	const contents = xml.substring(start.length, xml.length - end.length);
-	return xmlEntitiesDecode(contents);
-}
-
-/**
- * A small helper function for finding Info.plist values.
- *
- * @param xml XML string.
- * @param key Plist dict key.
- * @returns Found indexes or null.
- */
-function infoPlistFind(
-	xml: string,
-	key: string
-) {
-	let replaceTagStart = -1;
-	let replaceTagEnd = -1;
-
-	const parser = sax.parser(true, {});
-
-	// Get the tag path in a consistent way.
-	const tagPath = () => {
-		const tags = [...(parser as any).tags];
-		const {tag} = (parser as any);
-		if (tag && tags[tags.length - 1] !== tag) {
-			tags.push(tag);
-		}
-		return tags.map(o => o.name as string);
-	};
-
-	const dictTag = () => {
-		const path = tagPath();
-		if (
-			path.length !== 3 ||
-			path[0] !== 'plist' ||
-			path[1] !== 'dict'
-		) {
-			return null;
-		}
-		return path[2];
-	};
-
-	let keyTag = false;
-	let nextTag = false;
-
-	// eslint-disable-next-line @typescript-eslint/unbound-method
-	parser.onerror = err => {
-		throw err;
-	};
-	// eslint-disable-next-line @typescript-eslint/unbound-method
-	parser.ontext = text => {
-		if (keyTag && text === key) {
-			nextTag = true;
-		}
-	};
-	// eslint-disable-next-line @typescript-eslint/unbound-method
-	parser.onopentag = node => {
-		const tag = dictTag();
-		if (!tag) {
-			return;
-		}
-		if (tag === 'key') {
-			keyTag = true;
-			return;
-		}
-		if (!nextTag) {
-			return;
-		}
-
-		if (replaceTagStart < 0) {
-			replaceTagStart = parser.startTagPosition - 1;
-		}
-	};
-	// eslint-disable-next-line @typescript-eslint/unbound-method
-	parser.onclosetag = node => {
-		const tag = dictTag();
-		if (!tag) {
-			return;
-		}
-		if (tag === 'key') {
-			keyTag = false;
-			return;
-		}
-		if (!nextTag) {
-			return;
-		}
-		nextTag = false;
-
-		if (replaceTagEnd < 0) {
-			replaceTagEnd = parser.position;
-		}
-	};
-
-	parser.write(xml).close();
-
-	return (replaceTagStart < 0 || replaceTagEnd < 0) ?
-		null :
-		[replaceTagStart, replaceTagEnd];
-}
-
-/**
- * A small utility function for replacing Info.plist values.
- *
- * @param xml XML string.
- * @param key Plist dict key.
- * @param value Plist dict value, XML tag.
- * @returns Updated document.
- */
-export function infoPlistReplace(
-	xml: string,
-	key: string,
-	value: string
-) {
-	const found = infoPlistFind(xml, key);
-	if (!found) {
-		return xml;
-	}
-	// Splice in new value.
-	const before = xml.substr(0, found[0]);
-	const after = xml.substr(found[1]);
-	return `${before}${value}${after}`;
-}
-
-/**
- * A small utility function for reading Info.plist values.
- *
- * @param xml XML string.
- * @param key Plist dict key.
- * @returns XML tag.
- */
-export function infoPlistRead(
-	xml: string,
-	key: string
-) {
-	const found = infoPlistFind(xml, key);
-	return found ? xml.substring(found[0], found[1]) : null;
-}
-
-/**
  * Get ArrayBuffer from Buffer.
  *
  * @param buffer Buffer instance.
@@ -371,29 +145,24 @@ export function bufferToArrayBuffer(buffer: Readonly<Buffer>) {
 }
 
 /**
- * Uses rcedit to edit the resources of a Windows EXE.
- * Requires either Windows or wine in the path.
+ * Get launcher data for an ID.
  *
- * @param path File path.
- * @param options Options object.
- * @deprecated No longer used in this package.
+ * @param id Laucher ID.
+ * @returns Launcher data.
  */
-export async function rcedit(
-	path: string,
-	options: Readonly<IRceditOptions>
-) {
-	const opts: {[key: string]: any} = {};
-	if (options.iconPath) {
-		opts.icon = options.iconPath;
+export async function launcher(id: string) {
+	const b64 = launchers()[id];
+	if (typeof b64 !== 'string') {
+		throw new Error(`Invalid launcher id: ${id}`);
 	}
-	if (typeof options.fileVersion === 'string') {
-		opts['file-version'] = options.fileVersion;
-	}
-	if (typeof options.productVersion === 'string') {
-		opts['product-version'] = options.productVersion;
-	}
-	if (options.versionStrings) {
-		opts['version-string'] = options.versionStrings;
-	}
-	await _rcedit(path, opts);
+
+	return new Promise<Buffer>((resolve, reject) => {
+		zlib.inflateRaw(Buffer.from(b64, 'base64'), (err, data) => {
+			if (err) {
+				reject(err);
+				return;
+			}
+			resolve(data);
+		});
+	});
 }
