@@ -25,26 +25,53 @@ Currently only flat projectors are supported, not the kind that Director makes w
 
 # Usage
 
-## Basic Usage
+## Projector
 
 ### Windows
 
 ```js
-import {ProjectorWindows} from '@shockpkg/dir-projector';
+import {ProjectorWindows32} from '@shockpkg/dir-projector';
 
-async function main() {
-	const projector = new ProjectorWindows({
-		skeleton: 'projector.zip',
-		movieFile: 'movie.dir',
-		movieName: 'movie.dir',
-		configFile: 'config.ini'
-	});
-	await projector.write('out-dir-windows', 'application.exe');
-}
-main().catch(err => {
-	process.exitCode = 1;
-	console.error(err);
-});
+const projector = new ProjectorWindows('projector-windows32/application.exe');
+
+// Optional custom icon.
+projector.iconFile = 'icon.ico';
+
+// Optional custom PE resource strings.
+projector.versionStrings = {
+	FileVersion: '3.1.4',
+	ProductVersion: '3.1.4',
+	CompanyName: 'Custom Company Name',
+	FileDescription: 'Custom File Description',
+	LegalCopyright: 'Custom Legal Copyright',
+	ProductName: 'Custom Product Name',
+	LegalTrademarks: 'Custom Legal Trademarks',
+	OriginalFilename: 'CustomOriginalFilename.exe',
+	InternalName: 'CustomInternalName',
+	Comments: 'Custom Comments'
+};
+
+// Optional Lingo startup script.
+projector.lingoFile = 'lingo.ini';
+
+// Optional splash screen image.
+projector.splashImageFile = 'splash.bmp';
+
+// Optionally use system installed Shockwave libraries.
+// projector.shockwave = true;
+
+// Xtras included (all in this case).
+projector.includeXtras = {
+	'': null
+};
+
+// Optionally nest Xtras in Configuration directory.
+projector.nestXtrasConfiguration = true;
+
+// Optionally fix Shockwave 3D Xtra InstalledDisplayDrivers reading.
+projector.patchShockwave3dInstalledDisplayDriversSize = true;
+
+await projector.withFile('skeleton.zip', 'config.ini');
 ```
 
 ### Mac App
@@ -52,18 +79,85 @@ main().catch(err => {
 ```js
 import {ProjectorMacApp} from '@shockpkg/dir-projector';
 
-async function main() {
-	const projector = new ProjectorMacApp({
-		skeleton: 'projector.dmg',
-		movieFile: 'movie.dir',
-		movieName: 'movie.dir',
-		configFile: 'config.ini'
-	});
-	await projector.write('out-dir-macapp', 'application.app');
-}
-main().catch(err => {
-	process.exitCode = 1;
-	console.error(err);
+const projector = new ProjectorMacApp('projector-macapp/application.app');
+
+// Optional custom icon.
+projector.iconFile = 'icon.icns';
+
+// Optionally change main binary name.
+projector.binaryName = 'application';
+
+// Optionally base Info.plist file.
+projector.infoPlistFile = 'Info.plist';
+
+// Optionally custom PkgInfo file.
+projector.pkgInfoFile = 'PkgInfo';
+
+// Optionally update bundle name.
+projector.bundleName = 'application';
+
+// Optional Lingo startup script.
+projector.lingoFile = 'lingo.ini';
+
+// Optional splash screen image.
+projector.splashImageFile = 'splash.pict';
+
+// Optionally use system installed Shockwave libraries.
+// projector.shockwave = true;
+
+// Xtras included (all in this case).
+projector.includeXtras = {
+	'': null
+};
+
+// Optionally nest Xtras in Configuration directory.
+// projector.nestXtrasConfiguration = true;
+
+// Optionally nest Xtras inside the app Contents directory.
+projector.nestXtrasContents = true;
+
+// Optionally use Intel-only skeleton.
+// projector.intel = true;
+
+await projector.withFile('skeleton.dmg', 'config.ini');
+```
+
+
+## Bundle
+
+### Windows
+
+```js
+import {BundleWindows32} from '@shockpkg/dir-projector';
+
+const bundle = new BundleWindows32('bundle-windows32/application.exe');
+
+// Use projector property to set options.
+bundle.projector.includeXtras = {
+	'': null
+};
+
+await bundle.withFile('skeleton.zip', 'config.ini', async b => {
+	// Add resources in callback.
+	await b.copyResource('movie.dir', 'movie.dir');
+});
+```
+
+### Mac App
+
+```js
+import {BundleMacApp} from '@shockpkg/dir-projector';
+
+const bundle = new BundleMacApp('bundle-macapp/application.app');
+
+// Use projector property to set options.
+bundle.projector.includeXtras = {
+	'': null
+};
+
+await bundle.withFile('skeleton.dmg', 'config.ini', async b => {
+	// Add resources in callback.
+	await b.copyResource('movie.dir', 'movie.dir');
 });
 ```
 
