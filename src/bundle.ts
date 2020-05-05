@@ -145,27 +145,27 @@ export abstract class Bundle extends Object {
 	 * Open output with file.
 	 *
 	 * @param player Player path.
-	 * @param movieFile Movie file.
+	 * @param configFile Config file.
 	 */
-	public async openFile(player: string, movieFile: string | null) {
-		const movieData = movieFile ? await fse.readFile(movieFile) : null;
-		await this.openData(player, movieData);
+	public async openFile(player: string, configFile: string | null) {
+		const configData = configFile ? await fse.readFile(configFile) : null;
+		await this.openData(player, configData);
 	}
 
 	/**
 	 * Open output with data.
 	 *
 	 * @param player Player path.
-	 * @param movieData Movie data.
+	 * @param configData Config data.
 	 */
-	public async openData(player: string, movieData: Readonly<Buffer> | null) {
+	public async openData(player: string, configData: Readonly<Buffer> | null) {
 		if (this._isOpen) {
 			throw new Error('Already open');
 		}
 		await this._checkOutput();
 
 		this._closeQueue.clear();
-		await this._openData(player, movieData);
+		await this._openData(player, configData);
 
 		this._isOpen = true;
 	}
@@ -191,17 +191,17 @@ export abstract class Bundle extends Object {
 	 * Has a callback to write out the resources.
 	 *
 	 * @param player Player path.
-	 * @param movieFile Movie file.
+	 * @param configFile Config file.
 	 * @param func Async function.
 	 * @returns Return value of the async function.
 	 */
 	public async withFile<T>(
 		player: string,
-		movieFile: string | null,
+		configFile: string | null,
 		func: ((self: this) => Promise<T>) | null = null
 	) {
-		const movieData = movieFile ? await fse.readFile(movieFile) : null;
-		return this.withData(player, movieData, func);
+		const configData = configFile ? await fse.readFile(configFile) : null;
+		return this.withData(player, configData, func);
 	}
 
 	/**
@@ -209,16 +209,16 @@ export abstract class Bundle extends Object {
 	 * Has a callback to write out the resources.
 	 *
 	 * @param player Player path.
-	 * @param movieData Movie data.
+	 * @param configData Config data.
 	 * @param func Async function.
 	 * @returns Return value of the async function.
 	 */
 	public async withData<T>(
 		player: string,
-		movieData: Readonly<Buffer> | null,
+		configData: Readonly<Buffer> | null,
 		func: ((self: this) => Promise<T>) | null = null
 	) {
-		await this.openData(player, movieData);
+		await this.openData(player, configData);
 		try {
 			return func ? await func.call(this, this) : null;
 		}
@@ -585,13 +585,13 @@ export abstract class Bundle extends Object {
 	 * Open output with data.
 	 *
 	 * @param player Player path.
-	 * @param movieData Movie data.
+	 * @param configData Config data.
 	 */
 	protected async _openData(
 		player: string,
-		movieData: Readonly<Buffer> | null
+		configData: Readonly<Buffer> | null
 	) {
-		await this.projector.withData(player, movieData);
+		await this.projector.withData(player, configData);
 	}
 
 	/**
