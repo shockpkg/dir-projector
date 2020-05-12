@@ -98,16 +98,19 @@ matrix:
   - os: linux
     node_js: v10.0.0
     env:
+    - NO_LINT=1
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_WIN_LIN"
 
   - os: osx
     node_js: v10.0.0
     env:
+    - NO_LINT=1
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_MAC"
 
   - os: windows
     node_js: v10.0.0
     env:
+    - NO_LINT=1
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_WIN_LIN"
 
   - os: linux
@@ -129,6 +132,6 @@ script:
 - npm run shockpkg -- update --summary
 - npm run shockpkg -- install $SHOCKPKG_PACKAGES
 - npm run clean
-- npm run lint
+- if [ "$NO_LINT" != "1" ]; then npm run lint; fi
 - npm run build
 - npm run test
