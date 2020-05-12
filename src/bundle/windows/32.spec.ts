@@ -19,7 +19,7 @@ import {
 } from './32';
 
 describe('bundle/windows/32', () => {
-	describe('ProjectorWindows32', () => {
+	describe('BundleWindows32', () => {
 		for (const {
 			name,
 			patchShockwave3dInstalledDisplayDriversSize
