@@ -114,17 +114,17 @@ matrix:
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_WIN_LIN"
 
   - os: linux
-    node_js: v14.5.0
+    node_js: v14.6.0
     env:
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_WIN_LIN"
 
   - os: osx
-    node_js: v14.5.0
+    node_js: v14.6.0
     env:
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_MAC"
 
   - os: windows
-    node_js: v14.4.0
+    node_js: v14.6.0
     env:
     - SHOCKPKG_PACKAGES="$SHOCKPKG_PACKAGES_WIN_LIN"
 
