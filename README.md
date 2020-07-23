@@ -20,7 +20,7 @@ Takes either a directory containing a skeleton or a shockpkg projector package f
 
 Can also create bundles that group the projector and resources in a directory beside a single launcher for Windows or within an application bundle for macOS.
 
-Reading DMG projector packages is only supported on MacOS.
+Reading DMG projector packages is only supported on macOS.
 
 Currently only flat projectors are supported, not the kind that Director makes where everything is appended to the main binary in some format, and extracted to a temporary directory when run.
 
