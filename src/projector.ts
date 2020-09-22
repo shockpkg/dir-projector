@@ -1,3 +1,4 @@
+import {TranscodeEncoding} from 'buffer';
 import {
 	join as pathJoin,
 	dirname
@@ -138,7 +139,7 @@ export abstract class Projector extends Object {
 	 * @returns File encoding.
 	 */
 	public get configEncoding() {
-		return 'ascii' as BufferEncoding;
+		return 'ascii' as TranscodeEncoding;
 	}
 
 	/**
@@ -156,7 +157,7 @@ export abstract class Projector extends Object {
 	 * @returns File encoding.
 	 */
 	public get lingoEncoding() {
-		return 'ascii' as BufferEncoding;
+		return 'ascii' as TranscodeEncoding;
 	}
 
 	/**
