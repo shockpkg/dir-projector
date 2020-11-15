@@ -9,7 +9,7 @@ Package for creating Shockwave Director projectors
 [![size](https://packagephobia.now.sh/badge?p=@shockpkg/dir-projector)](https://packagephobia.now.sh/result?p=@shockpkg/dir-projector)
 [![downloads](https://img.shields.io/npm/dm/@shockpkg/dir-projector.svg)](https://npmcharts.com/compare/@shockpkg/dir-projector?minimal=true)
 
-[![travis-ci](https://travis-ci.com/shockpkg/dir-projector.svg?branch=master)](https://travis-ci.com/shockpkg/dir-projector)
+[![Build Status](https://github.com/shockpkg/dir-projector/workflows/main/badge.svg?branch=master)](https://github.com/shockpkg/dir-projector/actions?query=workflow%3Amain+branch%3Amaster)
 
 
 # Overview
