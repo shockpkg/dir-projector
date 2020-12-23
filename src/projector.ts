@@ -491,10 +491,10 @@ export abstract class Projector extends Object {
 	 *
 	 * @param skeleton Skeleton path.
 	 */
-	protected abstract async _writeSkeleton(skeleton: string): Promise<void>;
+	protected abstract _writeSkeleton(skeleton: string): Promise<void>;
 
 	/**
 	 * Modify the projector skeleton.
 	 */
-	protected abstract async _modifySkeleton(): Promise<void>;
+	protected abstract _modifySkeleton(): Promise<void>;
 }
