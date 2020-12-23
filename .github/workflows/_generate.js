@@ -2,7 +2,7 @@
 
 const fs = require('fs').promises;
 
-const packagesWinLin = [
+const packages = [
 	'shockwave-projector-director-7.0.0-win-win',
 	'shockwave-projector-director-7.0.2-2-win-win',
 	'shockwave-projector-director-7.0.2-trial-win-win',
@@ -48,57 +48,9 @@ const packagesWinLin = [
 	'shockwave-projector-director-12.0.0-mac-mac-zip',
 	'shockwave-projector-director-12.0.0-win-mac-zip'
 ];
-const packagesMac = [
-	'shockwave-projector-director-7.0.0-win-win',
-	'shockwave-projector-director-7.0.2-2-win-win',
-	'shockwave-projector-director-7.0.2-trial-win-win',
-	'shockwave-projector-director-7.0.2-win-win',
-	'shockwave-projector-director-8.0.0-trial-win-win',
-	'shockwave-projector-director-8.0.0-win-win',
-	'shockwave-projector-director-8.5.0-win-win',
-	'shockwave-projector-director-8.5.0-trial-win-win',
-	'shockwave-projector-director-8.5.1-win-win',
-	'shockwave-projector-director-8.5.1-trial-win-win',
-	'shockwave-projector-director-9.0.0-win-win',
-	'shockwave-projector-director-9.0.0-trial-win-win',
-	'shockwave-projector-director-10.0.0-mac-win',
-	'shockwave-projector-director-10.0.0-win-win',
-	'shockwave-projector-director-10.1.0-mac-win',
-	'shockwave-projector-director-10.1.0-win-win',
-	'shockwave-projector-director-10.1.1-mac-win',
-	'shockwave-projector-director-10.1.1-win-win',
-	'shockwave-projector-director-11.0.0-mac-win',
-	'shockwave-projector-director-11.0.0-win-win',
-	'shockwave-projector-director-11.0.0-hotfix-1-mac-win',
-	'shockwave-projector-director-11.0.0-hotfix-3-mac-win',
-	'shockwave-projector-director-11.0.0-hotfix-3-win-win',
-	'shockwave-projector-director-11.5.0-mac-win',
-	'shockwave-projector-director-11.5.0-win-win',
-	'shockwave-projector-director-11.5.8-mac-win',
-	'shockwave-projector-director-11.5.8-win-win',
-	'shockwave-projector-director-11.5.9-mac-win',
-	'shockwave-projector-director-11.5.9-win-win',
-	'shockwave-projector-director-12.0.0-mac-win',
-	'shockwave-projector-director-12.0.0-win-win',
-	'shockwave-projector-director-11.0.0-mac-mac',
-	'shockwave-projector-director-11.0.0-win-mac',
-	'shockwave-projector-director-11.0.0-hotfix-1-mac-mac',
-	'shockwave-projector-director-11.0.0-hotfix-3-mac-mac',
-	'shockwave-projector-director-11.0.0-hotfix-3-win-mac',
-	'shockwave-projector-director-11.5.0-mac-mac',
-	'shockwave-projector-director-11.5.0-win-mac',
-	'shockwave-projector-director-11.5.8-mac-mac',
-	'shockwave-projector-director-11.5.8-win-mac',
-	'shockwave-projector-director-11.5.9-mac-mac',
-	'shockwave-projector-director-11.5.9-win-mac',
-	'shockwave-projector-director-12.0.0-mac-mac',
-	'shockwave-projector-director-12.0.0-win-mac'
-];
 
 const platforms = [
-	['linux', 'ubuntu-20.04', packagesWinLin],
-	['macos', 'macos-10.15', packagesMac],
-	['windows', 'windows-2019', packagesWinLin]
+	['linux', 'ubuntu-20.04', packages]
 ];
 
 const nodeVersions = [
