@@ -1,0 +1,22 @@
+name: 'windows_10.0.0'
+
+on: push
+
+jobs:
+  build:
+    runs-on: 'windows-2019'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.0.0'
+
+    - run: npm install
+    - run: npm run clean
+    - run: npm run shockpkg -- update --summary
+    - run: npm run shockpkg -- install shockwave-projector-director-7.0.0-win-win shockwave-projector-director-7.0.2-2-win-win shockwave-projector-director-7.0.2-trial-win-win shockwave-projector-director-7.0.2-win-win shockwave-projector-director-8.0.0-trial-win-win shockwave-projector-director-8.0.0-win-win shockwave-projector-director-8.5.0-win-win shockwave-projector-director-8.5.0-trial-win-win shockwave-projector-director-8.5.1-win-win shockwave-projector-director-8.5.1-trial-win-win shockwave-projector-director-9.0.0-win-win shockwave-projector-director-9.0.0-trial-win-win shockwave-projector-director-10.0.0-mac-win shockwave-projector-director-10.0.0-win-win shockwave-projector-director-10.1.0-mac-win shockwave-projector-director-10.1.0-win-win shockwave-projector-director-10.1.1-mac-win shockwave-projector-director-10.1.1-win-win shockwave-projector-director-11.0.0-mac-win shockwave-projector-director-11.0.0-win-win shockwave-projector-director-11.0.0-hotfix-1-mac-win shockwave-projector-director-11.0.0-hotfix-3-mac-win shockwave-projector-director-11.0.0-hotfix-3-win-win shockwave-projector-director-11.5.0-mac-win shockwave-projector-director-11.5.0-win-win shockwave-projector-director-11.5.8-mac-win shockwave-projector-director-11.5.8-win-win shockwave-projector-director-11.5.9-mac-win shockwave-projector-director-11.5.9-win-win shockwave-projector-director-12.0.0-mac-win shockwave-projector-director-12.0.0-win-win shockwave-projector-director-11.0.0-mac-mac-zip shockwave-projector-director-11.0.0-win-mac-zip shockwave-projector-director-11.0.0-hotfix-1-mac-mac-zip shockwave-projector-director-11.0.0-hotfix-3-mac-mac-zip shockwave-projector-director-11.0.0-hotfix-3-win-mac-zip shockwave-projector-director-11.5.0-mac-mac-zip shockwave-projector-director-11.5.0-win-mac-zip shockwave-projector-director-11.5.8-mac-mac-zip shockwave-projector-director-11.5.8-win-mac-zip shockwave-projector-director-11.5.9-mac-mac-zip shockwave-projector-director-11.5.9-win-mac-zip shockwave-projector-director-12.0.0-mac-mac-zip shockwave-projector-director-12.0.0-win-mac-zip
+
+    - run: npm run build
+    - run: npm run test
