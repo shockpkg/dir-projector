@@ -54,12 +54,8 @@ const platforms = [
 ];
 
 const nodeVersions = [
-	['10.0.0', {
-		lint: false
-	}],
-	['15.5.0', {
-		lint: true
-	}]
+	['10.0.0', {}],
+	['15.5.0', {}]
 ];
 
 function template(name, runsOn, nodeVersion, lint, packages) {
@@ -109,7 +105,7 @@ async function main() {
 				name,
 				runsOn,
 				nodeVersion,
-				options.lint,
+				false,
 				packages
 			));
 		}
