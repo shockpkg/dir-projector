@@ -1,0 +1,22 @@
+name: 'linux_10.0.0_11.5-mac'
+
+on: push
+
+jobs:
+  build:
+    runs-on: 'ubuntu-20.04'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.0.0'
+
+    - run: npm install
+    - run: npm run clean
+    - run: npm run shockpkg -- update --summary
+    - run: npm run shockpkg -- install shockwave-projector-director-11.5.0-mac-mac-zip shockwave-projector-director-11.5.0-win-mac-zip shockwave-projector-director-11.5.8-mac-mac-zip shockwave-projector-director-11.5.8-win-mac-zip shockwave-projector-director-11.5.9-mac-mac-zip shockwave-projector-director-11.5.9-win-mac-zip
+
+    - run: npm run build
+    - run: npm run test

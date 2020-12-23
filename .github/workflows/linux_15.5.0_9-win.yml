@@ -1,0 +1,22 @@
+name: 'linux_15.5.0_9-win'
+
+on: push
+
+jobs:
+  build:
+    runs-on: 'ubuntu-20.04'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '15.5.0'
+
+    - run: npm install
+    - run: npm run clean
+    - run: npm run shockpkg -- update --summary
+    - run: npm run shockpkg -- install shockwave-projector-director-9.0.0-win-win shockwave-projector-director-9.0.0-trial-win-win
+
+    - run: npm run build
+    - run: npm run test
