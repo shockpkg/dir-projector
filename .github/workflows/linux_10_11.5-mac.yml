@@ -1,4 +1,4 @@
-name: 'linux_10.0.0_11.5-mac'
+name: 'linux_10_11.5-mac'
 
 on: push
 

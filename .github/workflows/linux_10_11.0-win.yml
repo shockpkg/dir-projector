@@ -1,4 +1,4 @@
-name: 'linux_10.0.0_8.0-win'
+name: 'linux_10_11.0-win'
 
 on: push
 
@@ -16,7 +16,7 @@ jobs:
     - run: npm install
     - run: npm run clean
     - run: npm run shockpkg -- update --summary
-    - run: npm run shockpkg -- install shockwave-projector-director-8.0.0-trial-win-win shockwave-projector-director-8.0.0-win-win
+    - run: npm run shockpkg -- install shockwave-projector-director-11.0.0-mac-win shockwave-projector-director-11.0.0-win-win shockwave-projector-director-11.0.0-hotfix-1-mac-win shockwave-projector-director-11.0.0-hotfix-3-mac-win shockwave-projector-director-11.0.0-hotfix-3-win-win
 
     - run: npm run build
     - run: npm run test

@@ -1,4 +1,4 @@
-name: 'linux_10.0.0_12-mac'
+name: 'linux_15_12-win'
 
 on: push
 
@@ -11,12 +11,12 @@ jobs:
 
     - uses: actions/setup-node@v1
       with:
-        node-version: '10.0.0'
+        node-version: '15.13.0'
 
     - run: npm install
     - run: npm run clean
     - run: npm run shockpkg -- update --summary
-    - run: npm run shockpkg -- install shockwave-projector-director-12.0.0-mac-mac-zip shockwave-projector-director-12.0.0-win-mac-zip
+    - run: npm run shockpkg -- install shockwave-projector-director-12.0.0-mac-win shockwave-projector-director-12.0.0-win-win
 
     - run: npm run build
     - run: npm run test

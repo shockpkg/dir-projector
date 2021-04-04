@@ -1,4 +1,4 @@
-name: 'linux_15.5.0_11.0-mac'
+name: 'linux_10_11.0-mac'
 
 on: push
 
@@ -11,7 +11,7 @@ jobs:
 
     - uses: actions/setup-node@v1
       with:
-        node-version: '15.5.0'
+        node-version: '10.0.0'
 
     - run: npm install
     - run: npm run clean
