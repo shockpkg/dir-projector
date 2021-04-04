@@ -115,7 +115,7 @@ async function main() {
 	await fs.writeFile('main.yml', template(
 		'main',
 		platforms[0][1],
-		nodeVersions[nodeVersions.length - 1][0],
+		nodeVersions[nodeVersions.length - 1][1],
 		true,
 		[]
 	));
