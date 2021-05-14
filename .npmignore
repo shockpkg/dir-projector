@@ -29,7 +29,6 @@ yarn.lock
 /tsconfig.json
 /tsconfig.eslint.json
 /gulpfile.babel.ts
-/nodemon.json
 /spec
 /src
 

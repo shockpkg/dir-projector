@@ -82,7 +82,6 @@
 		"jasmine": "^3.7.0",
 		"jasmine-core": "^3.7.1",
 		"jasmine-spec-reporter": "^7.0.0",
-		"nodemon": "^2.0.7",
 		"source-map-support": "^0.5.19",
 		"typescript": "^4.2.4"
 	},
