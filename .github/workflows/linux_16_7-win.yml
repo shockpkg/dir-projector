@@ -1,4 +1,4 @@
-name: 'linux_15_8.5-win'
+name: 'linux_16_7-win'
 
 on: push
 
@@ -11,12 +11,12 @@ jobs:
 
     - uses: actions/setup-node@v1
       with:
-        node-version: '15.13.0'
+        node-version: '16.1.0'
 
     - run: npm install
     - run: npm run clean
     - run: npm run shockpkg -- update --summary
-    - run: npm run shockpkg -- install shockwave-projector-director-8.5.0-win-win shockwave-projector-director-8.5.0-trial-win-win shockwave-projector-director-8.5.1-win-win shockwave-projector-director-8.5.1-trial-win-win
+    - run: npm run shockpkg -- install shockwave-projector-director-7.0.0-win-win shockwave-projector-director-7.0.2-2-win-win shockwave-projector-director-7.0.2-trial-win-win shockwave-projector-director-7.0.2-win-win
 
     - run: npm run build
     - run: npm run test

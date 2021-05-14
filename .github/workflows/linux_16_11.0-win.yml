@@ -1,4 +1,4 @@
-name: 'linux_15_11.0-win'
+name: 'linux_16_11.0-win'
 
 on: push
 
@@ -11,7 +11,7 @@ jobs:
 
     - uses: actions/setup-node@v1
       with:
-        node-version: '15.13.0'
+        node-version: '16.1.0'
 
     - run: npm install
     - run: npm run clean
