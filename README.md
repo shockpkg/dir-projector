@@ -5,7 +5,7 @@ Package for creating Shockwave Director projectors
 [![npm](https://img.shields.io/npm/v/@shockpkg/dir-projector.svg)](https://npmjs.com/package/@shockpkg/dir-projector)
 [![node](https://img.shields.io/node/v/@shockpkg/dir-projector.svg)](https://nodejs.org)
 
-[![dependencies](https://img.shields.io/david/shockpkg/dir-projector.svg)](https://david-dm.org/shockpkg/dir-projector)
+[![dependencies](https://img.shields.io/david/shockpkg/dir-projector)](https://david-dm.org/shockpkg/dir-projector)
 [![size](https://packagephobia.now.sh/badge?p=@shockpkg/dir-projector)](https://packagephobia.now.sh/result?p=@shockpkg/dir-projector)
 [![downloads](https://img.shields.io/npm/dm/@shockpkg/dir-projector.svg)](https://npmcharts.com/compare/@shockpkg/dir-projector?minimal=true)
 
