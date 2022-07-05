@@ -67,7 +67,9 @@ const packages = [
 	]],
 	['12-mac', [
 		'shockwave-projector-director-12.0.0-mac-mac-zip',
-		'shockwave-projector-director-12.0.0-win-mac-zip'
+		'shockwave-projector-director-12.0.0-win-mac-zip',
+		'shockwave-projector-director-12.0.2-mac-mac-zip',
+		'shockwave-projector-director-12.0.2-win-mac-zip'
 	]]
 ];
 
