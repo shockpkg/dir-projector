@@ -13,6 +13,7 @@ import {
 	fixtureFile,
 	getPackageFile
 } from '../../util.spec';
+import {BundleWindows} from '../windows';
 
 import {
 	BundleWindows32
@@ -20,6 +21,11 @@ import {
 
 describe('bundle/windows/32', () => {
 	describe('BundleWindows32', () => {
+		it('instanceof BundleWindows', () => {
+			expect(BundleWindows32.prototype instanceof BundleWindows)
+				.toBeTrue();
+		});
+
 		for (const {
 			name,
 			patchShockwave3dInstalledDisplayDriversSize
@@ -56,6 +62,7 @@ describe('bundle/windows/32', () => {
 					p.splashImageFile = fixtureFile('splash.bmp');
 					p.nestXtrasConfiguration = true;
 					p.includeXtras = {
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
 					p.patchShockwave3dInstalledDisplayDriversSize =

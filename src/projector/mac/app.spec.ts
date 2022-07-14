@@ -12,6 +12,7 @@ import {
 	shouldTest,
 	getInstalledPackagesSync
 } from '../../util.spec';
+import {ProjectorMac} from '../mac';
 
 import {
 	ProjectorMacApp
@@ -54,6 +55,11 @@ export function listSamples() {
 
 describe('projector/mac/app', () => {
 	describe('ProjectorMacApp', () => {
+		it('instanceof ProjectorMac', () => {
+			expect(ProjectorMacApp.prototype instanceof ProjectorMac)
+				.toBeTrue();
+		});
+
 		for (const {
 			name,
 			nestXtrasContents,
@@ -86,6 +92,7 @@ describe('projector/mac/app', () => {
 
 					const p = new ProjectorMacApp(dest);
 					p.includeXtras = {
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
 					await p.withFile(
@@ -106,6 +113,7 @@ describe('projector/mac/app', () => {
 					const p = new ProjectorMacApp(dest);
 					p.includeXtras = {
 						Scripting: null,
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.xtra': null
 					};
 					await p.withFile(
@@ -126,6 +134,7 @@ describe('projector/mac/app', () => {
 					const p = new ProjectorMacApp(dest);
 					p.includeXtras = {
 						Scripting: 'Scripting RENAMED',
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.xtra': 'GIF Agent RENAMED.xtra'
 					};
 					await p.withFile(
@@ -163,6 +172,7 @@ describe('projector/mac/app', () => {
 					const p = new ProjectorMacApp(dest);
 					p.nestXtrasConfiguration = true;
 					p.includeXtras = {
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
 					await p.withFile(
@@ -184,6 +194,7 @@ describe('projector/mac/app', () => {
 						const p = new ProjectorMacApp(dest);
 						p.nestXtrasContents = true;
 						p.includeXtras = {
+							// eslint-disable-next-line @typescript-eslint/naming-convention
 							'': null
 						};
 						await p.withFile(
@@ -249,6 +260,7 @@ describe('projector/mac/app', () => {
 					p.bundleName = 'application';
 					p.nestXtrasContents = true;
 					p.includeXtras = {
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
 					await p.withFile(

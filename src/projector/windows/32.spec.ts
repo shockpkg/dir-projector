@@ -11,6 +11,7 @@ import {
 	shouldTest,
 	getInstalledPackagesSync
 } from '../../util.spec';
+import {ProjectorWindows} from '../windows';
 
 import {
 	ProjectorWindows32
@@ -59,6 +60,11 @@ export const versionStrings = {
 
 describe('projector/windows/32', () => {
 	describe('ProjectorWindows32', () => {
+		it('instanceof ProjectorWindows', () => {
+			expect(ProjectorWindows32.prototype instanceof ProjectorWindows)
+				.toBeTrue();
+		});
+
 		for (const {
 			name,
 			patchShockwave3dInstalledDisplayDriversSize
@@ -90,6 +96,7 @@ describe('projector/windows/32', () => {
 
 					const p = new ProjectorWindows32(dest);
 					p.includeXtras = {
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
 					p.patchShockwave3dInstalledDisplayDriversSize =
@@ -112,7 +119,9 @@ describe('projector/windows/32', () => {
 					const p = new ProjectorWindows32(dest);
 					p.includeXtras = {
 						Scripting: null,
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'Flash Asset': null,
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.x32': null
 					};
 					await p.withFile(
@@ -133,7 +142,9 @@ describe('projector/windows/32', () => {
 					const p = new ProjectorWindows32(dest);
 					p.includeXtras = {
 						Scripting: 'Scripting RENAMED',
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'Flash Asset': 'Flash Asset RENAMED',
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.x32': 'GIF Agent RENAMED.x32'
 					};
 					await p.withFile(
@@ -171,6 +182,7 @@ describe('projector/windows/32', () => {
 					const p = new ProjectorWindows32(dest);
 					p.nestXtrasConfiguration = true;
 					p.includeXtras = {
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
 					p.patchShockwave3dInstalledDisplayDriversSize =
@@ -195,6 +207,7 @@ describe('projector/windows/32', () => {
 					p.splashImageFile = fixtureFile('splash.bmp');
 					p.nestXtrasConfiguration = true;
 					p.includeXtras = {
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
 					p.patchShockwave3dInstalledDisplayDriversSize =

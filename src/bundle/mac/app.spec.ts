@@ -12,6 +12,7 @@ import {
 	fixtureFile,
 	getPackageFile
 } from '../../util.spec';
+import {BundleMac} from '../mac';
 
 import {
 	BundleMacApp
@@ -19,6 +20,11 @@ import {
 
 describe('bundle/mac/app', () => {
 	describe('BundleMacApp', () => {
+		it('instanceof BundleMac', () => {
+			expect(BundleMacApp.prototype instanceof BundleMac)
+				.toBeTrue();
+		});
+
 		for (const {
 			name
 		} of listSamples()) {
@@ -59,6 +65,7 @@ describe('bundle/mac/app', () => {
 					p.bundleName = 'application';
 					p.nestXtrasContents = true;
 					p.includeXtras = {
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
 					await b.withFile(
