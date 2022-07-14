@@ -39,67 +39,115 @@ jobs:
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-7.0.0-win-win shockwave-projector-director-7.0.2-2-win-win shockwave-projector-director-7.0.2-trial-win-win shockwave-projector-director-7.0.2-win-win'
+            PKG:
+              - shockwave-projector-director-7.0.0-win-win
+              - shockwave-projector-director-7.0.2-2-win-win
+              - shockwave-projector-director-7.0.2-trial-win-win
+              - shockwave-projector-director-7.0.2-win-win
 
           # 8 windows
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-8.0.0-trial-win-win shockwave-projector-director-8.0.0-win-win'
+            PKG:
+              - shockwave-projector-director-8.0.0-trial-win-win
+              - shockwave-projector-director-8.0.0-win-win
 
           # 8.5 windows
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-8.5.0-win-win shockwave-projector-director-8.5.0-trial-win-win shockwave-projector-director-8.5.1-win-win shockwave-projector-director-8.5.1-trial-win-win'
+            PKG:
+              - shockwave-projector-director-8.5.0-win-win
+              - shockwave-projector-director-8.5.0-trial-win-win
+              - shockwave-projector-director-8.5.1-win-win
+              - shockwave-projector-director-8.5.1-trial-win-win
 
           # 9 windows
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-9.0.0-win-win shockwave-projector-director-9.0.0-trial-win-win'
+            PKG:
+              - shockwave-projector-director-9.0.0-win-win
+              - shockwave-projector-director-9.0.0-trial-win-win
 
           # 10 windows
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-10.0.0-mac-win shockwave-projector-director-10.0.0-win-win shockwave-projector-director-10.1.0-mac-win shockwave-projector-director-10.1.0-win-win shockwave-projector-director-10.1.1-mac-win shockwave-projector-director-10.1.1-win-win'
+            PKG:
+              - shockwave-projector-director-10.0.0-mac-win
+              - shockwave-projector-director-10.0.0-win-win
+              - shockwave-projector-director-10.1.0-mac-win
+              - shockwave-projector-director-10.1.0-win-win
+              - shockwave-projector-director-10.1.1-mac-win
+              - shockwave-projector-director-10.1.1-win-win
 
           # 11 windows
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-11.0.0-mac-win shockwave-projector-director-11.0.0-win-win shockwave-projector-director-11.0.0-hotfix-1-mac-win shockwave-projector-director-11.0.0-hotfix-3-mac-win shockwave-projector-director-11.0.0-hotfix-3-win-win'
+            PKG:
+              - shockwave-projector-director-11.0.0-mac-win
+              - shockwave-projector-director-11.0.0-win-win
+              - shockwave-projector-director-11.0.0-hotfix-1-mac-win
+              - shockwave-projector-director-11.0.0-hotfix-3-mac-win
+              - shockwave-projector-director-11.0.0-hotfix-3-win-win
 
           # 11.5 windows
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-11.5.0-mac-win shockwave-projector-director-11.5.0-win-win shockwave-projector-director-11.5.8-mac-win shockwave-projector-director-11.5.8-win-win shockwave-projector-director-11.5.9-mac-win shockwave-projector-director-11.5.9-win-win'
+            PKG:
+              - shockwave-projector-director-11.5.0-mac-win
+              - shockwave-projector-director-11.5.0-win-win
+              - shockwave-projector-director-11.5.8-mac-win
+              - shockwave-projector-director-11.5.8-win-win
+              - shockwave-projector-director-11.5.9-mac-win
+              - shockwave-projector-director-11.5.9-win-win
 
           # 12 windows
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-12.0.0-mac-win shockwave-projector-director-12.0.0-win-win shockwave-projector-director-12.0.2-mac-win shockwave-projector-director-12.0.2-win-win'
+            PKG:
+              - shockwave-projector-director-12.0.0-mac-win
+              - shockwave-projector-director-12.0.0-win-win
+              - shockwave-projector-director-12.0.2-mac-win
+              - shockwave-projector-director-12.0.2-win-win
 
           # 11 mac
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-11.0.0-mac-mac-zip shockwave-projector-director-11.0.0-win-mac-zip shockwave-projector-director-11.0.0-hotfix-1-mac-mac-zip shockwave-projector-director-11.0.0-hotfix-3-mac-mac-zip shockwave-projector-director-11.0.0-hotfix-3-win-mac-zip'
+            PKG:
+              - shockwave-projector-director-11.0.0-mac-mac-zip
+              - shockwave-projector-director-11.0.0-win-mac-zip
+              - shockwave-projector-director-11.0.0-hotfix-1-mac-mac-zip
+              - shockwave-projector-director-11.0.0-hotfix-3-mac-mac-zip
+              - shockwave-projector-director-11.0.0-hotfix-3-win-mac-zip
 
           # 11.5 mac
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-11.5.0-mac-mac-zip shockwave-projector-director-11.5.0-win-mac-zip shockwave-projector-director-11.5.8-mac-mac-zip shockwave-projector-director-11.5.8-win-mac-zip shockwave-projector-director-11.5.9-mac-mac-zip shockwave-projector-director-11.5.9-win-mac-zip'
+            PKG:
+              - shockwave-projector-director-11.5.0-mac-mac-zip
+              - shockwave-projector-director-11.5.0-win-mac-zip
+              - shockwave-projector-director-11.5.8-mac-mac-zip
+              - shockwave-projector-director-11.5.8-win-mac-zip
+              - shockwave-projector-director-11.5.9-mac-mac-zip
+              - shockwave-projector-director-11.5.9-win-mac-zip
 
           # 12 mac
           - node-version: '16.16.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
-            PKG: 'shockwave-projector-director-12.0.0-mac-mac-zip shockwave-projector-director-12.0.0-win-mac-zip shockwave-projector-director-12.0.2-mac-mac-zip shockwave-projector-director-12.0.2-win-mac-zip'
+            PKG:
+              - shockwave-projector-director-12.0.0-mac-mac-zip
+              - shockwave-projector-director-12.0.0-win-mac-zip
+              - shockwave-projector-director-12.0.2-mac-mac-zip
+              - shockwave-projector-director-12.0.2-win-mac-zip
 
     runs-on: 'ubuntu-20.04'
 
@@ -119,7 +167,7 @@ jobs:
         run: npm run shockpkg -- update --summary
 
       - name: shockpkg Install
-        run: npm run shockpkg -- install ${{ matrix.config.PKG }}
+        run: npm run shockpkg -- install ${{ join(matrix.config.PKG, ' ') }}
         if: matrix.config.PKG != ''
 
       - name: Build
