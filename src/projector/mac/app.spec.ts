@@ -1,6 +1,4 @@
-import {
-	join as pathJoin
-} from 'path';
+import {join as pathJoin} from 'path';
 
 import fse from 'fs-extra';
 
@@ -14,9 +12,7 @@ import {
 } from '../../util.spec';
 import {ProjectorMac} from '../mac';
 
-import {
-	ProjectorMacApp
-} from './app';
+import {ProjectorMacApp} from './app';
 
 export function listSamples() {
 	if (!shouldTest('macapp')) {
@@ -40,14 +36,11 @@ export function listSamples() {
 		r.push({
 			name,
 			version,
-			nestXtrasContents: (
-				version[0] > 11 ||
-				(version[0] === 11 && version[1] >= 5)
-			),
-			intel: (
+			nestXtrasContents:
+				version[0] > 11 || (version[0] === 11 && version[1] >= 5),
+			intel:
 				version[0] > 11 ||
 				(version[0] === 11 && version[1] >= 5 && version[2] >= 9)
-			)
 		});
 	}
 	return r;
@@ -56,19 +49,17 @@ export function listSamples() {
 describe('projector/mac/app', () => {
 	describe('ProjectorMacApp', () => {
 		it('instanceof ProjectorMac', () => {
-			expect(ProjectorMacApp.prototype instanceof ProjectorMac)
-				.toBeTrue();
+			expect(
+				ProjectorMacApp.prototype instanceof ProjectorMac
+			).toBeTrue();
 		});
 
-		for (const {
-			name,
-			nestXtrasContents,
-			intel
-		} of listSamples()) {
+		for (const {name, nestXtrasContents, intel} of listSamples()) {
 			const getDir = async (d: string) =>
 				cleanProjectorDir('macapp', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
+			// eslint-disable-next-line no-loop-func
 			describe(name, () => {
 				it('simple', async () => {
 					const dir = await getDir('simple');

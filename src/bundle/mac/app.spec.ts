@@ -1,37 +1,24 @@
-import {
-	join as pathJoin
-} from 'path';
+import {join as pathJoin} from 'path';
 
-import {
-	listSamples
-} from '../../projector/mac/app.spec';
-import {
-	cleanBundlesDir
-} from '../../bundle.spec';
-import {
-	fixtureFile,
-	getPackageFile
-} from '../../util.spec';
+import {listSamples} from '../../projector/mac/app.spec';
+import {cleanBundlesDir} from '../../bundle.spec';
+import {fixtureFile, getPackageFile} from '../../util.spec';
 import {BundleMac} from '../mac';
 
-import {
-	BundleMacApp
-} from './app';
+import {BundleMacApp} from './app';
 
 describe('bundle/mac/app', () => {
 	describe('BundleMacApp', () => {
 		it('instanceof BundleMac', () => {
-			expect(BundleMacApp.prototype instanceof BundleMac)
-				.toBeTrue();
+			expect(BundleMacApp.prototype instanceof BundleMac).toBeTrue();
 		});
 
-		for (const {
-			name
-		} of listSamples()) {
+		for (const {name} of listSamples()) {
 			const getDir = async (d: string) =>
 				cleanBundlesDir('macapp', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
+			// eslint-disable-next-line no-loop-func
 			describe(name, () => {
 				it('simple', async () => {
 					const dir = await getDir('simple');

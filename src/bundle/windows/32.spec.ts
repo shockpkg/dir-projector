@@ -1,29 +1,18 @@
-import {
-	join as pathJoin
-} from 'path';
+import {join as pathJoin} from 'path';
 
-import {
-	listSamples,
-	versionStrings
-} from '../../projector/windows/32.spec';
-import {
-	cleanBundlesDir
-} from '../../bundle.spec';
-import {
-	fixtureFile,
-	getPackageFile
-} from '../../util.spec';
+import {listSamples, versionStrings} from '../../projector/windows/32.spec';
+import {cleanBundlesDir} from '../../bundle.spec';
+import {fixtureFile, getPackageFile} from '../../util.spec';
 import {BundleWindows} from '../windows';
 
-import {
-	BundleWindows32
-} from './32';
+import {BundleWindows32} from './32';
 
 describe('bundle/windows/32', () => {
 	describe('BundleWindows32', () => {
 		it('instanceof BundleWindows', () => {
-			expect(BundleWindows32.prototype instanceof BundleWindows)
-				.toBeTrue();
+			expect(
+				BundleWindows32.prototype instanceof BundleWindows
+			).toBeTrue();
 		});
 
 		for (const {
@@ -34,6 +23,7 @@ describe('bundle/windows/32', () => {
 				cleanBundlesDir('windows32', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
+			// eslint-disable-next-line no-loop-func
 			describe(name, () => {
 				it('simple', async () => {
 					const dir = await getDir('simple');

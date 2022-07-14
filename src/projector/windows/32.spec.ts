@@ -1,6 +1,4 @@
-import {
-	join as pathJoin
-} from 'path';
+import {join as pathJoin} from 'path';
 
 import fse from 'fs-extra';
 
@@ -13,9 +11,7 @@ import {
 } from '../../util.spec';
 import {ProjectorWindows} from '../windows';
 
-import {
-	ProjectorWindows32
-} from './32';
+import {ProjectorWindows32} from './32';
 
 export function listSamples() {
 	if (!shouldTest('windows32')) {
@@ -23,9 +19,7 @@ export function listSamples() {
 	}
 	const r = [];
 	for (const name of getInstalledPackagesSync()) {
-		const m = name.match(
-			/^shockwave-projector-director-([\d.]+)-\w+-win$/
-		);
+		const m = name.match(/^shockwave-projector-director-([\d.]+)-\w+-win$/);
 		if (!m) {
 			continue;
 		}
@@ -36,10 +30,8 @@ export function listSamples() {
 		r.push({
 			name,
 			version,
-			patchShockwave3dInstalledDisplayDriversSize: (
-				version[0] > 8 ||
-				(version[0] === 8 && version[1] >= 5)
-			)
+			patchShockwave3dInstalledDisplayDriversSize:
+				version[0] > 8 || (version[0] === 8 && version[1] >= 5)
 		});
 	}
 	return r;
@@ -61,8 +53,9 @@ export const versionStrings = {
 describe('projector/windows/32', () => {
 	describe('ProjectorWindows32', () => {
 		it('instanceof ProjectorWindows', () => {
-			expect(ProjectorWindows32.prototype instanceof ProjectorWindows)
-				.toBeTrue();
+			expect(
+				ProjectorWindows32.prototype instanceof ProjectorWindows
+			).toBeTrue();
 		});
 
 		for (const {
@@ -73,6 +66,7 @@ describe('projector/windows/32', () => {
 				cleanProjectorDir('windows32', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
+			// eslint-disable-next-line no-loop-func
 			describe(name, () => {
 				it('simple', async () => {
 					const dir = await getDir('simple');

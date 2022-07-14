@@ -1,29 +1,14 @@
-import {
-	join as pathJoin,
-	dirname
-} from 'path';
+import {join as pathJoin, dirname} from 'path';
 
 import fse from 'fs-extra';
-import {
-	Entry,
-	PathType
-} from '@shockpkg/archive-files';
+import {Entry, PathType} from '@shockpkg/archive-files';
 
-import {
-	pathRelativeBase,
-	pathRelativeBaseMatch
-} from '../util';
-import {
-	peResourceReplace
-} from '../util/windows';
-import {
-	Projector
-} from '../projector';
+import {pathRelativeBase, pathRelativeBaseMatch} from '../util';
+import {peResourceReplace} from '../util/windows';
+import {Projector} from '../projector';
 
 /**
- * ProjectorWindows constructor.
- *
- * @param path Output path.
+ * ProjectorWindows object.
  */
 export abstract class ProjectorWindows extends Projector {
 	/**
@@ -41,6 +26,11 @@ export abstract class ProjectorWindows extends Projector {
 	 */
 	public versionStrings: Readonly<{[key: string]: string}> | null = null;
 
+	/**
+	 * ProjectorWindows constructor.
+	 *
+	 * @param path Output path.
+	 */
 	constructor(path: string) {
 		super(path);
 	}
@@ -106,19 +96,19 @@ export abstract class ProjectorWindows extends Projector {
 	 * @param skeleton Skeleton path.
 	 */
 	protected async _writeSkeleton(skeleton: string) {
-		const {
-			path,
-			shockwave,
-			sklName,
-			xtrasName,
-			xtrasPath
-		} = this;
+		const {path, shockwave, sklName, xtrasName, xtrasPath} = this;
 
 		const xtrasMappings = this.getIncludeXtrasMappings();
 
 		let foundProjectorSkl = false;
 		let foundXtras = false;
 
+		/**
+		 * Xtras handler.
+		 *
+		 * @param entry Archive entry.
+		 * @returns Boolean.
+		 */
 		const xtrasHandler = async (entry: Entry) => {
 			// Check if Xtras path.
 			const xtrasRel = pathRelativeBase(
@@ -132,10 +122,7 @@ export abstract class ProjectorWindows extends Projector {
 			foundXtras = true;
 
 			// Find output path if being included, else skip.
-			const dest = this.includeXtrasMappingsDest(
-				xtrasMappings,
-				xtrasRel
-			);
+			const dest = this.includeXtrasMappingsDest(xtrasMappings, xtrasRel);
 			if (!dest) {
 				return true;
 			}
@@ -144,6 +131,12 @@ export abstract class ProjectorWindows extends Projector {
 			return true;
 		};
 
+		/**
+		 * SKL handler.
+		 *
+		 * @param entry Archive entry.
+		 * @returns Boolean.
+		 */
 		const projectorSklHandler = async (entry: Entry) => {
 			const entryPath = entry.volumePath;
 
@@ -162,6 +155,12 @@ export abstract class ProjectorWindows extends Projector {
 			return true;
 		};
 
+		/**
+		 * DLL handler.
+		 *
+		 * @param entry Archive entry.
+		 * @returns Boolean.
+		 */
 		const projectorDllHandler = async (entry: Entry) => {
 			const entryPath = entry.volumePath;
 
@@ -217,13 +216,8 @@ export abstract class ProjectorWindows extends Projector {
 	 */
 	protected async _modifySkeleton() {
 		const iconData = await this.getIconData();
-		const {
-			versionStrings
-		} = this;
-		if (!(
-			iconData ||
-			versionStrings
-		)) {
+		const {versionStrings} = this;
+		if (!(iconData || versionStrings)) {
 			return;
 		}
 

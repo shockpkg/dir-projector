@@ -1,36 +1,31 @@
-import {
-	Plist,
-	Value,
-	ValueDict,
-	ValueString
-} from '@shockpkg/plist-dom';
+import {Plist, Value, ValueDict, ValueString} from '@shockpkg/plist-dom';
 import fse from 'fs-extra';
 
-import {
-	once,
-	launcher
-} from '../util';
+import {once, launcher} from '../util';
 
-const FAT_MAGIC = 0xCAFEBABE;
-const MH_MAGIC = 0xFEEDFACE;
-const MH_CIGAM = 0xCEFAEDFE;
-const MH_MAGIC_64 = 0xFEEDFACF;
-const MH_CIGAM_64 = 0xCFFAEDFE;
+const FAT_MAGIC = 0xcafebabe;
+const MH_MAGIC = 0xfeedface;
+const MH_CIGAM = 0xcefaedfe;
+const MH_MAGIC_64 = 0xfeedfacf;
+const MH_CIGAM_64 = 0xcffaedfe;
 
 const CPU_TYPE_POWERPC = 0x00000012;
 const CPU_TYPE_POWERPC64 = 0x01000012;
 const CPU_TYPE_I386 = 0x00000007;
 const CPU_TYPE_X86_64 = 0x01000007;
 
-const launcherMappings = once(() => new Map([
-	[CPU_TYPE_POWERPC, 'mac-app-ppc'],
-	[CPU_TYPE_POWERPC64, 'mac-app-ppc64'],
-	[CPU_TYPE_I386, 'mac-app-i386'],
-	[CPU_TYPE_X86_64, 'mac-app-x86_64']
-]));
+const launcherMappings = once(
+	() =>
+		new Map([
+			[CPU_TYPE_POWERPC, 'mac-app-ppc'],
+			[CPU_TYPE_POWERPC64, 'mac-app-ppc64'],
+			[CPU_TYPE_I386, 'mac-app-i386'],
+			[CPU_TYPE_X86_64, 'mac-app-x86_64']
+		])
+);
 
 export interface IMachoType {
-
+	//
 	/**
 	 * CPU type.
 	 */
@@ -49,6 +44,7 @@ export interface IMachoType {
  * @param data Plist XML.
  * @returns Plist document.
  */
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function plistParse(data: string) {
 	const plist = new Plist();
 	plist.fromXml(data);
@@ -102,8 +98,7 @@ export function infoPlistDictSet(
 	const dict = infoPlistDict(plist);
 	if (value) {
 		dict.set(key, value);
-	}
-	else {
+	} else {
 		dict.delete(key);
 	}
 }
@@ -115,8 +110,9 @@ export function infoPlistDictSet(
  * @returns Executable name.
  */
 export function infoPlistBundleExecutableGet(plist: Plist) {
-	return infoPlistDictGetValue(plist, 'CFBundleExecutable')
-		.castAs(ValueString).value;
+	return infoPlistDictGetValue(plist, 'CFBundleExecutable').castAs(
+		ValueString
+	).value;
 }
 
 /**
@@ -140,8 +136,8 @@ export function infoPlistBundleExecutableSet(
  * @returns Icon name.
  */
 export function infoPlistBundleIconFileGet(plist: Plist) {
-	return infoPlistDictGetValue(plist, 'CFBundleIconFile')
-		.castAs(ValueString).value;
+	return infoPlistDictGetValue(plist, 'CFBundleIconFile').castAs(ValueString)
+		.value;
 }
 
 /**
@@ -174,13 +170,29 @@ export function infoPlistBundleNameSet(plist: Plist, value: string | null) {
  */
 export function machoTypesData(data: Readonly<Buffer>) {
 	let le = false;
-	const uint32 = (offset: number) => (
-		le ? data.readUInt32LE(offset) : data.readUInt32BE(offset)
-	);
+
+	/**
+	 * Read UINT32 at offset.
+	 *
+	 * @param offset File offset.
+	 * @returns UINT32 value.
+	 */
+	// eslint-disable-next-line arrow-body-style
+	const uint32 = (offset: number) => {
+		return le ? data.readUInt32LE(offset) : data.readUInt32BE(offset);
+	};
+
+	/**
+	 * Read type at offset.
+	 *
+	 * @param offset File offset.
+	 * @returns Type object.
+	 */
 	const type = (offset: number): IMachoType => ({
 		cpuType: uint32(offset),
 		cpuSubtype: uint32(offset + 4)
 	});
+
 	const magic = uint32(0);
 	switch (magic) {
 		case FAT_MAGIC: {
@@ -256,11 +268,19 @@ export async function machoAppLauncherFat(
 	const pieces = [head];
 	let total = head.length;
 
-	// Helpers for add and pad pieces, updating the total length.
+	/**
+	 * Helper to add pieces and update total length.
+	 *
+	 * @param data Data.
+	 */
 	const add = (data: Buffer) => {
 		pieces.push(data);
 		total += data.length;
 	};
+
+	/**
+	 * Helper to pad pieces.
+	 */
 	const pad = () => {
 		const over = total % alignSize;
 		if (over) {
@@ -304,7 +324,7 @@ export async function machoAppLauncherFat(
 export async function machoAppLauncher(
 	types: Readonly<IMachoType> | Readonly<Readonly<IMachoType>[]>
 ) {
-	return Array.isArray(types) ?
-		machoAppLauncherFat(types) :
-		machoAppLauncherThin(types as IMachoType);
+	return Array.isArray(types)
+		? machoAppLauncherFat(types)
+		: machoAppLauncherThin(types as IMachoType);
 }

@@ -10,7 +10,6 @@ Package for creating Shockwave Director projectors
 
 [![Build Status](https://github.com/shockpkg/dir-projector/workflows/main/badge.svg?branch=master)](https://github.com/shockpkg/dir-projector/actions?query=workflow%3Amain+branch%3Amaster)
 
-
 # Overview
 
 Creates Shockwave Director projectors from a projector skeleton.
@@ -22,7 +21,6 @@ Can also create bundles that group the projector and resources in a directory be
 Reading DMG projector packages is only supported on macOS.
 
 Currently only flat projectors are supported, not the kind that Director makes where everything is appended to the main binary in some format, and extracted to a temporary directory when run.
-
 
 # Usage
 
@@ -123,7 +121,6 @@ projector.nestXtrasContents = true;
 await projector.withFile('skeleton.dmg', 'config.ini');
 ```
 
-
 ## Bundle
 
 ### Windows
@@ -162,11 +159,9 @@ await bundle.withFile('skeleton.dmg', 'config.ini', async b => {
 });
 ```
 
-
 # Bugs
 
 If you find a bug or have compatibility issues, please open a ticket under issues section for this repository.
-
 
 # License
 

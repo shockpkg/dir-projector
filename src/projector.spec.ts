@@ -1,16 +1,9 @@
-import {
-	join as pathJoin
-} from 'path';
+import {join as pathJoin} from 'path';
 
 import fse from 'fs-extra';
 
-import {
-	Projector
-} from './projector';
-import {
-	cleanProjectorDir,
-	fixtureFile
-} from './util.spec';
+import {Projector} from './projector';
+import {cleanProjectorDir, fixtureFile} from './util.spec';
 
 const getDir = async (d: string) => cleanProjectorDir('dummy', d);
 

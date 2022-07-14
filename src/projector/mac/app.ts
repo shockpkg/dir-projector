@@ -1,16 +1,8 @@
-import {
-	join as pathJoin,
-	basename
-} from 'path';
+import {join as pathJoin, basename} from 'path';
 
 import fse from 'fs-extra';
-import {
-	PathType,
-	Entry
-} from '@shockpkg/archive-files';
-import {
-	Plist
-} from '@shockpkg/plist-dom';
+import {PathType, Entry} from '@shockpkg/archive-files';
+import {Plist} from '@shockpkg/plist-dom';
 
 import {
 	pathRelativeBase,
@@ -24,14 +16,10 @@ import {
 	infoPlistBundleIconFileSet,
 	infoPlistBundleNameSet
 } from '../../util/mac';
-import {
-	ProjectorMac
-} from '../mac';
+import {ProjectorMac} from '../mac';
 
 /**
- * ProjectorMacApp constructor.
- *
- * @param path Output path.
+ * ProjectorMacApp object.
  */
 export class ProjectorMacApp extends ProjectorMac {
 	/**
@@ -72,9 +60,11 @@ export class ProjectorMacApp extends ProjectorMac {
 	 * Info.plist data.
 	 * Currently only supports XML plist.
 	 */
-	public infoPlistData: (
-		string | Readonly<string[]> | Readonly<Buffer> | null
-	) = null;
+	public infoPlistData:
+		| string
+		| Readonly<string[]>
+		| Readonly<Buffer>
+		| null = null;
 
 	/**
 	 * Info.plist document.
@@ -112,6 +102,11 @@ export class ProjectorMacApp extends ProjectorMac {
 	 */
 	public nestXtrasContents = false;
 
+	/**
+	 * ProjectorMacApp constructor.
+	 *
+	 * @param path Output path.
+	 */
 	constructor(path: string) {
 		super(path);
 	}
@@ -446,28 +441,19 @@ export class ProjectorMacApp extends ProjectorMac {
 	 * @returns Info.plist data or null.
 	 */
 	public async getInfoPlistDocument() {
-		const {
-			infoPlistDocument,
-			infoPlistData,
-			infoPlistFile
-		} = this;
+		const {infoPlistDocument, infoPlistData, infoPlistFile} = this;
 		let xml;
 		if (infoPlistDocument) {
 			xml = infoPlistDocument.toXml();
-		}
-		else if (typeof infoPlistData === 'string') {
+		} else if (typeof infoPlistData === 'string') {
 			xml = infoPlistData;
-		}
-		else if (Array.isArray(infoPlistData)) {
+		} else if (Array.isArray(infoPlistData)) {
 			xml = infoPlistData.join('\n');
-		}
-		else if (infoPlistData) {
+		} else if (infoPlistData) {
 			xml = (infoPlistData as Readonly<Buffer>).toString('utf8');
-		}
-		else if (infoPlistFile) {
+		} else if (infoPlistFile) {
 			xml = await fse.readFile(infoPlistFile, 'utf8');
-		}
-		else {
+		} else {
 			return null;
 		}
 		return plistParse(xml);
@@ -493,9 +479,9 @@ export class ProjectorMacApp extends ProjectorMac {
 	 */
 	public getBundleName() {
 		const {bundleName} = this;
-		return bundleName === true ?
-			trimExtension(basename(this.path), this.extension, true) :
-			bundleName;
+		return bundleName === true
+			? trimExtension(basename(this.path), this.extension, true)
+			: bundleName;
 	}
 
 	/**
@@ -542,6 +528,12 @@ export class ProjectorMacApp extends ProjectorMac {
 		let foundRsrc = false;
 		let foundXtras = false;
 
+		/**
+		 * Xtras handler.
+		 *
+		 * @param entry Archive entry.
+		 * @returns Boolean.
+		 */
 		const xtrasHandler = async (entry: Entry) => {
 			// Check if Xtras path.
 			const xtrasRel = pathRelativeBase(
@@ -555,10 +547,7 @@ export class ProjectorMacApp extends ProjectorMac {
 			foundXtras = true;
 
 			// Find output path if being included, else skip.
-			const dest = this.includeXtrasMappingsDest(
-				xtrasMappings,
-				xtrasRel
-			);
+			const dest = this.includeXtrasMappingsDest(xtrasMappings, xtrasRel);
 			if (!dest) {
 				return true;
 			}
@@ -567,6 +556,12 @@ export class ProjectorMacApp extends ProjectorMac {
 			return true;
 		};
 
+		/**
+		 * Resources handler.
+		 *
+		 * @param entry Archive entry.
+		 * @returns Boolean.
+		 */
 		const projectorResourcesHandler = async (entry: Entry) => {
 			// Check if projector path.
 			const projectorRel = pathRelativeBase(
@@ -579,11 +574,7 @@ export class ProjectorMacApp extends ProjectorMac {
 			}
 			foundProjectorResourcesDirectory = true;
 
-			if (pathRelativeBaseMatch(
-				projectorRel,
-				appPathFrameworks,
-				true
-			)) {
+			if (pathRelativeBaseMatch(projectorRel, appPathFrameworks, true)) {
 				foundFrameworks = true;
 
 				// Exclude Frameworks directory for Shockwave projectors.
@@ -593,11 +584,7 @@ export class ProjectorMacApp extends ProjectorMac {
 			}
 
 			// Exclude Info.plist if using custom one.
-			if (pathRelativeBaseMatch(
-				projectorRel,
-				appPathInfoPlist,
-				true
-			)) {
+			if (pathRelativeBaseMatch(projectorRel, appPathInfoPlist, true)) {
 				foundInfoPlist = true;
 
 				if (hasInfoPlist) {
@@ -606,11 +593,7 @@ export class ProjectorMacApp extends ProjectorMac {
 			}
 
 			// Exclude PkgInfo if using custom one.
-			if (pathRelativeBaseMatch(
-				projectorRel,
-				appPathPkgInfo,
-				true
-			)) {
+			if (pathRelativeBaseMatch(projectorRel, appPathPkgInfo, true)) {
 				foundPkgInfo = true;
 
 				if (hasPkgInfo) {
@@ -621,11 +604,9 @@ export class ProjectorMacApp extends ProjectorMac {
 			let dest = projectorRel;
 
 			// Possibly rename the binary.
-			if (pathRelativeBaseMatch(
-				projectorRel,
-				appPathBinaryDefault,
-				true
-			)) {
+			if (
+				pathRelativeBaseMatch(projectorRel, appPathBinaryDefault, true)
+			) {
 				foundBinary = true;
 
 				if (appPathBinaryCustom) {
@@ -634,11 +615,7 @@ export class ProjectorMacApp extends ProjectorMac {
 			}
 
 			// Special case for icon.
-			if (pathRelativeBaseMatch(
-				projectorRel,
-				appPathIconDefault,
-				true
-			)) {
+			if (pathRelativeBaseMatch(projectorRel, appPathIconDefault, true)) {
 				foundIcon = true;
 
 				// Skip extracting icon if custom one.
@@ -653,11 +630,7 @@ export class ProjectorMacApp extends ProjectorMac {
 			}
 
 			// Special case for rsrc.
-			if (pathRelativeBaseMatch(
-				projectorRel,
-				appPathRsrcDefault,
-				true
-			)) {
+			if (pathRelativeBaseMatch(projectorRel, appPathRsrcDefault, true)) {
 				foundRsrc = true;
 
 				if (appPathRsrcCustom) {
@@ -761,16 +734,15 @@ export class ProjectorMacApp extends ProjectorMac {
 	protected async _updateInfoPlist() {
 		const customPlist = await this.getInfoPlistDocument();
 		const bundleName = this.getBundleName();
-		const {
-			appBinaryNameCustom,
-			appIconNameCustom
-		} = this;
-		if (!(
-			customPlist ||
-			appIconNameCustom ||
-			appBinaryNameCustom ||
-			bundleName !== false
-		)) {
+		const {appBinaryNameCustom, appIconNameCustom} = this;
+		if (
+			!(
+				customPlist ||
+				appIconNameCustom ||
+				appBinaryNameCustom ||
+				bundleName !== false
+			)
+		) {
 			return;
 		}
 

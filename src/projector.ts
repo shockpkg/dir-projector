@@ -1,8 +1,5 @@
 import {TranscodeEncoding} from 'buffer';
-import {
-	join as pathJoin,
-	dirname
-} from 'path';
+import {join as pathJoin, dirname} from 'path';
 
 import {
 	Archive,
@@ -12,13 +9,10 @@ import {
 } from '@shockpkg/archive-files';
 import fse from 'fs-extra';
 
-import {
-	pathRelativeBase,
-	trimExtension
-} from './util';
+import {pathRelativeBase, trimExtension} from './util';
 
 export interface IIncludeXtraMapping {
-
+	//
 	/**
 	 * Source path, case insensitive.
 	 * Does not need to match the full path.
@@ -33,7 +27,7 @@ export interface IIncludeXtraMapping {
 }
 
 export interface IIncludeXtraMappingBest {
-
+	//
 	/**
 	 * Map instance.
 	 */
@@ -51,8 +45,6 @@ export interface IIncludeXtras {
 
 /**
  * Projector constructor.
- *
- * @param path Output path.
  */
 export abstract class Projector extends Object {
 	/**
@@ -88,9 +80,8 @@ export abstract class Projector extends Object {
 	 *
 	 * @default null
 	 */
-	public lingoData: (
-		Readonly<string[]> | string | Readonly<Buffer> | null
-	) = null;
+	public lingoData: Readonly<string[]> | string | Readonly<Buffer> | null =
+		null;
 
 	/**
 	 * Xtras include map.
@@ -118,6 +109,11 @@ export abstract class Projector extends Object {
 	 */
 	public readonly path: string;
 
+	/**
+	 * Projector constructor.
+	 *
+	 * @param path Output path.
+	 */
 	constructor(path: string) {
 		super();
 
@@ -223,9 +219,9 @@ export abstract class Projector extends Object {
 	 */
 	public get xtrasPath() {
 		const cn = this.configurationName;
-		return (this.nestXtrasConfiguration && cn) ?
-			pathJoin(dirname(this.path), cn, this.xtrasName) :
-			pathJoin(dirname(this.path), this.xtrasName);
+		return this.nestXtrasConfiguration && cn
+			? pathJoin(dirname(this.path), cn, this.xtrasName)
+			: pathJoin(dirname(this.path), this.xtrasName);
 	}
 
 	/**
@@ -235,8 +231,9 @@ export abstract class Projector extends Object {
 	 */
 	public async getSplashImageData() {
 		const {splashImageData, splashImageFile} = this;
-		return splashImageData || (
-			splashImageFile ? fse.readFile(splashImageFile) : null
+		return (
+			splashImageData ||
+			(splashImageFile ? fse.readFile(splashImageFile) : null)
 		);
 	}
 
@@ -328,9 +325,8 @@ export abstract class Projector extends Object {
 		let bestScore = -1;
 		for (const map of mappings) {
 			const {src} = map;
-			const relative = src === '' ?
-				path :
-				pathRelativeBase(path, src, true);
+			const relative =
+				src === '' ? path : pathRelativeBase(path, src, true);
 			if (relative === null || bestScore >= src.length) {
 				continue;
 			}
@@ -422,14 +418,12 @@ export abstract class Projector extends Object {
 		let data: Readonly<Buffer> | null = null;
 		if (typeof configData === 'string') {
 			data = Buffer.from(configData, this.configEncoding);
-		}
-		else if (Array.isArray(data)) {
+		} else if (Array.isArray(data)) {
 			data = Buffer.from(
 				(configData as string[]).join(this.configNewline),
 				this.configEncoding
 			);
-		}
-		else if (configData) {
+		} else if (configData) {
 			data = configData as Readonly<Buffer>;
 		}
 

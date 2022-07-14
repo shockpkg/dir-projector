@@ -1,22 +1,13 @@
-import {
-	join as pathJoin
-} from 'path';
+import {join as pathJoin} from 'path';
 
-import {
-	Manager
-} from '@shockpkg/core';
+import {Manager} from '@shockpkg/core';
 import fse from 'fs-extra';
 
-import {
-	pathRelativeBase,
-	trimExtension
-} from './util';
+import {pathRelativeBase, trimExtension} from './util';
 
 export const platformIsMac = process.platform === 'darwin';
-export const platformIsWindows = (
-	process.platform === 'win32' ||
-	(process.platform as string) === 'win64'
-);
+export const platformIsWindows =
+	process.platform === 'win32' || (process.platform as string) === 'win64';
 
 // eslint-disable-next-line no-process-env
 export const envFastTest = process.env.DIR_PROJECTOR_FAST_TEST || null;
@@ -33,9 +24,7 @@ export function fixtureFile(name: string) {
 }
 
 export async function getPackageFile(pkg: string) {
-	return (new Manager()).with(
-		async manager => manager.packageInstallFile(pkg)
-	);
+	return new Manager().with(async manager => manager.packageInstallFile(pkg));
 }
 
 export async function cleanProjectorDir(...path: string[]) {
@@ -52,8 +41,7 @@ export function getInstalledPackagesSync() {
 		const installed = process.env.DIR_PROJECTOR_INSTALLED || null;
 		if (installed) {
 			getInstalledPackagesCache = installed.split(',');
-		}
-		else {
+		} else {
 			getInstalledPackagesCache = [];
 		}
 	}

@@ -1,23 +1,13 @@
-import {
-	join as pathJoin,
-	basename
-} from 'path';
+import {join as pathJoin, basename} from 'path';
 
-import {
-	fsWalk
-} from '@shockpkg/archive-files';
+import {fsWalk} from '@shockpkg/archive-files';
 
-import {
-	windowsPatchShockwave3dInstalledDisplayDriversSize
-} from '../../util/windows';
-import {
-	ProjectorWindows
-} from '../windows';
+// eslint-disable-next-line max-len
+import {windowsPatchShockwave3dInstalledDisplayDriversSize} from '../../util/windows';
+import {ProjectorWindows} from '../windows';
 
 /**
- * ProjectorWindows32 constructor.
- *
- * @param path Output path.
+ * ProjectorWindows32 object.
  */
 export class ProjectorWindows32 extends ProjectorWindows {
 	/**
@@ -31,6 +21,11 @@ export class ProjectorWindows32 extends ProjectorWindows {
 	 */
 	public patchShockwave3dInstalledDisplayDriversSize = false;
 
+	/**
+	 * ProjectorWindows32 constructor.
+	 *
+	 * @param path Output path.
+	 */
 	constructor(path: string) {
 		super(path);
 	}
@@ -57,23 +52,27 @@ export class ProjectorWindows32 extends ProjectorWindows {
 		const searchLower = search.toLowerCase();
 
 		let found = false;
-		await fsWalk(xtrasDir, async (path, stat) => {
-			if (!stat.isFile()) {
-				return;
-			}
+		await fsWalk(
+			xtrasDir,
+			async (path, stat) => {
+				if (!stat.isFile()) {
+					return;
+				}
 
-			const fn = basename(path);
-			if (fn.toLowerCase() !== searchLower) {
-				return;
-			}
+				const fn = basename(path);
+				if (fn.toLowerCase() !== searchLower) {
+					return;
+				}
 
-			found = true;
-			await windowsPatchShockwave3dInstalledDisplayDriversSize(
-				pathJoin(xtrasDir, path)
-			);
-		}, {
-			ignoreUnreadableDirectories: true
-		});
+				found = true;
+				await windowsPatchShockwave3dInstalledDisplayDriversSize(
+					pathJoin(xtrasDir, path)
+				);
+			},
+			{
+				ignoreUnreadableDirectories: true
+			}
+		);
 
 		if (!found) {
 			throw new Error(`Failed to locate for patching: ${search}`);

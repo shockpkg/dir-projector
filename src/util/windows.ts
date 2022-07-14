@@ -1,33 +1,26 @@
-import {
-	signatureGet,
-	signatureSet
-} from 'portable-executable-signature';
+import {signatureGet, signatureSet} from 'portable-executable-signature';
 import * as resedit from 'resedit';
 import fse from 'fs-extra';
 
-import {
-	bufferToArrayBuffer,
-	launcher
-} from '../util';
+import {bufferToArrayBuffer, launcher} from '../util';
 
 const ResEditNtExecutable =
-	resedit.NtExecutable ||
-	(resedit as any).default.NtExecutable;
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+	resedit.NtExecutable || (resedit as any).default.NtExecutable;
 
 const ResEditNtExecutableResource =
 	resedit.NtExecutableResource ||
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	(resedit as any).default.NtExecutableResource;
 
-const ResEditResource =
-	resedit.Resource ||
-	(resedit as any).default.Resource;
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const ResEditResource = resedit.Resource || (resedit as any).default.Resource;
 
-const ResEditData =
-	resedit.Data ||
-	(resedit as any).default.Data;
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const ResEditData = resedit.Data || (resedit as any).default.Data;
 
 export interface IPeResourceReplace {
-
+	//
 	/**
 	 * Replace icons if not null.
 	 *
@@ -61,17 +54,19 @@ export function peVersionInts(version: string): [number, number] | null {
 	const numbers = [];
 	for (const part of parts) {
 		const n = /^\d+$/.test(part) ? +part : NaN;
-		if (!(n >= 0 && n <= 0xFFFF)) {
+		if (!(n >= 0 && n <= 0xffff)) {
 			return null;
 		}
 		numbers.push(n);
 	}
-	return numbers.length ? [
-		// eslint-disable-next-line no-bitwise
-		(((numbers[0] || 0) << 16) | (numbers[1] || 0)) >>> 0,
-		// eslint-disable-next-line no-bitwise
-		(((numbers[2] || 0) << 16) | (numbers[3] || 0)) >>> 0
-	] : null;
+	return numbers.length
+		? [
+				// eslint-disable-next-line no-bitwise
+				(((numbers[0] || 0) << 16) | (numbers[1] || 0)) >>> 0,
+				// eslint-disable-next-line no-bitwise
+				(((numbers[2] || 0) << 16) | (numbers[3] || 0)) >>> 0
+		  ]
+		: null;
 }
 
 /**
@@ -84,11 +79,7 @@ export async function peResourceReplace(
 	path: string,
 	options: Readonly<IPeResourceReplace>
 ) {
-	const {
-		iconData,
-		versionStrings,
-		removeSignature
-	} = options;
+	const {iconData, versionStrings, removeSignature} = options;
 
 	// Read EXE file and remove signature if present.
 	const exeOriginal = await fse.readFile(path);
@@ -101,9 +92,7 @@ export async function peResourceReplace(
 
 	// Replace all the icons in all icon groups.
 	if (iconData) {
-		const ico = ResEditData.IconFile.from(
-			bufferToArrayBuffer(iconData)
-		);
+		const ico = ResEditData.IconFile.from(bufferToArrayBuffer(iconData));
 		for (const iconGroup of ResEditResource.IconGroupEntry.fromEntries(
 			res.entries
 		)) {
@@ -185,7 +174,7 @@ export async function windowsLauncher(
 			break;
 		}
 		default: {
-			throw new Error(`Invalid type: ${type}`);
+			throw new Error(`Invalid type: ${type as string}`);
 		}
 	}
 
@@ -200,16 +189,16 @@ export async function windowsLauncher(
 
 	// Read resources from file.
 	const res = ResEditNtExecutableResource.from(
-		ResEditNtExecutable.from(
-			await fse.readFile(resources),
-			{
-				ignoreCert: true
-			}
-		)
+		ResEditNtExecutable.from(await fse.readFile(resources), {
+			ignoreCert: true
+		})
 	);
 
 	// Find the first icon group for each language.
-	const resIconGroups = new Map();
+	const resIconGroups = new Map<
+		string | number,
+		resedit.Resource.IconGroupEntry
+	>();
 	for (const iconGroup of ResEditResource.IconGroupEntry.fromEntries(
 		res.entries
 	)) {
@@ -233,11 +222,12 @@ export async function windowsLauncher(
 	const typeVersionInfo = 16;
 	const typeIcon = 3;
 	const typeIconGroup = 14;
-	res.entries = res.entries.filter(entry => (
-		entry.type === typeVersionInfo ||
-		(entry.type === typeIcon && iconDatas.has(entry.id)) ||
-		(entry.type === typeIconGroup && iconGroups.has(entry.id))
-	));
+	res.entries = res.entries.filter(
+		entry =>
+			entry.type === typeVersionInfo ||
+			(entry.type === typeIcon && iconDatas.has(entry.id)) ||
+			(entry.type === typeIconGroup && iconGroups.has(entry.id))
+	);
 
 	// Apply resources to launcher.
 	const exe = ResEditNtExecutable.from(exeData);
@@ -253,7 +243,7 @@ export async function windowsLauncher(
 }
 
 interface IPatcherPatch {
-
+	//
 	/**
 	 * The bytes to find.
 	 */
@@ -291,71 +281,87 @@ function patchHexToBytes(str: string) {
 const patchShockwave3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
 	// director-8.5.0 - director-11.0.0-hotfix-1:
 	{
-		find: patchHexToBytes([
-			'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
-			'BE 04 01 00 00',    // mov     esi, 0x104
-			'56',                // push    esi
-			'E8 -- -- -- --'     // call    -- -- -- --
-		].join(' ')),
-		replace: patchHexToBytes([
-			'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
-			// Change:
-			'BE 00 00 01 00',    // mov     esi, 0x10000
-			'56',                // push    esi
-			'E8 -- -- -- --'     // call    -- -- -- --
-		].join(' '))
+		find: patchHexToBytes(
+			[
+				'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
+				'BE 04 01 00 00', // mov     esi, 0x104
+				'56', // push    esi
+				'E8 -- -- -- --' // call    -- -- -- --
+			].join(' ')
+		),
+		replace: patchHexToBytes(
+			[
+				'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
+				// Change:
+				'BE 00 00 01 00', // mov     esi, 0x10000
+				'56', // push    esi
+				'E8 -- -- -- --' // call    -- -- -- --
+			].join(' ')
+		)
 	},
 	// director-11.0.0-hotfix-3 - director-11.5.0:
 	{
-		find: patchHexToBytes([
-			'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
-			'BF 04 01 00 00',    // mov     edi, 0x104
-			'57',                // push    edi
-			'E8 -- -- -- --'     // call    -- -- -- --
-		].join(' ')),
-		replace: patchHexToBytes([
-			'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
-			// Change:
-			'BF 00 00 01 00',    // mov     edi, 0x10000
-			'57',                // push    edi
-			'E8 -- -- -- --'     // call    -- -- -- --
-		].join(' '))
+		find: patchHexToBytes(
+			[
+				'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
+				'BF 04 01 00 00', // mov     edi, 0x104
+				'57', // push    edi
+				'E8 -- -- -- --' // call    -- -- -- --
+			].join(' ')
+		),
+		replace: patchHexToBytes(
+			[
+				'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
+				// Change:
+				'BF 00 00 01 00', // mov     edi, 0x10000
+				'57', // push    edi
+				'E8 -- -- -- --' // call    -- -- -- --
+			].join(' ')
+		)
 	},
 	// director-11.5.8 - director-11.5.9:
 	{
-		find: patchHexToBytes([
-			'68 -- -- -- --',    // push    -- -- -- --
-			'57',                // push    edi
-			'FF D6',             // call    esi
-			'68 08 02 00 00',    // push    0x208
-			'E8 -- -- -- --'     // call    -- -- -- --
-		].join(' ')),
-		replace: patchHexToBytes([
-			'68 -- -- -- --',    // push    -- -- -- --
-			'57',                // push    edi
-			'FF D6',             // call    esi
-			// Change:
-			'68 00 00 02 00',    // push    0x20000
-			'E8 -- -- -- --'     // call    -- -- -- --
-		].join(' '))
+		find: patchHexToBytes(
+			[
+				'68 -- -- -- --', // push    -- -- -- --
+				'57', // push    edi
+				'FF D6', // call    esi
+				'68 08 02 00 00', // push    0x208
+				'E8 -- -- -- --' // call    -- -- -- --
+			].join(' ')
+		),
+		replace: patchHexToBytes(
+			[
+				'68 -- -- -- --', // push    -- -- -- --
+				'57', // push    edi
+				'FF D6', // call    esi
+				// Change:
+				'68 00 00 02 00', // push    0x20000
+				'E8 -- -- -- --' // call    -- -- -- --
+			].join(' ')
+		)
 	},
 	// director-12.0.0:
 	{
-		find: patchHexToBytes([
-			'68 -- -- -- --',    // push    -- -- -- --
-			'53',                // push    ebx
-			'FF D7',             // call    edi
-			'68 08 02 00 00',    // push    0x208
-			'E8 -- -- -- --'     // call    -- -- -- --
-		].join(' ')),
-		replace: patchHexToBytes([
-			'68 -- -- -- --',    // push    -- -- -- --
-			'53',                // push    ebx
-			'FF D7',             // call    edi
-			// Change:
-			'68 00 00 02 00',    // push    0x20000
-			'E8 -- -- -- --'     // call    -- -- -- --
-		].join(' '))
+		find: patchHexToBytes(
+			[
+				'68 -- -- -- --', // push    -- -- -- --
+				'53', // push    ebx
+				'FF D7', // call    edi
+				'68 08 02 00 00', // push    0x208
+				'E8 -- -- -- --' // call    -- -- -- --
+			].join(' ')
+		),
+		replace: patchHexToBytes(
+			[
+				'68 -- -- -- --', // push    -- -- -- --
+				'53', // push    ebx
+				'FF D7', // call    edi
+				// Change:
+				'68 00 00 02 00', // push    0x20000
+				'E8 -- -- -- --' // call    -- -- -- --
+			].join(' ')
+		)
 	}
 ];
 /* eslint-enable no-multi-spaces */
@@ -397,9 +403,7 @@ function patchDataOnce(
 				continue;
 			}
 			if (foundOffset !== -1) {
-				throw new Error(
-					`Multiple patch candidates found for: ${name}`
-				);
+				throw new Error(`Multiple patch candidates found for: ${name}`);
 			}
 
 			// Remember patch to apply.
