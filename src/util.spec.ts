@@ -6,7 +6,6 @@ import {
 	Manager
 } from '@shockpkg/core';
 import fse from 'fs-extra';
-import execa from 'execa';
 
 import {
 	pathRelativeBase,
@@ -49,10 +48,14 @@ export async function cleanProjectorDir(...path: string[]) {
 let getInstalledPackagesCache: string[] | null = null;
 export function getInstalledPackagesSync() {
 	if (!getInstalledPackagesCache) {
-		const {stdout} = execa.sync('shockpkg', ['installed'], {
-			preferLocal: true
-		});
-		getInstalledPackagesCache = stdout.trim().split(/[\r\n]+/);
+		// eslint-disable-next-line no-process-env
+		const installed = process.env.DIR_PROJECTOR_INSTALLED || null;
+		if (installed) {
+			getInstalledPackagesCache = installed.split(',');
+		}
+		else {
+			getInstalledPackagesCache = [];
+		}
 	}
 	return getInstalledPackagesCache;
 }
