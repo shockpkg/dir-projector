@@ -82,7 +82,7 @@ async function downloaded(source: string, dest: string, hash: string) {
 	await pipeline(response.body, fse.createWriteStream(part));
 	if (await hashFile(part, 'sha256') !== hash) {
 		await fse.remove(part);
-		throw new Error(`Unexpected hash: ${dest}`);
+		throw new Error(`Unexpected hash: ${source}`);
 	}
 	await fse.rename(part, dest);
 	return dest;
