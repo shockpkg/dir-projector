@@ -1,4 +1,4 @@
-# dir-projector
+# DIR Projector
 
 Package for creating Shockwave Director projectors
 
