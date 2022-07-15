@@ -270,9 +270,6 @@ function patchHexToBytes(str: string) {
 	});
 }
 
-/* eslint-disable no-multi-spaces */
-/* eslint-disable line-comment-position */
-/* eslint-disable no-inline-comments */
 // A list of patch candidates, made to be partially position independant.
 // Basically these patches just increase the temporary buffer sizes.
 // Enough to provide amply room for anything that should be in the registry.
@@ -283,19 +280,32 @@ const patchShockwave3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
 	{
 		find: patchHexToBytes(
 			[
-				'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
-				'BE 04 01 00 00', // mov     esi, 0x104
-				'56', // push    esi
-				'E8 -- -- -- --' // call    -- -- -- --
+				// call    DWORD PTR ds:-- -- -- --
+				'FF 15 -- -- -- --',
+
+				// Change:
+				// mov     esi, 0x104
+				'BE 04 01 00 00',
+
+				// push    esi
+				'56',
+				// call    -- -- -- --
+				'E8 -- -- -- --'
 			].join(' ')
 		),
 		replace: patchHexToBytes(
 			[
-				'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
-				// Change:
-				'BE 00 00 01 00', // mov     esi, 0x10000
-				'56', // push    esi
-				'E8 -- -- -- --' // call    -- -- -- --
+				// call    DWORD PTR ds:-- -- -- --
+				'FF 15 -- -- -- --',
+
+				// Changed:
+				// mov     esi, 0x10000
+				'BE 00 00 01 00',
+
+				// push    esi
+				'56',
+				// call    -- -- -- --
+				'E8 -- -- -- --'
 			].join(' ')
 		)
 	},
@@ -303,19 +313,32 @@ const patchShockwave3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
 	{
 		find: patchHexToBytes(
 			[
-				'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
-				'BF 04 01 00 00', // mov     edi, 0x104
-				'57', // push    edi
-				'E8 -- -- -- --' // call    -- -- -- --
+				// call    DWORD PTR ds:-- -- -- --
+				'FF 15 -- -- -- --',
+
+				// Change:
+				// mov     edi, 0x104
+				'BF 04 01 00 00',
+
+				// push    edi
+				'57',
+				// call    -- -- -- --
+				'E8 -- -- -- --'
 			].join(' ')
 		),
 		replace: patchHexToBytes(
 			[
-				'FF 15 -- -- -- --', // call    DWORD PTR ds:-- -- -- --
-				// Change:
-				'BF 00 00 01 00', // mov     edi, 0x10000
-				'57', // push    edi
-				'E8 -- -- -- --' // call    -- -- -- --
+				// call    DWORD PTR ds:-- -- -- --
+				'FF 15 -- -- -- --',
+
+				// Changed:
+				// mov     edi, 0x10000
+				'BF 00 00 01 00',
+
+				// push    edi
+				'57',
+				// call    -- -- -- --
+				'E8 -- -- -- --'
 			].join(' ')
 		)
 	},
@@ -323,50 +346,77 @@ const patchShockwave3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
 	{
 		find: patchHexToBytes(
 			[
-				'68 -- -- -- --', // push    -- -- -- --
-				'57', // push    edi
-				'FF D6', // call    esi
-				'68 08 02 00 00', // push    0x208
-				'E8 -- -- -- --' // call    -- -- -- --
+				// push    -- -- -- --
+				'68 -- -- -- --',
+				// push    edi
+				'57',
+				// call    esi
+				'FF D6',
+
+				// Change:
+				// push    0x208
+				'68 08 02 00 00',
+
+				// call    -- -- -- --
+				'E8 -- -- -- --'
 			].join(' ')
 		),
 		replace: patchHexToBytes(
 			[
-				'68 -- -- -- --', // push    -- -- -- --
-				'57', // push    edi
-				'FF D6', // call    esi
-				// Change:
-				'68 00 00 02 00', // push    0x20000
-				'E8 -- -- -- --' // call    -- -- -- --
+				// push    -- -- -- --
+				'68 -- -- -- --',
+				// push    edi
+				'57',
+				// call    esi
+				'FF D6',
+
+				// Changed:
+				// push    0x20000
+				'68 00 00 02 00',
+
+				// call    -- -- -- --
+				'E8 -- -- -- --'
 			].join(' ')
 		)
 	},
-	// director-12.0.0:
+	// director-12.0.0 - director-12.0.2:
 	{
 		find: patchHexToBytes(
 			[
-				'68 -- -- -- --', // push    -- -- -- --
-				'53', // push    ebx
-				'FF D7', // call    edi
-				'68 08 02 00 00', // push    0x208
-				'E8 -- -- -- --' // call    -- -- -- --
+				// push    -- -- -- --
+				'68 -- -- -- --',
+				// push    ebx
+				'53',
+				// call    edi
+				'FF D7',
+
+				// Change:
+				// push    0x208
+				'68 08 02 00 00',
+
+				// call    -- -- -- --
+				'E8 -- -- -- --'
 			].join(' ')
 		),
 		replace: patchHexToBytes(
 			[
-				'68 -- -- -- --', // push    -- -- -- --
-				'53', // push    ebx
-				'FF D7', // call    edi
-				// Change:
-				'68 00 00 02 00', // push    0x20000
-				'E8 -- -- -- --' // call    -- -- -- --
+				// push    -- -- -- --
+				'68 -- -- -- --',
+				// push    ebx
+				'53',
+				// call    edi
+				'FF D7',
+
+				// Changed:
+				// push    0x20000
+				'68 00 00 02 00',
+
+				// call    -- -- -- --
+				'E8 -- -- -- --'
 			].join(' ')
 		)
 	}
 ];
-/* eslint-enable no-multi-spaces */
-/* eslint-enable line-comment-position */
-/* eslint-enable no-inline-comments */
 
 /**
  * Patch data buffer once.
