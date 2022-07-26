@@ -1,6 +1,8 @@
 import {copyFile, mkdir, stat, writeFile} from 'fs/promises';
 import {join as pathJoin, basename, dirname} from 'path';
 
+import {fsLstatExists} from '@shockpkg/archive-files';
+
 import {trimExtension} from '../../util';
 import {
 	plistRead,
@@ -89,14 +91,12 @@ export class BundleMacApp extends BundleMac {
 
 		// Copy the projector icon if present.
 		const pathIcon = pathJoin(appResources, projIconName);
-		const projIconPathStat = await stat(projIconPath).catch(_ => null);
-		if (projIconPathStat && !projIconPathStat.isDirectory()) {
+		if (await fsLstatExists(projIconPath)) {
 			await copyFile(projIconPath, pathIcon);
 		}
 
 		// Copy PkgInfo if present.
-		const projPkgInfoPathStat = await stat(projIconPath).catch(_ => null);
-		if (projPkgInfoPathStat && !projPkgInfoPathStat.isDirectory()) {
+		if (await fsLstatExists(projPkgInfoPath)) {
 			await copyFile(projPkgInfoPath, appPkgInfo);
 		}
 
