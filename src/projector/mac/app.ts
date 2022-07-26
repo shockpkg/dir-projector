@@ -715,7 +715,7 @@ export class ProjectorMacApp extends ProjectorMac {
 		const data = await this.getIconData();
 		if (data) {
 			const {iconPath} = this;
-			await mkdir(dirname(iconPath));
+			await mkdir(dirname(iconPath), {recursive: true});
 			await writeFile(iconPath, data);
 		}
 	}
@@ -727,7 +727,7 @@ export class ProjectorMacApp extends ProjectorMac {
 		const data = await this.getPkgInfoData();
 		if (data) {
 			const {pkgInfoPath} = this;
-			await mkdir(dirname(pkgInfoPath));
+			await mkdir(dirname(pkgInfoPath), {recursive: true});
 			await writeFile(pkgInfoPath, data);
 		}
 	}
@@ -785,7 +785,7 @@ export class ProjectorMacApp extends ProjectorMac {
 	protected async _writeInfoPlist(plist: Plist) {
 		const path = this.infoPlistPath;
 		await rm(path, {force: true});
-		await mkdir(dirname(path));
+		await mkdir(dirname(path), {recursive: true});
 		await writeFile(path, plist.toXml(), 'utf8');
 	}
 }
