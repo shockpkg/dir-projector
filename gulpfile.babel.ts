@@ -13,7 +13,6 @@ import gulpFilter from 'gulp-filter';
 import gulpReplace from 'gulp-replace';
 import gulpSourcemaps from 'gulp-sourcemaps';
 import gulpBabel from 'gulp-babel';
-import fetch from 'node-fetch';
 import {Manager} from '@shockpkg/core';
 
 const pipe = promisify(pipeline);
@@ -69,11 +68,12 @@ async function downloaded(source: string, dest: string, hash: string) {
 		return data;
 	}
 	await rm(dest, {force: true});
+	const {default: fetch} = await import('node-fetch');
 	const response = await fetch(source);
 	if (response.status !== 200) {
 		throw new Error(`Status ${response.status}: ${source}`);
 	}
-	const body = await response.buffer();
+	const body = Buffer.from(await response.arrayBuffer());
 	if (sha256(body) !== hash) {
 		throw new Error(`Unexpected hash: ${source}`);
 	}
