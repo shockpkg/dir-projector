@@ -47,7 +47,7 @@ export interface IIncludeXtras {
 /**
  * Projector constructor.
  */
-export abstract class Projector extends Object {
+export abstract class Projector {
 	/**
 	 * Make a Shockwave projector.
 	 *
@@ -116,8 +116,6 @@ export abstract class Projector extends Object {
 	 * @param path Output path.
 	 */
 	constructor(path: string) {
-		super();
-
 		this.path = path;
 	}
 
