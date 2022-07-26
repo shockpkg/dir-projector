@@ -24,7 +24,7 @@ import {once} from './util';
 import {Queue} from './queue';
 import {Projector} from './projector';
 
-const pipelineP = promisify(pipeline);
+const pipe = promisify(pipeline);
 
 const userExec = 0b001000000;
 
@@ -473,7 +473,7 @@ export abstract class Bundle extends Object {
 
 		const dest = await this._assertNotResourceExists(destination);
 		await mkdir(dirname(dest), {recursive: true});
-		await pipelineP(data, createWriteStream(dest));
+		await pipe(data, createWriteStream(dest));
 
 		if (options) {
 			await this._setResourceAttributes(dest, options);
