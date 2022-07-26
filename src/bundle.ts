@@ -14,9 +14,7 @@ import {join as pathJoin, dirname, basename, resolve} from 'path';
 import {promisify} from 'util';
 
 import {
-	fsLchmodSupported,
 	fsLchmod,
-	fsLutimesSupported,
 	fsLutimes,
 	fsWalk,
 	fsLstatExists
@@ -536,14 +534,9 @@ export abstract class Bundle extends Object {
 		const {atime, mtime, executable} = options;
 		const st = await lstat(path);
 
-		// Maybe set executable if not a directory and supported.
+		// Maybe set executable if not a directory.
 		if (typeof executable === 'boolean' && !st.isDirectory()) {
-			if (!st.isSymbolicLink()) {
-				await chmod(
-					path,
-					this._setResourceModeExecutable(st.mode, executable)
-				);
-			} else if (fsLchmodSupported) {
+			if (st.isSymbolicLink()) {
 				await fsLchmod(
 					path,
 					this._setResourceModeExecutable(
@@ -553,15 +546,20 @@ export abstract class Bundle extends Object {
 						executable
 					)
 				);
+			} else {
+				await chmod(
+					path,
+					this._setResourceModeExecutable(st.mode, executable)
+				);
 			}
 		}
 
-		// Maybe change times if either is set and supported.
+		// Maybe change times if either is set.
 		if (atime || mtime) {
-			if (!st.isSymbolicLink()) {
-				await utimes(path, atime || st.atime, mtime || st.mtime);
-			} else if (fsLutimesSupported) {
+			if (st.isSymbolicLink()) {
 				await fsLutimes(path, atime || st.atime, mtime || st.mtime);
+			} else {
+				await utimes(path, atime || st.atime, mtime || st.mtime);
 			}
 		}
 	}
