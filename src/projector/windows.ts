@@ -1,6 +1,6 @@
+import {readFile} from 'fs/promises';
 import {join as pathJoin, dirname} from 'path';
 
-import fse from 'fs-extra';
 import {Entry, PathType} from '@shockpkg/archive-files';
 
 import {pathRelativeBase, pathRelativeBaseMatch} from '../util';
@@ -87,7 +87,7 @@ export abstract class ProjectorWindows extends Projector {
 	 */
 	public async getIconData() {
 		const {iconData, iconFile} = this;
-		return iconData || (iconFile ? fse.readFile(iconFile) : null);
+		return iconData || (iconFile ? readFile(iconFile) : null);
 	}
 
 	/**

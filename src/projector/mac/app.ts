@@ -1,6 +1,6 @@
-import {join as pathJoin, basename} from 'path';
+import {readFile, mkdir, rm, writeFile} from 'fs/promises';
+import {join as pathJoin, basename, dirname} from 'path';
 
-import fse from 'fs-extra';
 import {PathType, Entry} from '@shockpkg/archive-files';
 import {Plist} from '@shockpkg/plist-dom';
 
@@ -432,7 +432,7 @@ export class ProjectorMacApp extends ProjectorMac {
 	 */
 	public async getIconData() {
 		const {iconData, iconFile} = this;
-		return iconData || (iconFile ? fse.readFile(iconFile) : null);
+		return iconData || (iconFile ? readFile(iconFile) : null);
 	}
 
 	/**
@@ -452,7 +452,7 @@ export class ProjectorMacApp extends ProjectorMac {
 		} else if (infoPlistData) {
 			xml = (infoPlistData as Readonly<Buffer>).toString('utf8');
 		} else if (infoPlistFile) {
-			xml = await fse.readFile(infoPlistFile, 'utf8');
+			xml = await readFile(infoPlistFile, 'utf8');
 		} else {
 			return null;
 		}
@@ -469,7 +469,7 @@ export class ProjectorMacApp extends ProjectorMac {
 		if (typeof pkgInfoData === 'string') {
 			return Buffer.from(pkgInfoData, 'ascii');
 		}
-		return pkgInfoData || (pkgInfoFile ? fse.readFile(pkgInfoFile) : null);
+		return pkgInfoData || (pkgInfoFile ? readFile(pkgInfoFile) : null);
 	}
 
 	/**
@@ -714,7 +714,9 @@ export class ProjectorMacApp extends ProjectorMac {
 	protected async _writeIcon() {
 		const data = await this.getIconData();
 		if (data) {
-			await fse.outputFile(this.iconPath, data);
+			const {iconPath} = this;
+			await mkdir(dirname(iconPath));
+			await writeFile(iconPath, data);
 		}
 	}
 
@@ -724,7 +726,9 @@ export class ProjectorMacApp extends ProjectorMac {
 	protected async _writePkgInfo() {
 		const data = await this.getPkgInfoData();
 		if (data) {
-			await fse.outputFile(this.pkgInfoPath, data);
+			const {pkgInfoPath} = this;
+			await mkdir(dirname(pkgInfoPath));
+			await writeFile(pkgInfoPath, data);
 		}
 	}
 
@@ -780,7 +784,8 @@ export class ProjectorMacApp extends ProjectorMac {
 	 */
 	protected async _writeInfoPlist(plist: Plist) {
 		const path = this.infoPlistPath;
-		await fse.remove(path);
-		await fse.outputFile(path, plist.toXml(), 'utf8');
+		await rm(path, {force: true});
+		await mkdir(dirname(path));
+		await writeFile(path, plist.toXml(), 'utf8');
 	}
 }

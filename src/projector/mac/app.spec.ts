@@ -1,6 +1,5 @@
+import {copyFile} from 'fs/promises';
 import {join as pathJoin} from 'path';
-
-import fse from 'fs-extra';
 
 import {
 	cleanProjectorDir,
@@ -71,7 +70,7 @@ describe('projector/mac/app', () => {
 						fixtureFile('config.ini.lf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -91,7 +90,7 @@ describe('projector/mac/app', () => {
 						fixtureFile('config.ini.lf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -112,7 +111,7 @@ describe('projector/mac/app', () => {
 						fixtureFile('config.ini.lf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -133,7 +132,7 @@ describe('projector/mac/app', () => {
 						fixtureFile('config.ini.lf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -150,7 +149,7 @@ describe('projector/mac/app', () => {
 						fixtureFile('config.ini.lf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -171,7 +170,7 @@ describe('projector/mac/app', () => {
 						fixtureFile('config.ini.lf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -193,7 +192,7 @@ describe('projector/mac/app', () => {
 							fixtureFile('config.ini.lf.bin')
 						);
 
-						await fse.copyFile(
+						await copyFile(
 							fixtureFile('dir7.dir'),
 							pathJoin(dir, 'movie.dir')
 						);
@@ -212,7 +211,7 @@ describe('projector/mac/app', () => {
 							fixtureFile('config.ini.lf.bin')
 						);
 
-						await fse.copyFile(
+						await copyFile(
 							fixtureFile('dir7.dir'),
 							pathJoin(dir, 'movie.dir')
 						);
@@ -231,7 +230,7 @@ describe('projector/mac/app', () => {
 						fixtureFile('config.ini.lf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -259,7 +258,7 @@ describe('projector/mac/app', () => {
 						fixtureFile('config.ini.lf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);

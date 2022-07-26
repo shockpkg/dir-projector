@@ -1,6 +1,5 @@
+import {copyFile} from 'fs/promises';
 import {join as pathJoin} from 'path';
-
-import fse from 'fs-extra';
 
 import {Projector} from './projector';
 import {cleanProjectorDir, fixtureFile} from './util.spec';
@@ -46,10 +45,7 @@ describe('projector', () => {
 			const p = new ProjectorDummy(dest);
 			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
 
-			await fse.copyFile(
-				fixtureFile('dir7.dir'),
-				pathJoin(dir, 'movie.dir')
-			);
+			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
 
 		it('lingo', async () => {
@@ -60,10 +56,7 @@ describe('projector', () => {
 			p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
 			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
 
-			await fse.copyFile(
-				fixtureFile('dir7.dir'),
-				pathJoin(dir, 'movie.dir')
-			);
+			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
 
 		it('splash', async () => {
@@ -74,10 +67,7 @@ describe('projector', () => {
 			p.splashImageFile = fixtureFile('splash.bmp');
 			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
 
-			await fse.copyFile(
-				fixtureFile('dir7.dir'),
-				pathJoin(dir, 'movie.dir')
-			);
+			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
 
 		it('complex', async () => {
@@ -89,10 +79,7 @@ describe('projector', () => {
 			p.splashImageFile = fixtureFile('splash.bmp');
 			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
 
-			await fse.copyFile(
-				fixtureFile('dir7.dir'),
-				pathJoin(dir, 'movie.dir')
-			);
+			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
 	});
 });

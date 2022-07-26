@@ -1,4 +1,5 @@
 import {TranscodeEncoding} from 'buffer';
+import {lstat, mkdir, readFile, stat, writeFile} from 'fs/promises';
 import {join as pathJoin, dirname} from 'path';
 
 import {
@@ -7,7 +8,6 @@ import {
 	ArchiveHdi,
 	createArchiveByFileExtension
 } from '@shockpkg/archive-files';
-import fse from 'fs-extra';
 
 import {pathRelativeBase, trimExtension} from './util';
 
@@ -233,7 +233,7 @@ export abstract class Projector extends Object {
 		const {splashImageData, splashImageFile} = this;
 		return (
 			splashImageData ||
-			(splashImageFile ? fse.readFile(splashImageFile) : null)
+			(splashImageFile ? readFile(splashImageFile) : null)
 		);
 	}
 
@@ -256,7 +256,7 @@ export abstract class Projector extends Object {
 		if (lingoData) {
 			return lingoData as Readonly<Buffer>;
 		}
-		return lingoFile ? fse.readFile(lingoFile) : null;
+		return lingoFile ? readFile(lingoFile) : null;
 	}
 
 	/**
@@ -266,11 +266,11 @@ export abstract class Projector extends Object {
 	 * @returns Archive instance.
 	 */
 	public async getSkeletonArchive(skeleton: string): Promise<Archive> {
-		const stat = await fse.stat(skeleton);
-		if (stat.isDirectory()) {
+		const st = await stat(skeleton);
+		if (st.isDirectory()) {
 			return new ArchiveDir(skeleton);
 		}
-		if (!stat.isFile()) {
+		if (!st.isFile()) {
 			throw new Error('Projector skeleton not file or directory');
 		}
 
@@ -368,7 +368,7 @@ export abstract class Projector extends Object {
 	 * @param configFile Config file.
 	 */
 	public async withFile(skeleton: string, configFile: string | null) {
-		const configData = configFile ? await fse.readFile(configFile) : null;
+		const configData = configFile ? await readFile(configFile) : null;
 		await this.withData(skeleton, configData);
 	}
 
@@ -401,7 +401,7 @@ export abstract class Projector extends Object {
 			this.lingoPath
 		]) {
 			// eslint-disable-next-line no-await-in-loop
-			if (await fse.pathExists(p)) {
+			if (await lstat(p).catch(_ => null)) {
 				throw new Error(`Output path already exists: ${p}`);
 			}
 		}
@@ -428,7 +428,9 @@ export abstract class Projector extends Object {
 		}
 
 		if (data) {
-			await fse.outputFile(this.configPath, data);
+			const {configPath} = this;
+			await mkdir(dirname(configPath), {recursive: true});
+			await writeFile(configPath, data);
 		}
 	}
 
@@ -438,7 +440,9 @@ export abstract class Projector extends Object {
 	protected async _writeSplashImage() {
 		const data = await this.getSplashImageData();
 		if (data) {
-			await fse.outputFile(this.splashImagePath, data);
+			const {splashImagePath} = this;
+			await mkdir(dirname(splashImagePath), {recursive: true});
+			await writeFile(splashImagePath, data);
 		}
 	}
 
@@ -448,7 +452,9 @@ export abstract class Projector extends Object {
 	protected async _writeLingo() {
 		const data = await this.getLingoData();
 		if (data) {
-			await fse.outputFile(this.lingoPath, data);
+			const {lingoPath} = this;
+			await mkdir(dirname(lingoPath), {recursive: true});
+			await writeFile(lingoPath, data);
 		}
 	}
 

@@ -1,6 +1,5 @@
-import {join as pathJoin, basename} from 'path';
-
-import fse from 'fs-extra';
+import {copyFile, mkdir, stat, writeFile} from 'fs/promises';
+import {join as pathJoin, basename, dirname} from 'path';
 
 import {trimExtension} from '../../util';
 import {
@@ -83,29 +82,29 @@ export class BundleMacApp extends BundleMac {
 		// Create the launcher binary with the same types and mode.
 		const launcherName = this._getLauncherName();
 		const launcherPath = pathJoin(appMacOS, launcherName);
-		await fse.outputFile(
-			launcherPath,
-			await machoAppLauncher(projBinaryTypes),
-			{
-				mode: (await fse.stat(projBinaryPath)).mode
-			}
-		);
+		await mkdir(dirname(launcherPath), {recursive: true});
+		await writeFile(launcherPath, await machoAppLauncher(projBinaryTypes), {
+			mode: (await stat(projBinaryPath)).mode
+		});
 
 		// Copy the projector icon if present.
 		const pathIcon = pathJoin(appResources, projIconName);
-		if (await fse.pathExists(projIconPath)) {
-			await fse.copyFile(projIconPath, pathIcon);
+		const projIconPathStat = await stat(projIconPath).catch(_ => null);
+		if (projIconPathStat && !projIconPathStat.isDirectory()) {
+			await copyFile(projIconPath, pathIcon);
 		}
 
 		// Copy PkgInfo if present.
-		if (await fse.pathExists(projPkgInfoPath)) {
-			await fse.copyFile(projPkgInfoPath, appPkgInfo);
+		const projPkgInfoPathStat = await stat(projIconPath).catch(_ => null);
+		if (projPkgInfoPathStat && !projPkgInfoPathStat.isDirectory()) {
+			await copyFile(projPkgInfoPath, appPkgInfo);
 		}
 
 		// Update the executable name in the plist for the launcher.
 		infoPlistBundleExecutableSet(plist, launcherName);
 
 		// Write the updated Info.plist.
-		await fse.outputFile(appInfoPlist, plist.toXml(), 'utf8');
+		await mkdir(dirname(appInfoPlist), {recursive: true});
+		await writeFile(appInfoPlist, plist.toXml(), 'utf8');
 	}
 }

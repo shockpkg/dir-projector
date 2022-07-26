@@ -1,7 +1,7 @@
+import {mkdir, rm} from 'fs/promises';
 import {join as pathJoin} from 'path';
 
 import {Manager} from '@shockpkg/core';
-import fse from 'fs-extra';
 
 import {pathRelativeBase, trimExtension} from './util';
 
@@ -29,8 +29,8 @@ export async function getPackageFile(pkg: string) {
 
 export async function cleanProjectorDir(...path: string[]) {
 	const dir = pathJoin(specProjectorsPath, ...path);
-	await fse.remove(dir);
-	await fse.ensureDir(dir);
+	await rm(dir, {recursive: true, force: true});
+	await mkdir(dir, {recursive: true});
 	return dir;
 }
 

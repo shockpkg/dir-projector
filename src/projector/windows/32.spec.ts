@@ -1,6 +1,5 @@
+import {copyFile} from 'fs/promises';
 import {join as pathJoin} from 'path';
-
-import fse from 'fs-extra';
 
 import {
 	cleanProjectorDir,
@@ -78,7 +77,7 @@ describe('projector/windows/32', () => {
 						fixtureFile('config.ini.crlf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -100,7 +99,7 @@ describe('projector/windows/32', () => {
 						fixtureFile('config.ini.crlf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -123,7 +122,7 @@ describe('projector/windows/32', () => {
 						fixtureFile('config.ini.crlf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -146,7 +145,7 @@ describe('projector/windows/32', () => {
 						fixtureFile('config.ini.crlf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -163,7 +162,7 @@ describe('projector/windows/32', () => {
 						fixtureFile('config.ini.crlf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -186,7 +185,7 @@ describe('projector/windows/32', () => {
 						fixtureFile('config.ini.crlf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);
@@ -213,7 +212,7 @@ describe('projector/windows/32', () => {
 						fixtureFile('config.ini.crlf.bin')
 					);
 
-					await fse.copyFile(
+					await copyFile(
 						fixtureFile('dir7.dir'),
 						pathJoin(dir, 'movie.dir')
 					);

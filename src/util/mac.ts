@@ -1,5 +1,6 @@
+import {readFile} from 'fs/promises';
+
 import {Plist, Value, ValueDict, ValueString} from '@shockpkg/plist-dom';
-import fse from 'fs-extra';
 
 import {once, launcher} from '../util';
 
@@ -59,7 +60,7 @@ export async function plistParse(data: string) {
  * @returns Plist document.
  */
 export async function plistRead(path: string) {
-	return plistParse(await fse.readFile(path, 'utf8'));
+	return plistParse(await readFile(path, 'utf8'));
 }
 
 /**
@@ -227,7 +228,7 @@ export function machoTypesData(data: Readonly<Buffer>) {
  * @returns Mach-O types.
  */
 export async function machoTypesFile(path: string) {
-	return machoTypesData(await fse.readFile(path));
+	return machoTypesData(await readFile(path));
 }
 
 /**
