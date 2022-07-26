@@ -1,12 +1,13 @@
 import {TranscodeEncoding} from 'buffer';
-import {lstat, mkdir, readFile, stat, writeFile} from 'fs/promises';
+import {mkdir, readFile, stat, writeFile} from 'fs/promises';
 import {join as pathJoin, dirname} from 'path';
 
 import {
 	Archive,
 	ArchiveDir,
 	ArchiveHdi,
-	createArchiveByFileExtension
+	createArchiveByFileExtension,
+	fsLstatExists
 } from '@shockpkg/archive-files';
 
 import {pathRelativeBase, trimExtension} from './util';
@@ -401,7 +402,7 @@ export abstract class Projector extends Object {
 			this.lingoPath
 		]) {
 			// eslint-disable-next-line no-await-in-loop
-			if (await lstat(p).catch(_ => null)) {
+			if (await fsLstatExists(p)) {
 				throw new Error(`Output path already exists: ${p}`);
 			}
 		}

@@ -486,7 +486,7 @@ export abstract class Bundle extends Object {
 	protected async _checkOutput() {
 		for (const p of [this.path, this.resourcePath('')]) {
 			// eslint-disable-next-line no-await-in-loop
-			if (await lstat(p).catch(_ => null)) {
+			if (await fsLstatExists(p)) {
 				throw new Error(`Output path already exists: ${p}`);
 			}
 		}
