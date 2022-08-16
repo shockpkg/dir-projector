@@ -218,24 +218,6 @@ describe('projector/mac/app', () => {
 					});
 				}
 
-				it('binary', async () => {
-					const dir = await getDir('binary');
-					const dest = pathJoin(dir, 'application.app');
-
-					const p = new ProjectorMacApp(dest);
-					p.binaryName = 'application';
-					p.bundleName = 'application';
-					await p.withFile(
-						await getSkeleton(),
-						fixtureFile('config.ini.lf.bin')
-					);
-
-					await copyFile(
-						fixtureFile('dir7.dir'),
-						pathJoin(dir, 'movie.dir')
-					);
-				});
-
 				it('complex', async () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.app');
