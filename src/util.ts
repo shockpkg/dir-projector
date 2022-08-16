@@ -81,6 +81,18 @@ export function trimExtension(path: string, ext: string, nocase = false) {
 }
 
 /**
+ * Align integer.
+ *
+ * @param i Integer value.
+ * @param align Alignment amount.
+ * @returns Aligned integer.
+ */
+export function align(i: number, align: number) {
+	const o = i % align;
+	return o ? align - o + i : i;
+}
+
+/**
  * Get ArrayBuffer from Buffer.
  *
  * @param buffer Buffer instance.

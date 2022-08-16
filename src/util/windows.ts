@@ -3,7 +3,16 @@ import {readFile, writeFile} from 'fs/promises';
 import {signatureGet, signatureSet} from 'portable-executable-signature';
 import {NtExecutable, NtExecutableResource, Resource, Data} from 'resedit';
 
-import {bufferToArrayBuffer, launcher} from '../util';
+import {align, bufferToArrayBuffer, launcher} from '../util';
+
+// IMAGE_DATA_DIRECTORY indexes.
+const IDD_RESOURCE = 2;
+const IDD_BASE_RELOCATION = 5;
+
+// IMAGE_SECTION_HEADER characteristics.
+const IMAGE_SCN_CNT_CODE = 0x00000020;
+const IMAGE_SCN_CNT_INITIALIZED_DATA = 0x00000040;
+const IMAGE_SCN_CNT_UNINITIALIZED_DATA = 0x00000080;
 
 export interface IPeResourceReplace {
 	//
@@ -56,6 +65,150 @@ export function peVersionInts(version: string): [number, number] | null {
 }
 
 /**
+ * Assert the given section is last section.
+ *
+ * @param exe NtExecutable instance.
+ * @param index ImageDirectory index.
+ * @param name Friendly name for messages.
+ */
+function exeAssertLastSection(exe: NtExecutable, index: number, name: string) {
+	const section = exe.getSectionByEntry(index);
+	if (!section) {
+		throw new Error(`Missing section: ${index}:${name}`);
+	}
+	const allSections = exe.getAllSections();
+	let last = allSections[0].info;
+	for (const {info} of allSections) {
+		if (info.pointerToRawData > last.pointerToRawData) {
+			last = info;
+		}
+	}
+	const {info} = section;
+	if (info.pointerToRawData < last.pointerToRawData) {
+		throw new Error(`Not the last section: ${index}:${name}`);
+	}
+}
+
+/**
+ * Removes the reloc section if exists, fails if not the last section.
+ *
+ * @param exe NtExecutable instance.
+ * @returns Restore function.
+ */
+function exeRemoveReloc(exe: NtExecutable) {
+	const section = exe.getSectionByEntry(IDD_BASE_RELOCATION);
+	if (!section) {
+		return () => {};
+	}
+	const {size} =
+		exe.newHeader.optionalHeaderDataDirectory.get(IDD_BASE_RELOCATION);
+	exeAssertLastSection(exe, IDD_BASE_RELOCATION, '.reloc');
+	exe.setSectionByEntry(IDD_BASE_RELOCATION, null);
+	return () => {
+		exe.setSectionByEntry(IDD_BASE_RELOCATION, section);
+		const {virtualAddress} =
+			exe.newHeader.optionalHeaderDataDirectory.get(IDD_BASE_RELOCATION);
+		exe.newHeader.optionalHeaderDataDirectory.set(IDD_BASE_RELOCATION, {
+			virtualAddress,
+			size
+		});
+	};
+}
+
+/**
+ * Update the sizes in EXE headers.
+ *
+ * @param exe NtExecutable instance.
+ */
+function exeUpdateSizes(exe: NtExecutable) {
+	const {optionalHeader} = exe.newHeader;
+	const {fileAlignment} = optionalHeader;
+	let sizeOfCode = 0;
+	let sizeOfInitializedData = 0;
+	let sizeOfUninitializedData = 0;
+	for (const {
+		info: {characteristics, sizeOfRawData, virtualSize}
+	} of exe.getAllSections()) {
+		// eslint-disable-next-line no-bitwise
+		if (characteristics & IMAGE_SCN_CNT_CODE) {
+			sizeOfCode += sizeOfRawData;
+		}
+		// eslint-disable-next-line no-bitwise
+		if (characteristics & IMAGE_SCN_CNT_INITIALIZED_DATA) {
+			sizeOfInitializedData += Math.max(
+				sizeOfRawData,
+				align(virtualSize, fileAlignment)
+			);
+		}
+		// eslint-disable-next-line no-bitwise
+		if (characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA) {
+			sizeOfUninitializedData += align(virtualSize, fileAlignment);
+		}
+	}
+	optionalHeader.sizeOfCode = sizeOfCode;
+	optionalHeader.sizeOfInitializedData = sizeOfInitializedData;
+	optionalHeader.sizeOfUninitializedData = sizeOfUninitializedData;
+}
+
+/**
+ * Replace all the icons in all icon groups.
+ *
+ * @param rsrc NtExecutableResource instance.
+ * @param iconData Icon data.
+ */
+function rsrcPatchIcon(rsrc: NtExecutableResource, iconData: Readonly<Buffer>) {
+	const ico = Data.IconFile.from(bufferToArrayBuffer(iconData));
+	for (const iconGroup of Resource.IconGroupEntry.fromEntries(rsrc.entries)) {
+		Resource.IconGroupEntry.replaceIconsForResource(
+			rsrc.entries,
+			iconGroup.id,
+			iconGroup.lang,
+			ico.icons.map(icon => icon.data)
+		);
+	}
+}
+
+/**
+ * Update strings if present for all the languages.
+ *
+ * @param rsrc NtExecutableResource instance.
+ * @param versionStrings Version strings.
+ */
+function rsrcPatchVersion(
+	rsrc: NtExecutableResource,
+	versionStrings: Readonly<{[key: string]: string}>
+) {
+	for (const versionInfo of Resource.VersionInfo.fromEntries(rsrc.entries)) {
+		// Get all the languages, not just available languages.
+		const languages = versionInfo.getAllLanguagesForStringValues();
+		for (const language of languages) {
+			versionInfo.setStringValues(language, versionStrings);
+		}
+
+		// Update integer values from parsed strings if possible.
+		const {FileVersion, ProductVersion} = versionStrings;
+		if (FileVersion) {
+			const uints = peVersionInts(FileVersion);
+			if (uints) {
+				const [ms, ls] = uints;
+				versionInfo.fixedInfo.fileVersionMS = ms;
+				versionInfo.fixedInfo.fileVersionLS = ls;
+			}
+		}
+		if (ProductVersion) {
+			const uints = peVersionInts(ProductVersion);
+			if (uints) {
+				const [ms, ls] = uints;
+				versionInfo.fixedInfo.productVersionMS = ms;
+				versionInfo.fixedInfo.productVersionLS = ls;
+			}
+		}
+
+		versionInfo.outputToResourceEntries(rsrc.entries);
+	}
+}
+
+/**
  * Replace resources in Windows PE file.
  *
  * @param path File path.
@@ -72,61 +225,35 @@ export async function peResourceReplace(
 	const signedData = removeSignature ? null : signatureGet(exeOriginal);
 	let exeData = signatureSet(exeOriginal, null, true, true);
 
-	// Parse resources.
+	// Parse EXE.
 	const exe = NtExecutable.from(exeData);
-	const res = NtExecutableResource.from(exe);
 
-	// Replace all the icons in all icon groups.
+	// Remove reloc so rsrc can safely be resized.
+	const relocRestore = exeRemoveReloc(exe);
+
+	// Remove rsrc to modify.
+	exeAssertLastSection(exe, IDD_RESOURCE, '.rsrc');
+	const rsrc = NtExecutableResource.from(exe);
+	exe.setSectionByEntry(IDD_RESOURCE, null);
+
 	if (iconData) {
-		const ico = Data.IconFile.from(bufferToArrayBuffer(iconData));
-		for (const iconGroup of Resource.IconGroupEntry.fromEntries(
-			res.entries
-		)) {
-			Resource.IconGroupEntry.replaceIconsForResource(
-				res.entries,
-				iconGroup.id,
-				iconGroup.lang,
-				ico.icons.map(icon => icon.data)
-			);
-		}
+		rsrcPatchIcon(rsrc, iconData);
 	}
 
-	// Update strings if present for all the languages.
 	if (versionStrings) {
-		for (const versionInfo of Resource.VersionInfo.fromEntries(
-			res.entries
-		)) {
-			// Get all the languages, not just available languages.
-			const languages = versionInfo.getAllLanguagesForStringValues();
-			for (const language of languages) {
-				versionInfo.setStringValues(language, versionStrings);
-			}
-
-			// Update integer values from parsed strings if possible.
-			const {FileVersion, ProductVersion} = versionStrings;
-			if (FileVersion) {
-				const uints = peVersionInts(FileVersion);
-				if (uints) {
-					const [ms, ls] = uints;
-					versionInfo.fixedInfo.fileVersionMS = ms;
-					versionInfo.fixedInfo.fileVersionLS = ls;
-				}
-			}
-			if (ProductVersion) {
-				const uints = peVersionInts(ProductVersion);
-				if (uints) {
-					const [ms, ls] = uints;
-					versionInfo.fixedInfo.productVersionMS = ms;
-					versionInfo.fixedInfo.productVersionLS = ls;
-				}
-			}
-
-			versionInfo.outputToResourceEntries(res.entries);
-		}
+		rsrcPatchVersion(rsrc, versionStrings);
 	}
 
 	// Update resources.
-	res.outputResource(exe);
+	rsrc.outputResource(exe, false, true);
+
+	// Add reloc back.
+	relocRestore();
+
+	// Update sizes.
+	exeUpdateSizes(exe);
+
+	// Generate EXE.
 	exeData = exe.generate();
 
 	// Add back signature if not removing.
@@ -169,12 +296,8 @@ export async function windowsLauncher(
 		return data;
 	}
 
-	// Remove signature if present.
-	const signedData = signatureGet(data);
-	let exeData = signatureSet(data, null, true, true);
-
 	// Read resources from file.
-	const res = NtExecutableResource.from(
+	const rsrc = NtExecutableResource.from(
 		NtExecutable.from(await readFile(resources), {
 			ignoreCert: true
 		})
@@ -182,7 +305,7 @@ export async function windowsLauncher(
 
 	// Find the first icon group for each language.
 	const resIconGroups = new Map<string | number, Resource.IconGroupEntry>();
-	for (const iconGroup of Resource.IconGroupEntry.fromEntries(res.entries)) {
+	for (const iconGroup of Resource.IconGroupEntry.fromEntries(rsrc.entries)) {
 		const known = resIconGroups.get(iconGroup.lang) || null;
 		if (!known || iconGroup.id < known.id) {
 			resIconGroups.set(iconGroup.lang, iconGroup);
@@ -203,16 +326,33 @@ export async function windowsLauncher(
 	const typeVersionInfo = 16;
 	const typeIcon = 3;
 	const typeIconGroup = 14;
-	res.entries = res.entries.filter(
+	rsrc.entries = rsrc.entries.filter(
 		entry =>
 			entry.type === typeVersionInfo ||
 			(entry.type === typeIcon && iconDatas.has(entry.id)) ||
 			(entry.type === typeIconGroup && iconGroups.has(entry.id))
 	);
 
-	// Apply resources to launcher.
+	// Remove signature if present.
+	const signedData = signatureGet(data);
+	let exeData = signatureSet(data, null, true, true);
+
+	// Parse launcher.
 	const exe = NtExecutable.from(exeData);
-	res.outputResource(exe);
+
+	// Remove reloc so rsrc can safely be resized.
+	const relocRestore = exeRemoveReloc(exe);
+
+	// Apply resources to launcher.
+	rsrc.outputResource(exe, false, true);
+
+	// Add reloc back.
+	relocRestore();
+
+	// Update sizes.
+	exeUpdateSizes(exe);
+
+	// Generated the updated launcher.
 	exeData = exe.generate();
 
 	// Add back signature if one present.
