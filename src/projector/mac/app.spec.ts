@@ -14,7 +14,7 @@ import {ProjectorMac} from '../mac';
 import {ProjectorMacApp} from './app';
 
 export function listSamples() {
-	if (!shouldTest('macapp')) {
+	if (!shouldTest('mac-app')) {
 		return [];
 	}
 	const r = [];
@@ -55,7 +55,7 @@ describe('projector/mac/app', () => {
 
 		for (const {name, nestXtrasContents, intel} of listSamples()) {
 			const getDir = async (d: string) =>
-				cleanProjectorDir('macapp', name, d);
+				cleanProjectorDir('mac', 'app', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
 			// eslint-disable-next-line no-loop-func

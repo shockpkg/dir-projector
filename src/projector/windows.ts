@@ -1,16 +1,19 @@
 import {readFile} from 'fs/promises';
-import {join as pathJoin, dirname} from 'path';
+import {join as pathJoin, dirname, basename} from 'path';
 
-import {Entry, PathType} from '@shockpkg/archive-files';
+import {Entry, PathType, fsWalk} from '@shockpkg/archive-files';
 
 import {pathRelativeBase, pathRelativeBaseMatch} from '../util';
-import {peResourceReplace} from '../util/windows';
+import {
+	peResourceReplace,
+	windowsPatchShockwave3dInstalledDisplayDriversSize
+} from '../util/windows';
 import {Projector} from '../projector';
 
 /**
  * ProjectorWindows object.
  */
-export abstract class ProjectorWindows extends Projector {
+export class ProjectorWindows extends Projector {
 	/**
 	 * Icon file.
 	 */
@@ -25,6 +28,17 @@ export abstract class ProjectorWindows extends Projector {
 	 * Version strings.
 	 */
 	public versionStrings: Readonly<{[key: string]: string}> | null = null;
+
+	/**
+	 * Patch the Shockave 3D Xtra to have a larger buffer to avoid a crash.
+	 * The buffer for resolving InstalledDisplayDrivers to a path is small.
+	 * Changes to the values stored in InstalledDisplayDrivers cause issues.
+	 * The value is now supposed to hold full paths on modern Windows.
+	 * In particular, Nvidia drivers which do this need this patch.
+	 *
+	 * @default false
+	 */
+	public patchShockwave3dInstalledDisplayDriversSize = false;
 
 	/**
 	 * ProjectorWindows constructor.
@@ -225,5 +239,47 @@ export abstract class ProjectorWindows extends Projector {
 			iconData,
 			versionStrings
 		});
+
+		await this._patchShockwave3dInstalledDisplayDriversSize();
+	}
+
+	/**
+	 * Patch projector, Shockwave 3D InstalledDisplayDrivers size.
+	 */
+	protected async _patchShockwave3dInstalledDisplayDriversSize() {
+		if (!this.patchShockwave3dInstalledDisplayDriversSize) {
+			return;
+		}
+
+		const xtrasDir = this.xtrasPath;
+		const search = 'Shockwave 3D Asset.x32';
+		const searchLower = search.toLowerCase();
+
+		let found = false;
+		await fsWalk(
+			xtrasDir,
+			async (path, stat) => {
+				if (!stat.isFile()) {
+					return;
+				}
+
+				const fn = basename(path);
+				if (fn.toLowerCase() !== searchLower) {
+					return;
+				}
+
+				found = true;
+				await windowsPatchShockwave3dInstalledDisplayDriversSize(
+					pathJoin(xtrasDir, path)
+				);
+			},
+			{
+				ignoreUnreadableDirectories: true
+			}
+		);
+
+		if (!found) {
+			throw new Error(`Failed to locate for patching: ${search}`);
+		}
 	}
 }

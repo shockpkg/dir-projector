@@ -15,7 +15,7 @@ describe('bundle/mac/app', () => {
 
 		for (const {name} of listSamples()) {
 			const getDir = async (d: string) =>
-				cleanBundlesDir('macapp', name, d);
+				cleanBundlesDir('mac', 'app', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
 			// eslint-disable-next-line no-loop-func

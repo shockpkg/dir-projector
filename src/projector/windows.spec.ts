@@ -7,13 +7,13 @@ import {
 	getPackageFile,
 	shouldTest,
 	getInstalledPackagesSync
-} from '../../util.spec';
-import {ProjectorWindows} from '../windows';
+} from '../util.spec';
+import {Projector} from '../projector';
 
-import {ProjectorWindows32} from './32';
+import {ProjectorWindows} from './windows';
 
 export function listSamples() {
-	if (!shouldTest('windows32')) {
+	if (!shouldTest('windows-i386')) {
 		return [];
 	}
 	const r = [];
@@ -29,6 +29,7 @@ export function listSamples() {
 		r.push({
 			name,
 			version,
+			type: 'i386',
 			patchShockwave3dInstalledDisplayDriversSize:
 				version[0] > 8 || (version[0] === 8 && version[1] >= 5)
 		});
@@ -49,20 +50,19 @@ export const versionStrings = {
 	Comments: 'Custom Comments'
 };
 
-describe('projector/windows/32', () => {
-	describe('ProjectorWindows32', () => {
-		it('instanceof ProjectorWindows', () => {
-			expect(
-				ProjectorWindows32.prototype instanceof ProjectorWindows
-			).toBeTrue();
+describe('projector/windows', () => {
+	describe('ProjectorWindows', () => {
+		it('instanceof Projector', () => {
+			expect(ProjectorWindows.prototype instanceof Projector).toBeTrue();
 		});
 
 		for (const {
 			name,
+			type,
 			patchShockwave3dInstalledDisplayDriversSize
 		} of listSamples()) {
 			const getDir = async (d: string) =>
-				cleanProjectorDir('windows32', name, d);
+				cleanProjectorDir('windows', type, name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
 			// eslint-disable-next-line no-loop-func
@@ -71,7 +71,7 @@ describe('projector/windows/32', () => {
 					const dir = await getDir('simple');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows32(dest);
+					const p = new ProjectorWindows(dest);
 					await p.withFile(
 						await getSkeleton(),
 						fixtureFile('config.ini.crlf.bin')
@@ -87,7 +87,7 @@ describe('projector/windows/32', () => {
 					const dir = await getDir('xtras-all');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows32(dest);
+					const p = new ProjectorWindows(dest);
 					p.includeXtras = {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
@@ -109,7 +109,7 @@ describe('projector/windows/32', () => {
 					const dir = await getDir('xtras-selective');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows32(dest);
+					const p = new ProjectorWindows(dest);
 					p.includeXtras = {
 						Scripting: null,
 						// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -132,7 +132,7 @@ describe('projector/windows/32', () => {
 					const dir = await getDir('xtras-rename');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows32(dest);
+					const p = new ProjectorWindows(dest);
 					p.includeXtras = {
 						Scripting: 'Scripting RENAMED',
 						// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -155,7 +155,7 @@ describe('projector/windows/32', () => {
 					const dir = await getDir('shockwave');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows32(dest);
+					const p = new ProjectorWindows(dest);
 					p.shockwave = true;
 					await p.withFile(
 						await getSkeleton(),
@@ -172,7 +172,7 @@ describe('projector/windows/32', () => {
 					const dir = await getDir('nestXtrasConfiguration');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows32(dest);
+					const p = new ProjectorWindows(dest);
 					p.nestXtrasConfiguration = true;
 					p.includeXtras = {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -195,7 +195,7 @@ describe('projector/windows/32', () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows32(dest);
+					const p = new ProjectorWindows(dest);
 					p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
 					p.splashImageFile = fixtureFile('splash.bmp');
 					p.nestXtrasConfiguration = true;

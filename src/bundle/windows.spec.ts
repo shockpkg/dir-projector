@@ -1,26 +1,25 @@
 import {join as pathJoin} from 'path';
 
-import {listSamples, versionStrings} from '../../projector/windows/32.spec';
-import {cleanBundlesDir} from '../../bundle.spec';
-import {fixtureFile, getPackageFile} from '../../util.spec';
-import {BundleWindows} from '../windows';
+import {listSamples, versionStrings} from '../projector/windows.spec';
+import {cleanBundlesDir} from '../bundle.spec';
+import {fixtureFile, getPackageFile} from '../util.spec';
+import {Bundle} from '../bundle';
 
-import {BundleWindows32} from './32';
+import {BundleWindows} from './windows';
 
-describe('bundle/windows/32', () => {
-	describe('BundleWindows32', () => {
-		it('instanceof BundleWindows', () => {
-			expect(
-				BundleWindows32.prototype instanceof BundleWindows
-			).toBeTrue();
+describe('bundle/windows', () => {
+	describe('BundleWindows', () => {
+		it('instanceof Bundle', () => {
+			expect(BundleWindows.prototype instanceof Bundle).toBeTrue();
 		});
 
 		for (const {
 			name,
+			type,
 			patchShockwave3dInstalledDisplayDriversSize
 		} of listSamples()) {
 			const getDir = async (d: string) =>
-				cleanBundlesDir('windows32', name, d);
+				cleanBundlesDir('windows', type, name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
 			// eslint-disable-next-line no-loop-func
@@ -29,7 +28,7 @@ describe('bundle/windows/32', () => {
 					const dir = await getDir('simple');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const b = new BundleWindows32(dest);
+					const b = new BundleWindows(dest);
 					await b.withFile(
 						await getSkeleton(),
 						fixtureFile('config.ini.crlf.bin'),
@@ -46,7 +45,7 @@ describe('bundle/windows/32', () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const b = new BundleWindows32(dest);
+					const b = new BundleWindows(dest);
 					const p = b.projector;
 					p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
 					p.splashImageFile = fixtureFile('splash.bmp');
