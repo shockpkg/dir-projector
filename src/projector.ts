@@ -98,13 +98,6 @@ export abstract class Projector {
 	public nestXtrasConfiguration: boolean = false;
 
 	/**
-	 * Path to hdiutil binary.
-	 *
-	 * @default null
-	 */
-	public pathToHdiutil: string | null = null;
-
-	/**
 	 * Output path.
 	 */
 	public readonly path: string;
@@ -465,23 +458,14 @@ export abstract class Projector {
 		if (st.isDirectory()) {
 			return new ArchiveDir(path);
 		}
-		if (!st.isFile()) {
-			throw new Error('Projector skeleton not file or directory');
+		const archive = createArchiveByFileExtension(path);
+		if (!archive) {
+			throw new Error(`Unrecognized archive format: ${path}`);
 		}
-
-		const r = createArchiveByFileExtension(path);
-		if (!r) {
-			throw new Error('Projector skeleton archive file type unknown');
+		if (archive instanceof ArchiveHdi) {
+			archive.nobrowse = true;
 		}
-
-		if (r instanceof ArchiveHdi) {
-			const {pathToHdiutil} = this;
-			if (pathToHdiutil) {
-				r.mounterMac.hdiutil = pathToHdiutil;
-			}
-			r.nobrowse = true;
-		}
-		return r;
+		return archive;
 	}
 
 	/**
