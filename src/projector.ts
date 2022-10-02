@@ -3,7 +3,6 @@ import {mkdir, readFile, stat, writeFile} from 'fs/promises';
 import {join as pathJoin, dirname} from 'path';
 
 import {
-	Archive,
 	ArchiveDir,
 	ArchiveHdi,
 	createArchiveByFileExtension,
@@ -264,7 +263,7 @@ export abstract class Projector {
 	 * @param skeleton Skeleton path.
 	 * @returns Archive instance.
 	 */
-	public async getSkeletonArchive(skeleton: string): Promise<Archive> {
+	public async getSkeletonArchive(skeleton: string) {
 		const st = await stat(skeleton);
 		if (st.isDirectory()) {
 			return new ArchiveDir(skeleton);
