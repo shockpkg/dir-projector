@@ -197,7 +197,7 @@ export class ProjectorWindows extends Projector {
 			return true;
 		};
 
-		const archive = await this.getSkeletonArchive(skeleton);
+		const archive = await this._openArchive(skeleton);
 		await archive.read(async entry => {
 			if (entry.type === PathType.RESOURCE_FORK) {
 				return;

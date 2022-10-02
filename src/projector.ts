@@ -258,36 +258,6 @@ export abstract class Projector {
 	}
 
 	/**
-	 * Get the skeleton file or directory as an Archive instance.
-	 *
-	 * @param skeleton Skeleton path.
-	 * @returns Archive instance.
-	 */
-	public async getSkeletonArchive(skeleton: string) {
-		const st = await stat(skeleton);
-		if (st.isDirectory()) {
-			return new ArchiveDir(skeleton);
-		}
-		if (!st.isFile()) {
-			throw new Error('Projector skeleton not file or directory');
-		}
-
-		const r = createArchiveByFileExtension(skeleton);
-		if (!r) {
-			throw new Error('Projector skeleton archive file type unknown');
-		}
-
-		if (r instanceof ArchiveHdi) {
-			const {pathToHdiutil} = this;
-			if (pathToHdiutil) {
-				r.mounterMac.hdiutil = pathToHdiutil;
-			}
-			r.nobrowse = true;
-		}
-		return r;
-	}
-
-	/**
 	 * Get include Xtras as a list of mappings.
 	 *
 	 * @returns Mappings list.
@@ -483,6 +453,36 @@ export abstract class Projector {
 	 * @returns Newline characters.
 	 */
 	public abstract get lingoNewline(): string;
+
+	/**
+	 * Open path as archive.
+	 *
+	 * @param path Archive path.
+	 * @returns Archive instance.
+	 */
+	protected async _openArchive(path: string) {
+		const st = await stat(path);
+		if (st.isDirectory()) {
+			return new ArchiveDir(path);
+		}
+		if (!st.isFile()) {
+			throw new Error('Projector skeleton not file or directory');
+		}
+
+		const r = createArchiveByFileExtension(path);
+		if (!r) {
+			throw new Error('Projector skeleton archive file type unknown');
+		}
+
+		if (r instanceof ArchiveHdi) {
+			const {pathToHdiutil} = this;
+			if (pathToHdiutil) {
+				r.mounterMac.hdiutil = pathToHdiutil;
+			}
+			r.nobrowse = true;
+		}
+		return r;
+	}
 
 	/**
 	 * Write the projector skeleton from archive.
