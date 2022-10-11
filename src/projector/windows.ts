@@ -199,14 +199,7 @@ export class ProjectorWindows extends Projector {
 
 		const archive = await this._openArchive(skeleton);
 		await archive.read(async entry => {
-			const {volumePath, type} = entry;
-
-			// Ignore any dot files and directories and all their children.
-			if (volumePath.startsWith('.') || volumePath.includes('/.')) {
-				return null;
-			}
-
-			if (type === PathType.RESOURCE_FORK) {
+			if (entry.type === PathType.RESOURCE_FORK) {
 				return true;
 			}
 
