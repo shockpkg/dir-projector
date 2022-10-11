@@ -631,17 +631,26 @@ export class ProjectorMacApp extends ProjectorMac {
 
 		const archive = await this._openArchive(skeleton);
 		await archive.read(async entry => {
-			if (entry.type === PathType.RESOURCE_FORK) {
-				return;
+			const {volumePath, type} = entry;
+
+			// Ignore any dot files and directories and all their children.
+			if (volumePath.startsWith('.') || volumePath.includes('/.')) {
+				return null;
+			}
+
+			if (type === PathType.RESOURCE_FORK) {
+				return true;
 			}
 
 			if (await xtrasHandler(entry)) {
-				return;
+				return true;
 			}
 
 			if (await projectorResourcesHandler(entry)) {
-				return;
+				return true;
 			}
+
+			return true;
 		});
 
 		if (!foundProjectorResourcesDirectory) {
