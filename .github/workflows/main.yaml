@@ -17,14 +17,14 @@ jobs:
             NO_LINT: 1
             PKG: ''
 
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             PKG: ''
 
-          - node-version: '18.6.0' # Latest
+          - node-version: '18.11.0' # Latest
             PKG: ''
 
           # 7 windows
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -34,7 +34,7 @@ jobs:
               - shockwave-projector-director-7.0.2-win-win
 
           # 8 windows
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -42,7 +42,7 @@ jobs:
               - shockwave-projector-director-8.0.0-win-win
 
           # 8.5 windows
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -52,7 +52,7 @@ jobs:
               - shockwave-projector-director-8.5.1-trial-win-win
 
           # 9 windows
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -60,7 +60,7 @@ jobs:
               - shockwave-projector-director-9.0.0-trial-win-win
 
           # 10 windows
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -72,7 +72,7 @@ jobs:
               - shockwave-projector-director-10.1.1-win-win
 
           # 11 windows
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -83,7 +83,7 @@ jobs:
               - shockwave-projector-director-11.0.0-hotfix-3-win-win
 
           # 11.5 windows
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -95,7 +95,7 @@ jobs:
               - shockwave-projector-director-11.5.9-win-win
 
           # 12 windows
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -105,7 +105,7 @@ jobs:
               - shockwave-projector-director-12.0.2-win-win
 
           # 11 mac
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -116,7 +116,7 @@ jobs:
               - shockwave-projector-director-11.0.0-hotfix-3-win-mac-zip
 
           # 11.5 mac
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -128,7 +128,7 @@ jobs:
               - shockwave-projector-director-11.5.9-win-mac-zip
 
           # 12 mac
-          - node-version: '16.16.0' # LTS (current)
+          - node-version: '16.18.0' # LTS (current)
             NO_FORMATTED: 1
             NO_LINT: 1
             PKG:
@@ -188,7 +188,7 @@ jobs:
       - name: Node
         uses: actions/setup-node@v3
         with:
-          node-version: '16.16.0'
+          node-version: '16.18.0'
           registry-url: https://registry.npmjs.org/
 
       - name: Dependencies
