@@ -29,9 +29,9 @@ Currently only flat projectors are supported, not the kind that Director makes w
 ### Windows
 
 ```js
-import {ProjectorWindows32} from '@shockpkg/dir-projector';
+import {ProjectorWindows} from '@shockpkg/dir-projector';
 
-const projector = new ProjectorWindows('projector-windows32/application.exe');
+const projector = new ProjectorWindows('projector-windows/application.exe');
 
 // Optional custom icon.
 projector.iconFile = 'icon.ico';
@@ -126,9 +126,9 @@ await projector.withFile('skeleton.dmg', 'config.ini');
 ### Windows
 
 ```js
-import {BundleWindows32} from '@shockpkg/dir-projector';
+import {BundleWindows} from '@shockpkg/dir-projector';
 
-const bundle = new BundleWindows32('bundle-windows32/application.exe');
+const bundle = new BundleWindows('bundle-windows/application.exe');
 
 // Use projector property to set options.
 bundle.projector.includeXtras = {
