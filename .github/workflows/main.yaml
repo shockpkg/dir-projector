@@ -164,6 +164,7 @@ jobs:
 
       - name: shockpkg Update
         run: npm run shockpkg -- update --summary
+        if: matrix.config.PKG != ''
 
       - name: shockpkg Install
         run: npm run shockpkg -- install ${{ join(matrix.config.PKG, ' ') }}
