@@ -159,7 +159,7 @@ jobs:
         uses: actions/cache@v3
         if: matrix.config.PKGSET != ''
         with:
-          key: shockpkg-${{ matrix.config.pkgset }}
+          key: shockpkg-${{ matrix.config.PKGSET }}
           path: shockpkg
 
       - name: shockpkg Update
