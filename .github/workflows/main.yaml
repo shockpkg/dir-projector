@@ -140,6 +140,9 @@ jobs:
         run: npm run shockpkg -- install ${{ join(matrix.config.PKG, ' ') }}
         if: matrix.config.PKG != ''
 
+      - name: Launchers
+        run: npm run launchers
+
       - name: Build
         run: npm run build
 
