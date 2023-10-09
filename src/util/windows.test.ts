@@ -1,6 +1,6 @@
 import {describe, it} from 'node:test';
 import {strictEqual} from 'node:assert';
-import {createHash} from 'crypto';
+import {createHash} from 'node:crypto';
 
 import {windowsLauncher} from './windows';
 

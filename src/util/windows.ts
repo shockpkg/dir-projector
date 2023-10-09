@@ -1,4 +1,4 @@
-import {readFile, writeFile} from 'fs/promises';
+import {readFile, writeFile} from 'node:fs/promises';
 
 import {signatureGet, signatureSet} from 'portable-executable-signature';
 import {NtExecutable, NtExecutableResource, Resource, Data} from 'resedit';

@@ -1,4 +1,4 @@
-import {inflateRaw} from 'zlib';
+import {inflateRaw} from 'node:zlib';
 
 import {launchers} from './launchers';
 

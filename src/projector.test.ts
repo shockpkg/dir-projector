@@ -1,6 +1,6 @@
 import {describe, it} from 'node:test';
-import {copyFile} from 'fs/promises';
-import {join as pathJoin} from 'path';
+import {copyFile} from 'node:fs/promises';
+import {join as pathJoin} from 'node:path';
 
 import {ProjectorDummy} from './projector.spec';
 import {cleanProjectorDir, fixtureFile} from './util.spec';

@@ -1,5 +1,5 @@
-import {join as pathJoin} from 'path';
-import {mkdir, rm} from 'fs/promises';
+import {join as pathJoin} from 'node:path';
+import {mkdir, rm} from 'node:fs/promises';
 
 export const specBundlesPath = pathJoin('spec', 'bundles');
 

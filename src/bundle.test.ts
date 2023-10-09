@@ -1,7 +1,15 @@
 import {describe, it} from 'node:test';
 import {notEqual, strictEqual} from 'node:assert';
-import {chmod, lstat, mkdir, rm, symlink, utimes, writeFile} from 'fs/promises';
-import {join as pathJoin, basename, dirname} from 'path';
+import {
+	chmod,
+	lstat,
+	mkdir,
+	rm,
+	symlink,
+	utimes,
+	writeFile
+} from 'node:fs/promises';
+import {join as pathJoin, basename, dirname} from 'node:path';
 
 import {fsLchmod, fsLutimes} from '@shockpkg/archive-files';
 

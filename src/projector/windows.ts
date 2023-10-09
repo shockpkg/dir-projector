@@ -1,5 +1,5 @@
-import {readFile} from 'fs/promises';
-import {join as pathJoin, dirname, basename} from 'path';
+import {readFile} from 'node:fs/promises';
+import {join as pathJoin, dirname, basename} from 'node:path';
 
 import {Entry, PathType, fsWalk} from '@shockpkg/archive-files';
 

@@ -1,7 +1,7 @@
 import {describe, it} from 'node:test';
 import {ok} from 'node:assert';
-import {copyFile} from 'fs/promises';
-import {join as pathJoin} from 'path';
+import {copyFile} from 'node:fs/promises';
+import {join as pathJoin} from 'node:path';
 
 import {cleanProjectorDir, fixtureFile, getPackageFile} from '../../util.spec';
 import {ProjectorMac} from '../mac';

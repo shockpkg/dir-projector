@@ -1,6 +1,6 @@
-import {mkdir, rm} from 'fs/promises';
-import {join as pathJoin} from 'path';
-import {readdirSync, statSync} from 'fs';
+import {mkdir, rm} from 'node:fs/promises';
+import {join as pathJoin} from 'node:path';
+import {readdirSync, statSync} from 'node:fs';
 
 import {Manager} from '@shockpkg/core';
 

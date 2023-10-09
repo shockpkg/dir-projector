@@ -1,6 +1,6 @@
 import {describe, it} from 'node:test';
 import {ok} from 'node:assert';
-import {join as pathJoin} from 'path';
+import {join as pathJoin} from 'node:path';
 
 import {listSamples, versionStrings} from '../projector/windows.spec';
 import {cleanBundlesDir} from '../bundle.spec';

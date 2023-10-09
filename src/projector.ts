@@ -1,6 +1,6 @@
-import {TranscodeEncoding} from 'buffer';
-import {mkdir, readFile, stat, writeFile} from 'fs/promises';
-import {join as pathJoin, dirname} from 'path';
+import {type TranscodeEncoding} from 'node:buffer';
+import {mkdir, readFile, stat, writeFile} from 'node:fs/promises';
+import {join as pathJoin, dirname} from 'node:path';
 
 import {
 	ArchiveDir,
