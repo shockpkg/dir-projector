@@ -1,3 +1,5 @@
+import {describe, it} from 'node:test';
+import {strictEqual} from 'node:assert';
 import {createHash} from 'crypto';
 
 import {windowsLauncher} from './windows';
@@ -23,7 +25,7 @@ describe('util/windows', () => {
 			// eslint-disable-next-line no-loop-func
 			it(type, async () => {
 				const data = await windowsLauncher(type);
-				expect(sha256(data)).toBe(hash);
+				strictEqual(sha256(data), hash);
 			});
 		}
 	});

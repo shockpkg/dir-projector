@@ -1,3 +1,5 @@
+import {describe, it} from 'node:test';
+import {ok} from 'node:assert';
 import {join as pathJoin} from 'path';
 
 import {listSamples} from '../../projector/mac/app.spec';
@@ -10,7 +12,7 @@ import {BundleMacApp} from './app';
 describe('bundle/mac/app', () => {
 	describe('BundleMacApp', () => {
 		it('instanceof BundleMac', () => {
-			expect(BundleMacApp.prototype instanceof BundleMac).toBeTrue();
+			ok(BundleMacApp.prototype instanceof BundleMac);
 		});
 
 		for (const {name} of listSamples()) {

@@ -1,3 +1,5 @@
+import {describe, it} from 'node:test';
+import {ok} from 'node:assert';
 import {join as pathJoin} from 'path';
 
 import {listSamples, versionStrings} from '../projector/windows.spec';
@@ -10,7 +12,7 @@ import {BundleWindows} from './windows';
 describe('bundle/windows', () => {
 	describe('BundleWindows', () => {
 		it('instanceof Bundle', () => {
-			expect(BundleWindows.prototype instanceof Bundle).toBeTrue();
+			ok(BundleWindows.prototype instanceof Bundle);
 		});
 
 		for (const {

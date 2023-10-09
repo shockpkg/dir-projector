@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/require-await */
+import {describe, it} from 'node:test';
+import {strictEqual} from 'node:assert';
+
 import {Queue} from './queue';
 
 describe('queue', () => {
@@ -28,7 +31,7 @@ describe('queue', () => {
 
 			await q.run();
 
-			expect(order.join(',')).toBe('a,b,c,d,e,f');
+			strictEqual(order.join(','), 'a,b,c,d,e,f');
 		});
 
 		it('priority: incremental', async () => {
@@ -56,7 +59,7 @@ describe('queue', () => {
 
 			await q.run();
 
-			expect(order.join(',')).toBe('a,b,c,d,e,f');
+			strictEqual(order.join(','), 'a,b,c,d,e,f');
 		});
 
 		it('priority: decremental', async () => {
@@ -84,7 +87,7 @@ describe('queue', () => {
 
 			await q.run();
 
-			expect(order.join(',')).toBe('a,b,c,d,e,f');
+			strictEqual(order.join(','), 'a,b,c,d,e,f');
 		});
 
 		it('priority: mixed', async () => {
@@ -112,7 +115,7 @@ describe('queue', () => {
 
 			await q.run();
 
-			expect(order.join(',')).toBe('a,b,c,d,e,f');
+			strictEqual(order.join(','), 'a,b,c,d,e,f');
 		});
 	});
 });

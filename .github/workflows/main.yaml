@@ -7,29 +7,20 @@ jobs:
     strategy:
       matrix:
         config:
-          - node-version: '14.15.0' # LTS
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.12.0' # LTS
             PKGSET: ''
             PKG: ''
 
-          - node-version: '16.13.0' # LTS
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
+            CODE_CHECK: 1
             PKGSET: ''
             PKG: ''
 
-          - node-version: '18.12.0' # LTS (current)
+          - node-version: '20.8.0' # Latest
             PKGSET: ''
             PKG: ''
 
-          - node-version: '19.0.0' # Latest
-            PKGSET: ''
-            PKG: ''
-
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '7-windows'
             PKG:
               - shockwave-projector-director-7.0.0-win-win
@@ -37,17 +28,13 @@ jobs:
               - shockwave-projector-director-7.0.2-trial-win-win
               - shockwave-projector-director-7.0.2-win-win
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '8-windows'
             PKG:
               - shockwave-projector-director-8.0.0-trial-win-win
               - shockwave-projector-director-8.0.0-win-win
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '8.5-windows'
             PKG:
               - shockwave-projector-director-8.5.0-win-win
@@ -55,17 +42,13 @@ jobs:
               - shockwave-projector-director-8.5.1-win-win
               - shockwave-projector-director-8.5.1-trial-win-win
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '9-windows'
             PKG:
               - shockwave-projector-director-9.0.0-win-win
               - shockwave-projector-director-9.0.0-trial-win-win
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '10-windows'
             PKG:
               - shockwave-projector-director-10.0.0-mac-win
@@ -75,9 +58,7 @@ jobs:
               - shockwave-projector-director-10.1.1-mac-win
               - shockwave-projector-director-10.1.1-win-win
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '11-windows'
             PKG:
               - shockwave-projector-director-11.0.0-mac-win
@@ -86,9 +67,7 @@ jobs:
               - shockwave-projector-director-11.0.0-hotfix-3-mac-win
               - shockwave-projector-director-11.0.0-hotfix-3-win-win
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '11.5-windows'
             PKG:
               - shockwave-projector-director-11.5.0-mac-win
@@ -98,9 +77,7 @@ jobs:
               - shockwave-projector-director-11.5.9-mac-win
               - shockwave-projector-director-11.5.9-win-win
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '12-windows'
             PKG:
               - shockwave-projector-director-12.0.0-mac-win
@@ -108,9 +85,7 @@ jobs:
               - shockwave-projector-director-12.0.2-mac-win
               - shockwave-projector-director-12.0.2-win-win
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '11-mac'
             PKG:
               - shockwave-projector-director-11.0.0-mac-mac-zip
@@ -119,9 +94,7 @@ jobs:
               - shockwave-projector-director-11.0.0-hotfix-3-mac-mac-zip
               - shockwave-projector-director-11.0.0-hotfix-3-win-mac-zip
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '11.5-mac'
             PKG:
               - shockwave-projector-director-11.5.0-mac-mac-zip
@@ -131,9 +104,7 @@ jobs:
               - shockwave-projector-director-11.5.9-mac-mac-zip
               - shockwave-projector-director-11.5.9-win-mac-zip
 
-          - node-version: '18.12.0' # LTS (current)
-            NO_FORMATTED: 1
-            NO_LINT: 1
+          - node-version: '18.18.0' # LTS (current)
             PKGSET: '12-mac'
             PKG:
               - shockwave-projector-director-12.0.0-mac-mac-zip
@@ -141,7 +112,7 @@ jobs:
               - shockwave-projector-director-12.0.2-mac-mac-zip
               - shockwave-projector-director-12.0.2-win-mac-zip
 
-    runs-on: 'ubuntu-20.04'
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -180,17 +151,17 @@ jobs:
 
       - name: Lint
         run: npm run lint
-        if: matrix.config.NO_LINT != 1
+        if: matrix.config.CODE_CHECK == 1
 
       - name: Formatted
         run: npm run formatted
-        if: matrix.config.NO_FORMATTED != 1
+        if: matrix.config.CODE_CHECK == 1
 
   publish:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -199,7 +170,7 @@ jobs:
       - name: Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.12.0'
+          node-version: '18.18.0'
           registry-url: https://registry.npmjs.org/
 
       - name: Dependencies
