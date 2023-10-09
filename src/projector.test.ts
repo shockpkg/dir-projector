@@ -7,9 +7,9 @@ import {cleanProjectorDir, fixtureFile} from './util.spec';
 
 const getDir = async (d: string) => cleanProjectorDir('dummy', d);
 
-describe('projector', () => {
-	describe('ProjectorDummy', () => {
-		it('simple', async () => {
+void describe('projector', () => {
+	void describe('ProjectorDummy', () => {
+		void it('simple', async () => {
 			const dir = await getDir('simple');
 			const dest = pathJoin(dir, 'application.exe');
 
@@ -19,7 +19,7 @@ describe('projector', () => {
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
 
-		it('lingo', async () => {
+		void it('lingo', async () => {
 			const dir = await getDir('lingo');
 			const dest = pathJoin(dir, 'application.exe');
 
@@ -30,7 +30,7 @@ describe('projector', () => {
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
 
-		it('splash', async () => {
+		void it('splash', async () => {
 			const dir = await getDir('splash');
 			const dest = pathJoin(dir, 'application.exe');
 
@@ -41,7 +41,7 @@ describe('projector', () => {
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
 
-		it('complex', async () => {
+		void it('complex', async () => {
 			const dir = await getDir('complex');
 			const dest = pathJoin(dir, 'application.exe');
 

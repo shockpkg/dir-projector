@@ -9,9 +9,9 @@ import {Bundle} from '../bundle';
 
 import {BundleWindows} from './windows';
 
-describe('bundle/windows', () => {
-	describe('BundleWindows', () => {
-		it('instanceof Bundle', () => {
+void describe('bundle/windows', () => {
+	void describe('BundleWindows', () => {
+		void it('instanceof Bundle', () => {
 			ok(BundleWindows.prototype instanceof Bundle);
 		});
 
@@ -25,8 +25,8 @@ describe('bundle/windows', () => {
 			const getSkeleton = async () => getPackageFile(name);
 
 			// eslint-disable-next-line no-loop-func
-			describe(name, () => {
-				it('simple', async () => {
+			void describe(name, () => {
+				void it('simple', async () => {
 					const dir = await getDir('simple');
 					const dest = pathJoin(dir, 'application.exe');
 
@@ -43,7 +43,7 @@ describe('bundle/windows', () => {
 					);
 				});
 
-				it('complex', async () => {
+				void it('complex', async () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.exe');
 

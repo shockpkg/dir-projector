@@ -9,9 +9,9 @@ import {ProjectorMac} from '../mac';
 import {ProjectorMacApp} from './app';
 import {listSamples} from './app.spec';
 
-describe('projector/mac/app', () => {
-	describe('ProjectorMacApp', () => {
-		it('instanceof ProjectorMac', () => {
+void describe('projector/mac/app', () => {
+	void describe('ProjectorMacApp', () => {
+		void it('instanceof ProjectorMac', () => {
 			ok(ProjectorMacApp.prototype instanceof ProjectorMac);
 		});
 
@@ -21,8 +21,8 @@ describe('projector/mac/app', () => {
 			const getSkeleton = async () => getPackageFile(name);
 
 			// eslint-disable-next-line no-loop-func
-			describe(name, () => {
-				it('simple', async () => {
+			void describe(name, () => {
+				void it('simple', async () => {
 					const dir = await getDir('simple');
 					const dest = pathJoin(dir, 'application.app');
 
@@ -38,7 +38,7 @@ describe('projector/mac/app', () => {
 					);
 				});
 
-				it('xtras-all', async () => {
+				void it('xtras-all', async () => {
 					const dir = await getDir('xtras-all');
 					const dest = pathJoin(dir, 'application.app');
 
@@ -58,7 +58,7 @@ describe('projector/mac/app', () => {
 					);
 				});
 
-				it('xtras-selective', async () => {
+				void it('xtras-selective', async () => {
 					const dir = await getDir('xtras-selective');
 					const dest = pathJoin(dir, 'application.app');
 
@@ -79,7 +79,7 @@ describe('projector/mac/app', () => {
 					);
 				});
 
-				it('xtras-rename', async () => {
+				void it('xtras-rename', async () => {
 					const dir = await getDir('xtras-rename');
 					const dest = pathJoin(dir, 'application.app');
 
@@ -100,7 +100,7 @@ describe('projector/mac/app', () => {
 					);
 				});
 
-				it('shockwave', async () => {
+				void it('shockwave', async () => {
 					const dir = await getDir('shockwave');
 					const dest = pathJoin(dir, 'application.app');
 
@@ -117,7 +117,7 @@ describe('projector/mac/app', () => {
 					);
 				});
 
-				it('nestXtrasConfiguration', async () => {
+				void it('nestXtrasConfiguration', async () => {
 					const dir = await getDir('nestXtrasConfiguration');
 					const dest = pathJoin(dir, 'application.app');
 
@@ -139,7 +139,7 @@ describe('projector/mac/app', () => {
 				});
 
 				if (nestXtrasContents) {
-					it('nestXtrasContents', async () => {
+					void it('nestXtrasContents', async () => {
 						const dir = await getDir('nestXtrasContents');
 						const dest = pathJoin(dir, 'application.app');
 
@@ -162,7 +162,7 @@ describe('projector/mac/app', () => {
 				}
 
 				if (intel) {
-					it('intel', async () => {
+					void it('intel', async () => {
 						const dir = await getDir('intel');
 						const dest = pathJoin(dir, 'application.app');
 
@@ -180,7 +180,7 @@ describe('projector/mac/app', () => {
 					});
 				}
 
-				it('complex', async () => {
+				void it('complex', async () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.app');
 

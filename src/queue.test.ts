@@ -4,9 +4,9 @@ import {strictEqual} from 'node:assert';
 
 import {Queue} from './queue';
 
-describe('queue', () => {
-	describe('Queue', () => {
-		it('priority: 0', async () => {
+void describe('queue', () => {
+	void describe('Queue', () => {
+		void it('priority: 0', async () => {
 			const order: string[] = [];
 			const q = new Queue();
 
@@ -34,7 +34,7 @@ describe('queue', () => {
 			strictEqual(order.join(','), 'a,b,c,d,e,f');
 		});
 
-		it('priority: incremental', async () => {
+		void it('priority: incremental', async () => {
 			const order: string[] = [];
 			const q = new Queue();
 
@@ -62,7 +62,7 @@ describe('queue', () => {
 			strictEqual(order.join(','), 'a,b,c,d,e,f');
 		});
 
-		it('priority: decremental', async () => {
+		void it('priority: decremental', async () => {
 			const order: string[] = [];
 			const q = new Queue();
 
@@ -90,7 +90,7 @@ describe('queue', () => {
 			strictEqual(order.join(','), 'a,b,c,d,e,f');
 		});
 
-		it('priority: mixed', async () => {
+		void it('priority: mixed', async () => {
 			const order: string[] = [];
 			const q = new Queue();
 

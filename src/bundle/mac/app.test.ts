@@ -9,9 +9,9 @@ import {BundleMac} from '../mac';
 
 import {BundleMacApp} from './app';
 
-describe('bundle/mac/app', () => {
-	describe('BundleMacApp', () => {
-		it('instanceof BundleMac', () => {
+void describe('bundle/mac/app', () => {
+	void describe('BundleMacApp', () => {
+		void it('instanceof BundleMac', () => {
 			ok(BundleMacApp.prototype instanceof BundleMac);
 		});
 
@@ -21,8 +21,8 @@ describe('bundle/mac/app', () => {
 			const getSkeleton = async () => getPackageFile(name);
 
 			// eslint-disable-next-line no-loop-func
-			describe(name, () => {
-				it('simple', async () => {
+			void describe(name, () => {
+				void it('simple', async () => {
 					const dir = await getDir('simple');
 					const dest = pathJoin(dir, 'application.app');
 
@@ -39,7 +39,7 @@ describe('bundle/mac/app', () => {
 					);
 				});
 
-				it('complex', async () => {
+				void it('complex', async () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.app');
 

@@ -9,9 +9,9 @@ import {Projector} from '../projector';
 import {ProjectorWindows} from './windows';
 import {listSamples, versionStrings} from './windows.spec';
 
-describe('projector/windows', () => {
-	describe('ProjectorWindows', () => {
-		it('instanceof Projector', () => {
+void describe('projector/windows', () => {
+	void describe('ProjectorWindows', () => {
+		void it('instanceof Projector', () => {
 			ok(ProjectorWindows.prototype instanceof Projector);
 		});
 
@@ -25,8 +25,8 @@ describe('projector/windows', () => {
 			const getSkeleton = async () => getPackageFile(name);
 
 			// eslint-disable-next-line no-loop-func
-			describe(name, () => {
-				it('simple', async () => {
+			void describe(name, () => {
+				void it('simple', async () => {
 					const dir = await getDir('simple');
 					const dest = pathJoin(dir, 'application.exe');
 
@@ -42,7 +42,7 @@ describe('projector/windows', () => {
 					);
 				});
 
-				it('xtras-all', async () => {
+				void it('xtras-all', async () => {
 					const dir = await getDir('xtras-all');
 					const dest = pathJoin(dir, 'application.exe');
 
@@ -64,7 +64,7 @@ describe('projector/windows', () => {
 					);
 				});
 
-				it('xtras-selective', async () => {
+				void it('xtras-selective', async () => {
 					const dir = await getDir('xtras-selective');
 					const dest = pathJoin(dir, 'application.exe');
 
@@ -87,7 +87,7 @@ describe('projector/windows', () => {
 					);
 				});
 
-				it('xtras-rename', async () => {
+				void it('xtras-rename', async () => {
 					const dir = await getDir('xtras-rename');
 					const dest = pathJoin(dir, 'application.exe');
 
@@ -110,7 +110,7 @@ describe('projector/windows', () => {
 					);
 				});
 
-				it('shockwave', async () => {
+				void it('shockwave', async () => {
 					const dir = await getDir('shockwave');
 					const dest = pathJoin(dir, 'application.exe');
 
@@ -127,7 +127,7 @@ describe('projector/windows', () => {
 					);
 				});
 
-				it('nestXtrasConfiguration', async () => {
+				void it('nestXtrasConfiguration', async () => {
 					const dir = await getDir('nestXtrasConfiguration');
 					const dest = pathJoin(dir, 'application.exe');
 
@@ -150,7 +150,7 @@ describe('projector/windows', () => {
 					);
 				});
 
-				it('complex', async () => {
+				void it('complex', async () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.exe');
 
