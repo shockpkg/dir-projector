@@ -11,17 +11,17 @@ const MH_MAGIC_64 = 0xfeedfacf;
 const MH_CIGAM_64 = 0xcffaedfe;
 
 const CPU_TYPE_POWERPC = 0x00000012;
-const CPU_TYPE_POWERPC64 = 0x01000012;
+// const CPU_TYPE_POWERPC64 = 0x01000012;
 const CPU_TYPE_I386 = 0x00000007;
-const CPU_TYPE_X86_64 = 0x01000007;
+// const CPU_TYPE_X86_64 = 0x01000007;
 
 const launcherMappings = once(
 	() =>
 		new Map([
 			[CPU_TYPE_POWERPC, 'mac-app-ppc'],
-			[CPU_TYPE_POWERPC64, 'mac-app-ppc64'],
-			[CPU_TYPE_I386, 'mac-app-i386'],
-			[CPU_TYPE_X86_64, 'mac-app-x86_64']
+			// [CPU_TYPE_POWERPC64, 'mac-app-ppc64'],
+			[CPU_TYPE_I386, 'mac-app-i386']
+			// [CPU_TYPE_X86_64, 'mac-app-x86_64']
 		])
 );
 
