@@ -1,13 +1,8 @@
 import {type TranscodeEncoding} from 'node:buffer';
-import {mkdir, readFile, stat, writeFile} from 'node:fs/promises';
+import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {join as pathJoin, dirname} from 'node:path';
 
-import {
-	ArchiveDir,
-	ArchiveHdi,
-	createArchiveByFileExtension,
-	fsLstatExists
-} from '@shockpkg/archive-files';
+import {fsLstatExists} from '@shockpkg/archive-files';
 
 import {pathRelativeBase, trimExtension} from './util';
 
@@ -94,6 +89,11 @@ export abstract class Projector {
 	 * @default false
 	 */
 	public nestXtrasConfiguration: boolean = false;
+
+	/**
+	 * Set the nobrowse option on mounted disk images.
+	 */
+	public nobrowse = false;
 
 	/**
 	 * Output path.
@@ -445,27 +445,6 @@ export abstract class Projector {
 	 * @returns Newline characters.
 	 */
 	public abstract get lingoNewline(): string;
-
-	/**
-	 * Open path as archive.
-	 *
-	 * @param path Archive path.
-	 * @returns Archive instance.
-	 */
-	protected async _openArchive(path: string) {
-		const st = await stat(path);
-		if (st.isDirectory()) {
-			return new ArchiveDir(path);
-		}
-		const archive = createArchiveByFileExtension(path);
-		if (!archive) {
-			throw new Error(`Unrecognized archive format: ${path}`);
-		}
-		if (archive instanceof ArchiveHdi) {
-			archive.nobrowse = true;
-		}
-		return archive;
-	}
 
 	/**
 	 * Write the projector skeleton from archive.

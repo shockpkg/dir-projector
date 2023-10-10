@@ -1,7 +1,12 @@
 import {readFile} from 'node:fs/promises';
 import {join as pathJoin, dirname, basename} from 'node:path';
 
-import {Entry, PathType, fsWalk} from '@shockpkg/archive-files';
+import {
+	Entry,
+	PathType,
+	createArchiveByFileStatOrThrow,
+	fsWalk
+} from '@shockpkg/archive-files';
 
 import {pathRelativeBase, pathRelativeBaseMatch} from '../util';
 import {
@@ -197,7 +202,9 @@ export class ProjectorWindows extends Projector {
 			return true;
 		};
 
-		const archive = await this._openArchive(skeleton);
+		const archive = await createArchiveByFileStatOrThrow(skeleton, {
+			nobrowse: this.nobrowse
+		});
 		await archive.read(async entry => {
 			if (entry.type === PathType.RESOURCE_FORK) {
 				return true;

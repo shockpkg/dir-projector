@@ -1,7 +1,11 @@
 import {readFile, mkdir, rm, writeFile} from 'node:fs/promises';
 import {join as pathJoin, basename, dirname} from 'node:path';
 
-import {PathType, Entry} from '@shockpkg/archive-files';
+import {
+	PathType,
+	Entry,
+	createArchiveByFileStatOrThrow
+} from '@shockpkg/archive-files';
 import {Plist} from '@shockpkg/plist-dom';
 
 import {
@@ -629,7 +633,9 @@ export class ProjectorMacApp extends ProjectorMac {
 			return true;
 		};
 
-		const archive = await this._openArchive(skeleton);
+		const archive = await createArchiveByFileStatOrThrow(skeleton, {
+			nobrowse: this.nobrowse
+		});
 		await archive.read(async entry => {
 			if (entry.type === PathType.RESOURCE_FORK) {
 				return true;
