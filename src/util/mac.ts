@@ -2,7 +2,7 @@ import {readFile} from 'node:fs/promises';
 
 import {Plist, Value, ValueDict, ValueString} from '@shockpkg/plist-dom';
 
-import {once, launcher} from '../util';
+import {launcher} from '../util';
 
 const FAT_MAGIC = 0xcafebabe;
 const MH_MAGIC = 0xfeedface;
@@ -14,16 +14,6 @@ const CPU_TYPE_POWERPC = 0x00000012;
 // const CPU_TYPE_POWERPC64 = 0x01000012;
 const CPU_TYPE_I386 = 0x00000007;
 // const CPU_TYPE_X86_64 = 0x01000007;
-
-const launcherMappings = once(
-	() =>
-		new Map([
-			[CPU_TYPE_POWERPC, 'mac-app-ppc'],
-			// [CPU_TYPE_POWERPC64, 'mac-app-ppc64'],
-			[CPU_TYPE_I386, 'mac-app-i386']
-			// [CPU_TYPE_X86_64, 'mac-app-x86_64']
-		])
-);
 
 export interface IMachoType {
 	//
@@ -239,9 +229,27 @@ export async function machoTypesFile(path: string) {
  */
 export async function machoAppLauncherThin(type: Readonly<IMachoType>) {
 	const {cpuType} = type;
-	const id = launcherMappings().get(cpuType);
-	if (!id) {
-		throw new Error(`Unknown CPU type: 0x${cpuType.toString(16)}`);
+	let id = '';
+	switch (cpuType) {
+		case CPU_TYPE_POWERPC: {
+			id = 'mac-app-ppc';
+			break;
+		}
+		// case CPU_TYPE_POWERPC64: {
+		// 	id = 'mac-app-ppc64';
+		// 	break;
+		// }
+		case CPU_TYPE_I386: {
+			id = 'mac-app-i386';
+			break;
+		}
+		// case CPU_TYPE_X86_64: {
+		// 	id = 'mac-app-x86_64';
+		// 	break;
+		// }
+		default: {
+			throw new Error(`Unknown CPU type: 0x${cpuType.toString(16)}`);
+		}
 	}
 	return launcher(id);
 }
