@@ -1,4 +1,3 @@
-import {type TranscodeEncoding} from 'node:buffer';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {join as pathJoin, dirname} from 'node:path';
 
@@ -119,30 +118,12 @@ export abstract class Projector {
 	}
 
 	/**
-	 * Config file encoding.
-	 *
-	 * @returns File encoding.
-	 */
-	public get configEncoding() {
-		return 'ascii' as TranscodeEncoding;
-	}
-
-	/**
 	 * Lingo file name.
 	 *
 	 * @returns File name.
 	 */
 	public get lingoName() {
 		return 'LINGO.INI';
-	}
-
-	/**
-	 * Lingo file encoding.
-	 *
-	 * @returns File encoding.
-	 */
-	public get lingoEncoding() {
-		return 'ascii' as TranscodeEncoding;
 	}
 
 	/**
@@ -234,13 +215,10 @@ export abstract class Projector {
 	public async getLingoData() {
 		const {lingoData, lingoFile} = this;
 		if (typeof lingoData === 'string') {
-			return Buffer.from(lingoData, this.lingoEncoding);
+			return Buffer.from(lingoData);
 		}
 		if (Array.isArray(lingoData)) {
-			return Buffer.from(
-				lingoData.join(this.lingoNewline),
-				this.lingoEncoding
-			);
+			return Buffer.from(lingoData.join(this.lingoNewline));
 		}
 		if (lingoData) {
 			return lingoData as Readonly<Buffer>;
@@ -375,14 +353,11 @@ export abstract class Projector {
 	protected async _writeConfig(
 		configData: Readonly<string[]> | string | Readonly<Buffer> | null
 	) {
-		let data: Readonly<Buffer> | null = null;
+		let data;
 		if (typeof configData === 'string') {
-			data = Buffer.from(configData, this.configEncoding);
+			data = configData;
 		} else if (Array.isArray(data)) {
-			data = Buffer.from(
-				(configData as string[]).join(this.configNewline),
-				this.configEncoding
-			);
+			data = (configData as string[]).join(this.configNewline);
 		} else if (configData) {
 			data = configData as Readonly<Buffer>;
 		}
