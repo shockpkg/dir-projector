@@ -20,7 +20,6 @@ void describe('projector/mac/app', () => {
 				cleanProjectorDir('mac', 'app', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
-			// eslint-disable-next-line no-loop-func
 			void describe(name, () => {
 				void it('simple', async () => {
 					const dir = await getDir('simple');

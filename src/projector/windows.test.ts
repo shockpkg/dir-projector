@@ -24,7 +24,6 @@ void describe('projector/windows', () => {
 				cleanProjectorDir('windows', type, name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
-			// eslint-disable-next-line no-loop-func
 			void describe(name, () => {
 				void it('simple', async () => {
 					const dir = await getDir('simple');
