@@ -8,7 +8,7 @@ import {
 	Data
 } from '@shockpkg/resedit';
 
-import {align, bufferToArrayBuffer, launcher} from '../util';
+import {align, launcher} from '../util';
 
 // IMAGE_DATA_DIRECTORY indexes.
 const IDD_RESOURCE = 2;
@@ -162,7 +162,7 @@ function exeUpdateSizes(exe: NtExecutable) {
  * @param iconData Icon data.
  */
 function rsrcPatchIcon(rsrc: NtExecutableResource, iconData: Readonly<Buffer>) {
-	const ico = Data.IconFile.from(bufferToArrayBuffer(iconData));
+	const ico = Data.IconFile.from(iconData);
 	for (const iconGroup of Resource.IconGroupEntry.fromEntries(rsrc.entries)) {
 		Resource.IconGroupEntry.replaceIconsForResource(
 			rsrc.entries,
