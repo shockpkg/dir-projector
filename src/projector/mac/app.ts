@@ -6,18 +6,13 @@ import {
 	Entry,
 	createArchiveByFileStatOrThrow
 } from '@shockpkg/archive-files';
-import {Plist} from '@shockpkg/plist-dom';
+import {Plist, ValueDict, ValueString} from '@shockpkg/plist-dom';
 
 import {
 	pathRelativeBase,
 	pathRelativeBaseMatch,
 	trimExtension
 } from '../../util';
-import {
-	infoPlistBundleExecutableSet,
-	infoPlistBundleIconFileSet,
-	infoPlistBundleNameSet
-} from '../../util/mac';
 import {ProjectorMac} from '../mac';
 
 /**
@@ -764,15 +759,26 @@ export class ProjectorMacApp extends ProjectorMac {
 
 		const plist = new Plist();
 		plist.fromXml(xml);
+		const dict = plist.getValue().castAs(ValueDict);
 
 		if (appIconNameCustom) {
-			infoPlistBundleIconFileSet(plist, appIconNameCustom);
+			dict.set('CFBundleIconFile', new ValueString(appIconNameCustom));
 		}
+
 		if (appBinaryNameCustom) {
-			infoPlistBundleExecutableSet(plist, appBinaryNameCustom);
+			dict.set(
+				'CFBundleExecutable',
+				new ValueString(appBinaryNameCustom)
+			);
 		}
+
 		if (bundleName !== false) {
-			infoPlistBundleNameSet(plist, bundleName);
+			const key = 'CFBundleName';
+			if (bundleName === null) {
+				dict.delete(key);
+			} else {
+				dict.set(key, new ValueString(bundleName));
+			}
 		}
 
 		return plist.toXml();
