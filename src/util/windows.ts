@@ -278,7 +278,7 @@ export async function peResourceReplace(
  * @returns Launcher data.
  */
 export async function windowsLauncher(
-	type: 'i686' | 'x86_64',
+	type: string,
 	resources: string | null = null
 ) {
 	let data;
@@ -287,12 +287,8 @@ export async function windowsLauncher(
 			data = await launcher('windows-i686');
 			break;
 		}
-		// case 'x86_64': {
-		// 	throw new Error(`Invalid type: ${type as string}`);
-		// 	break;
-		// }
 		default: {
-			throw new Error(`Invalid type: ${type as string}`);
+			throw new Error(`Invalid type: ${type}`);
 		}
 	}
 

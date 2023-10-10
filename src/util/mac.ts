@@ -11,9 +11,7 @@ const MH_MAGIC_64 = 0xfeedfacf;
 const MH_CIGAM_64 = 0xcffaedfe;
 
 const CPU_TYPE_POWERPC = 0x00000012;
-// const CPU_TYPE_POWERPC64 = 0x01000012;
 const CPU_TYPE_I386 = 0x00000007;
-// const CPU_TYPE_X86_64 = 0x01000007;
 
 export interface IMachoType {
 	//
@@ -235,18 +233,10 @@ export async function machoAppLauncherThin(type: Readonly<IMachoType>) {
 			id = 'mac-app-ppc';
 			break;
 		}
-		// case CPU_TYPE_POWERPC64: {
-		// 	id = 'mac-app-ppc64';
-		// 	break;
-		// }
 		case CPU_TYPE_I386: {
 			id = 'mac-app-i386';
 			break;
 		}
-		// case CPU_TYPE_X86_64: {
-		// 	id = 'mac-app-x86_64';
-		// 	break;
-		// }
 		default: {
 			throw new Error(`Unknown CPU type: 0x${cpuType.toString(16)}`);
 		}

@@ -71,10 +71,6 @@ export class BundleWindows extends Bundle {
 				launcher = await windowsLauncher('i686', projector.path);
 				break;
 			}
-			// case 0x8664: {
-			// 	launcher = await windowsLauncher('x86_64', projector.path);
-			// 	break;
-			// }
 			default: {
 				throw new Error(`Unknown machine type: ${machine}`);
 			}
