@@ -12,7 +12,6 @@ import {
 import {pathRelativeBase, trimExtension} from './util';
 
 export interface IIncludeXtraMapping {
-	//
 	/**
 	 * Source path, case insensitive.
 	 * Does not need to match the full path.
@@ -27,7 +26,6 @@ export interface IIncludeXtraMapping {
 }
 
 export interface IIncludeXtraMappingBest {
-	//
 	/**
 	 * Map instance.
 	 */

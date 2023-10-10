@@ -14,7 +14,6 @@ const CPU_TYPE_POWERPC = 0x00000012;
 const CPU_TYPE_I386 = 0x00000007;
 
 export interface IMachoType {
-	//
 	/**
 	 * CPU type.
 	 */
