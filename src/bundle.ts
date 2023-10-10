@@ -481,12 +481,13 @@ export abstract class Bundle {
 	 * Check that output path is valid, else throws.
 	 */
 	protected async _checkOutput() {
-		for (const p of [this.path, this.resourcePath('')]) {
-			// eslint-disable-next-line no-await-in-loop
-			if (await fsLstatExists(p)) {
-				throw new Error(`Output path already exists: ${p}`);
-			}
-		}
+		await Promise.all(
+			[this.path, this.resourcePath('')].map(async p => {
+				if (await fsLstatExists(p)) {
+					throw new Error(`Output path already exists: ${p}`);
+				}
+			})
+		);
 	}
 
 	/**

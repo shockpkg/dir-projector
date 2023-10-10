@@ -289,15 +289,21 @@ export async function machoAppLauncherFat(
 
 	// Create a head and get the body for each type.
 	const parts = [];
-	for (const type of types) {
+	for (const {type, body} of await Promise.all(
+		types.map(async type =>
+			machoAppLauncherThin(type).then(body => ({
+				type,
+				body
+			}))
+		)
+	)) {
 		const head = Buffer.alloc(20);
 		head.writeUInt32BE(type.cpuType, 0);
 		head.writeUInt32BE(type.cpuSubtype, 4);
 		head.writeUInt32BE(align, 16);
 		parts.push({
 			head,
-			// eslint-disable-next-line no-await-in-loop
-			body: await machoAppLauncherThin(type)
+			body
 		});
 		add(head);
 	}
