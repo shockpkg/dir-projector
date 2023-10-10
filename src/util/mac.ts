@@ -1,4 +1,4 @@
-import {readFile} from 'node:fs/promises';
+import {open} from 'node:fs/promises';
 
 import {launcher} from '../util';
 
@@ -88,7 +88,27 @@ export function machoTypesData(data: Readonly<Buffer>) {
  * @returns Mach-O types.
  */
 export async function machoTypesFile(path: string) {
-	return machoTypesData(await readFile(path));
+	let data;
+	const f = await open(path, 'r');
+	try {
+		const h = 8;
+		const head = Buffer.alloc(h);
+		const {bytesRead} = await f.read(head, 0, h, 0);
+		if (bytesRead < h) {
+			data = head.subarray(0, bytesRead);
+		} else {
+			const n =
+				head.readUInt32BE(0) === FAT_MAGIC
+					? head.readUInt32BE(4) * 20
+					: 4;
+			const d = Buffer.alloc(n);
+			const {bytesRead} = await f.read(d, 0, n, h);
+			data = Buffer.concat([head, d.subarray(0, bytesRead)]);
+		}
+	} finally {
+		await f.close();
+	}
+	return machoTypesData(data);
 }
 
 /**
