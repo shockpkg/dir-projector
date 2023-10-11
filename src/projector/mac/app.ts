@@ -21,29 +21,21 @@ import {ProjectorMac} from '../mac';
 export class ProjectorMacApp extends ProjectorMac {
 	/**
 	 * Binary name.
-	 *
-	 * @default null
 	 */
 	public binaryName: string | null = null;
 
 	/**
 	 * Intel binary package, not universal binary.
-	 *
-	 * @default false
 	 */
 	public intel = false;
 
 	/**
 	 * Icon file.
-	 *
-	 * @default null
 	 */
 	public iconFile: string | null = null;
 
 	/**
 	 * Icon data.
-	 *
-	 * @default null
 	 */
 	public iconData: Readonly<Buffer> | null = null;
 
@@ -61,15 +53,11 @@ export class ProjectorMacApp extends ProjectorMac {
 
 	/**
 	 * PkgInfo file.
-	 *
-	 * @default null
 	 */
 	public pkgInfoFile: string | null = null;
 
 	/**
 	 * PkgInfo data.
-	 *
-	 * @default null
 	 */
 	public pkgInfoData: string | Readonly<Buffer> | null = null;
 
@@ -85,8 +73,6 @@ export class ProjectorMacApp extends ProjectorMac {
 
 	/**
 	 * Nest Xtras at *.app/Contents/xtras.
-	 *
-	 * @default false
 	 */
 	public nestXtrasContents = false;
 

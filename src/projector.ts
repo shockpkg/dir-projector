@@ -41,53 +41,39 @@ export interface IIncludeXtras {
 export abstract class Projector {
 	/**
 	 * Make a Shockwave projector.
-	 *
-	 * @default false
 	 */
-	public shockwave: boolean = false;
+	public shockwave = false;
 
 	/**
 	 * Splash image file.
-	 *
-	 * @default null
 	 */
 	public splashImageFile: string | null = null;
 
 	/**
 	 * Splash image data.
-	 *
-	 * @default null
 	 */
 	public splashImageData: Readonly<Buffer> | null = null;
 
 	/**
 	 * Lingo file.
-	 *
-	 * @default null
 	 */
 	public lingoFile: string | null = null;
 
 	/**
 	 * Lingo data.
-	 *
-	 * @default null
 	 */
 	public lingoData: Readonly<string[]> | string | Readonly<Buffer> | null =
 		null;
 
 	/**
 	 * Xtras include map.
-	 *
-	 * @default null
 	 */
 	public includeXtras: Readonly<IIncludeXtras> | null = null;
 
 	/**
 	 * Nest xtras in a Configuration directory.
-	 *
-	 * @default false
 	 */
-	public nestXtrasConfiguration: boolean = false;
+	public nestXtrasConfiguration = false;
 
 	/**
 	 * Set the nobrowse option on mounted disk images.
