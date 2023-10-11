@@ -5,8 +5,7 @@ import {readdirSync, statSync} from 'node:fs';
 import {Manager} from '@shockpkg/core';
 
 export const platformIsMac = process.platform === 'darwin';
-export const platformIsWindows =
-	process.platform === 'win32' || (process.platform as string) === 'win64';
+export const platformIsWindows = /^win\d/.test(process.platform);
 
 // eslint-disable-next-line no-process-env
 export const envFastTest = process.env.DIR_PROJECTOR_FAST_TEST || null;
