@@ -14,7 +14,8 @@ void describe('projector', () => {
 			const dest = pathJoin(dir, 'application.exe');
 
 			const p = new ProjectorDummy(dest);
-			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
+			p.skeleton = 'dummy';
+			await p.withFile(fixtureFile('config.ini.crlf.bin'));
 
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
@@ -24,8 +25,9 @@ void describe('projector', () => {
 			const dest = pathJoin(dir, 'application.exe');
 
 			const p = new ProjectorDummy(dest);
+			p.skeleton = 'dummy';
 			p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
-			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
+			await p.withFile(fixtureFile('config.ini.crlf.bin'));
 
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
@@ -35,8 +37,9 @@ void describe('projector', () => {
 			const dest = pathJoin(dir, 'application.exe');
 
 			const p = new ProjectorDummy(dest);
+			p.skeleton = 'dummy';
 			p.splashImageFile = fixtureFile('splash.bmp');
-			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
+			await p.withFile(fixtureFile('config.ini.crlf.bin'));
 
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
@@ -46,9 +49,10 @@ void describe('projector', () => {
 			const dest = pathJoin(dir, 'application.exe');
 
 			const p = new ProjectorDummy(dest);
+			p.skeleton = 'dummy';
 			p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
 			p.splashImageFile = fixtureFile('splash.bmp');
-			await p.withFile('dummy', fixtureFile('config.ini.crlf.bin'));
+			await p.withFile(fixtureFile('config.ini.crlf.bin'));
 
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});

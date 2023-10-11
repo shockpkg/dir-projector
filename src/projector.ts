@@ -81,6 +81,11 @@ export abstract class Projector {
 	public nobrowse = false;
 
 	/**
+	 * Skeleton path.
+	 */
+	public skeleton: string | null = null;
+
+	/**
 	 * Output path.
 	 */
 	public readonly path: string;
@@ -287,24 +292,25 @@ export abstract class Projector {
 	/**
 	 * Write out projector with skeleton and config file.
 	 *
-	 * @param skeleton Skeleton path.
 	 * @param configFile Config file.
 	 */
-	public async withFile(skeleton: string, configFile: string | null) {
-		const configData = configFile ? await readFile(configFile) : null;
-		await this.withData(skeleton, configData);
+	public async withFile(configFile: string | null) {
+		await this.withData(configFile ? await readFile(configFile) : null);
 	}
 
 	/**
 	 * Write out projector with skeleton and config data.
 	 *
-	 * @param skeleton Skeleton path.
 	 * @param configData Config data.
 	 */
 	public async withData(
-		skeleton: string,
 		configData: Readonly<string[]> | string | Readonly<Buffer> | null
 	) {
+		const {skeleton} = this;
+		if (!skeleton) {
+			throw new Error('No projector skeleton configured');
+		}
+
 		await this._checkOutput();
 		await this._writeSkeleton(skeleton);
 		await this._modifySkeleton();

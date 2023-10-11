@@ -135,28 +135,26 @@ export abstract class Bundle {
 	/**
 	 * Open output with file.
 	 *
-	 * @param player Player path.
 	 * @param configFile Config file.
 	 */
-	public async openFile(player: string, configFile: string | null) {
+	public async openFile(configFile: string | null) {
 		const configData = configFile ? await readFile(configFile) : null;
-		await this.openData(player, configData);
+		await this.openData(configData);
 	}
 
 	/**
 	 * Open output with data.
 	 *
-	 * @param player Player path.
 	 * @param configData Config data.
 	 */
-	public async openData(player: string, configData: Readonly<Buffer> | null) {
+	public async openData(configData: Readonly<Buffer> | null) {
 		if (this._isOpen) {
 			throw new Error('Already open');
 		}
 		await this._checkOutput();
 
 		this._closeQueue.clear();
-		await this._openData(player, configData);
+		await this._openData(configData);
 
 		this._isOpen = true;
 	}
@@ -180,35 +178,31 @@ export abstract class Bundle {
 	 * Write out projector with player and file.
 	 * Has a callback to write out the resources.
 	 *
-	 * @param player Player path.
 	 * @param configFile Config file.
 	 * @param func Async function.
 	 * @returns Return value of the async function.
 	 */
 	public async withFile<T>(
-		player: string,
 		configFile: string | null,
 		func: ((self: this) => Promise<T>) | null = null
 	) {
 		const configData = configFile ? await readFile(configFile) : null;
-		return this.withData(player, configData, func);
+		return this.withData(configData, func);
 	}
 
 	/**
 	 * Write out projector with player and data.
 	 * Has a callback to write out the resources.
 	 *
-	 * @param player Player path.
 	 * @param configData Config data.
 	 * @param func Async function.
 	 * @returns Return value of the async function.
 	 */
 	public async withData<T>(
-		player: string,
 		configData: Readonly<Buffer> | null,
 		func: ((self: this) => Promise<T>) | null = null
 	) {
-		await this.openData(player, configData);
+		await this.openData(configData);
 		try {
 			return func ? await func.call(this, this) : null;
 		} finally {
@@ -588,14 +582,10 @@ export abstract class Bundle {
 	/**
 	 * Open output with data.
 	 *
-	 * @param player Player path.
 	 * @param configData Config data.
 	 */
-	protected async _openData(
-		player: string,
-		configData: Readonly<Buffer> | null
-	) {
-		await this.projector.withData(player, configData);
+	protected async _openData(configData: Readonly<Buffer> | null) {
+		await this.projector.withData(configData);
 	}
 
 	/**

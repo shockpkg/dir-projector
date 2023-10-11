@@ -33,6 +33,9 @@ import {ProjectorWindows} from '@shockpkg/dir-projector';
 
 const projector = new ProjectorWindows('projector-windows/application.exe');
 
+// Required skeleton.
+projector.skeleton = 'skeleton.zip';
+
 // Optional custom icon.
 projector.iconFile = 'icon.ico';
 
@@ -70,7 +73,7 @@ projector.nestXtrasConfiguration = true;
 // Optionally fix Shockwave 3D Xtra InstalledDisplayDrivers reading.
 projector.patchShockwave3dInstalledDisplayDriversSize = true;
 
-await projector.withFile('skeleton.zip', 'config.ini');
+await projector.withFile('config.ini');
 ```
 
 ### Mac App
@@ -79,6 +82,9 @@ await projector.withFile('skeleton.zip', 'config.ini');
 import {ProjectorMacApp} from '@shockpkg/dir-projector';
 
 const projector = new ProjectorMacApp('projector-macapp/application.app');
+
+// Required skeleton.
+projector.skeleton = 'skeleton.zip';
 
 // Optional custom icon.
 projector.iconFile = 'icon.icns';
@@ -118,7 +124,7 @@ projector.nestXtrasContents = true;
 // Optionally use Intel-only skeleton.
 // projector.intel = true;
 
-await projector.withFile('skeleton.dmg', 'config.ini');
+await projector.withFile('config.ini');
 ```
 
 ## Bundle
@@ -131,11 +137,9 @@ import {BundleWindows} from '@shockpkg/dir-projector';
 const bundle = new BundleWindows('bundle-windows/application.exe');
 
 // Use projector property to set options.
-bundle.projector.includeXtras = {
-	'': null
-};
+bundle.projector.skeleton = 'skeleton.zip';
 
-await bundle.withFile('skeleton.zip', 'config.ini', async b => {
+await bundle.withFile('config.ini', async b => {
 	// Add resources in callback.
 	await b.copyResource('movie.dir', 'movie.dir');
 });
@@ -149,11 +153,9 @@ import {BundleMacApp} from '@shockpkg/dir-projector';
 const bundle = new BundleMacApp('bundle-macapp/application.app');
 
 // Use projector property to set options.
-bundle.projector.includeXtras = {
-	'': null
-};
+bundle.projector.skeleton = 'skeleton.zip';
 
-await bundle.withFile('skeleton.dmg', 'config.ini', async b => {
+await bundle.withFile('config.ini', async b => {
 	// Add resources in callback.
 	await b.copyResource('movie.dir', 'movie.dir');
 });

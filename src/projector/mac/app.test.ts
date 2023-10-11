@@ -26,10 +26,8 @@ void describe('projector/mac/app', () => {
 					const dest = pathJoin(dir, 'application.app');
 
 					const p = new ProjectorMacApp(dest);
-					await p.withFile(
-						await getSkeleton(),
-						fixtureFile('config.ini.lf.bin')
-					);
+					p.skeleton = await getSkeleton();
+					await p.withFile(fixtureFile('config.ini.lf.bin'));
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -42,14 +40,12 @@ void describe('projector/mac/app', () => {
 					const dest = pathJoin(dir, 'application.app');
 
 					const p = new ProjectorMacApp(dest);
+					p.skeleton = await getSkeleton();
 					p.includeXtras = {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
-					await p.withFile(
-						await getSkeleton(),
-						fixtureFile('config.ini.lf.bin')
-					);
+					await p.withFile(fixtureFile('config.ini.lf.bin'));
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -62,15 +58,13 @@ void describe('projector/mac/app', () => {
 					const dest = pathJoin(dir, 'application.app');
 
 					const p = new ProjectorMacApp(dest);
+					p.skeleton = await getSkeleton();
 					p.includeXtras = {
 						Scripting: null,
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.xtra': null
 					};
-					await p.withFile(
-						await getSkeleton(),
-						fixtureFile('config.ini.lf.bin')
-					);
+					await p.withFile(fixtureFile('config.ini.lf.bin'));
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -83,15 +77,13 @@ void describe('projector/mac/app', () => {
 					const dest = pathJoin(dir, 'application.app');
 
 					const p = new ProjectorMacApp(dest);
+					p.skeleton = await getSkeleton();
 					p.includeXtras = {
 						Scripting: 'Scripting RENAMED',
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.xtra': 'GIF Agent RENAMED.xtra'
 					};
-					await p.withFile(
-						await getSkeleton(),
-						fixtureFile('config.ini.lf.bin')
-					);
+					await p.withFile(fixtureFile('config.ini.lf.bin'));
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -104,11 +96,9 @@ void describe('projector/mac/app', () => {
 					const dest = pathJoin(dir, 'application.app');
 
 					const p = new ProjectorMacApp(dest);
+					p.skeleton = await getSkeleton();
 					p.shockwave = true;
-					await p.withFile(
-						await getSkeleton(),
-						fixtureFile('config.ini.lf.bin')
-					);
+					await p.withFile(fixtureFile('config.ini.lf.bin'));
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -121,15 +111,13 @@ void describe('projector/mac/app', () => {
 					const dest = pathJoin(dir, 'application.app');
 
 					const p = new ProjectorMacApp(dest);
+					p.skeleton = await getSkeleton();
 					p.nestXtrasConfiguration = true;
 					p.includeXtras = {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
-					await p.withFile(
-						await getSkeleton(),
-						fixtureFile('config.ini.lf.bin')
-					);
+					await p.withFile(fixtureFile('config.ini.lf.bin'));
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -143,15 +131,13 @@ void describe('projector/mac/app', () => {
 						const dest = pathJoin(dir, 'application.app');
 
 						const p = new ProjectorMacApp(dest);
+						p.skeleton = await getSkeleton();
 						p.nestXtrasContents = true;
 						p.includeXtras = {
 							// eslint-disable-next-line @typescript-eslint/naming-convention
 							'': null
 						};
-						await p.withFile(
-							await getSkeleton(),
-							fixtureFile('config.ini.lf.bin')
-						);
+						await p.withFile(fixtureFile('config.ini.lf.bin'));
 
 						await copyFile(
 							fixtureFile('dir7.dir'),
@@ -166,11 +152,9 @@ void describe('projector/mac/app', () => {
 						const dest = pathJoin(dir, 'application.app');
 
 						const p = new ProjectorMacApp(dest);
+						p.skeleton = await getSkeleton();
 						p.intel = true;
-						await p.withFile(
-							await getSkeleton(),
-							fixtureFile('config.ini.lf.bin')
-						);
+						await p.withFile(fixtureFile('config.ini.lf.bin'));
 
 						await copyFile(
 							fixtureFile('dir7.dir'),
@@ -184,6 +168,7 @@ void describe('projector/mac/app', () => {
 					const dest = pathJoin(dir, 'application.app');
 
 					const p = new ProjectorMacApp(dest);
+					p.skeleton = await getSkeleton();
 					p.lingoFile = fixtureFile('lingo.ini.lf.bin');
 					p.splashImageFile = fixtureFile('splash.pict');
 					p.iconFile = fixtureFile('icon.icns');
@@ -196,10 +181,7 @@ void describe('projector/mac/app', () => {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
-					await p.withFile(
-						await getSkeleton(),
-						fixtureFile('config.ini.lf.bin')
-					);
+					await p.withFile(fixtureFile('config.ini.lf.bin'));
 
 					await copyFile(
 						fixtureFile('dir7.dir'),

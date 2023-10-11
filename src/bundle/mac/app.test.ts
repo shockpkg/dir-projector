@@ -26,8 +26,8 @@ void describe('bundle/mac/app', () => {
 					const dest = pathJoin(dir, 'application.app');
 
 					const b = new BundleMacApp(dest);
+					b.projector.skeleton = await getSkeleton();
 					await b.withFile(
-						await getSkeleton(),
 						fixtureFile('config.ini.lf.bin'),
 						async b => {
 							await b.copyResource(
@@ -44,6 +44,7 @@ void describe('bundle/mac/app', () => {
 
 					const b = new BundleMacApp(dest);
 					const p = b.projector;
+					p.skeleton = await getSkeleton();
 					p.lingoFile = fixtureFile('lingo.ini.lf.bin');
 					p.splashImageFile = fixtureFile('splash.pict');
 					p.iconFile = fixtureFile('icon.icns');
@@ -57,7 +58,6 @@ void describe('bundle/mac/app', () => {
 						'': null
 					};
 					await b.withFile(
-						await getSkeleton(),
 						fixtureFile('config.ini.lf.bin'),
 						async b => {
 							await b.copyResource(

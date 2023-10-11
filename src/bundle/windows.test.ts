@@ -30,8 +30,8 @@ void describe('bundle/windows', () => {
 					const dest = pathJoin(dir, 'application.exe');
 
 					const b = new BundleWindows(dest);
+					b.projector.skeleton = await getSkeleton();
 					await b.withFile(
-						await getSkeleton(),
 						fixtureFile('config.ini.crlf.bin'),
 						async b => {
 							await b.copyResource(
@@ -48,6 +48,7 @@ void describe('bundle/windows', () => {
 
 					const b = new BundleWindows(dest);
 					const p = b.projector;
+					p.skeleton = await getSkeleton();
 					p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
 					p.splashImageFile = fixtureFile('splash.bmp');
 					p.nestXtrasConfiguration = true;
@@ -60,7 +61,6 @@ void describe('bundle/windows', () => {
 					p.iconFile = fixtureFile('icon.ico');
 					p.versionStrings = versionStrings;
 					await b.withFile(
-						await getSkeleton(),
 						fixtureFile('config.ini.crlf.bin'),
 						async b => {
 							await b.copyResource(

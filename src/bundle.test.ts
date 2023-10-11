@@ -62,11 +62,9 @@ void describe('bundle', () => {
 			const dir = await getDir('simple');
 			const dest = pathJoin(dir, 'application.exe');
 
-			const p = new BundleDummy(dest);
-			await p.withFile(
-				fixtureFile('dummy.exe'),
-				fixtureFile('config.ini.crlf.bin')
-			);
+			const b = new BundleDummy(dest);
+			b.projector.skeleton = fixtureFile('dummy.zip');
+			await b.withFile(fixtureFile('config.ini.crlf.bin'));
 		});
 
 		void it('resources', async () => {
@@ -109,48 +107,45 @@ void describe('bundle', () => {
 
 			await utimes(resources, dateA, dateA);
 
-			const p = new BundleDummy(dest);
-			await p.withFile(
-				fixtureFile('dummy.exe'),
-				fixtureFile('config.ini.crlf.bin'),
-				async p => {
-					await p.copyResource('resources0', resources);
+			const b = new BundleDummy(dest);
+			b.projector.skeleton = fixtureFile('dummy.zip');
+			await b.withFile(fixtureFile('config.ini.crlf.bin'), async p => {
+				await p.copyResource('resources0', resources);
 
-					await p.copyResource('resources1', resources, {
-						atimeCopy: true,
-						mtimeCopy: true,
-						executableCopy: true
-					});
+				await p.copyResource('resources1', resources, {
+					atimeCopy: true,
+					mtimeCopy: true,
+					executableCopy: true
+				});
 
-					await p.copyResource('resources2/a.txt', resourcesA, {
+				await p.copyResource('resources2/a.txt', resourcesA, {
+					atime: dateB,
+					mtime: dateB,
+					executable: true
+				});
+				await p.copyResource('resources2/d/b.txt', resourcesB, {
+					atime: dateB,
+					mtime: dateB,
+					executable: false
+				});
+
+				if (supportsSymlinks) {
+					await p.copyResource('resources2/l1.txt', resourcesL1, {
 						atime: dateB,
 						mtime: dateB,
 						executable: true
 					});
-					await p.copyResource('resources2/d/b.txt', resourcesB, {
+					await p.copyResource('resources2/l2.txt', resourcesL2, {
 						atime: dateB,
 						mtime: dateB,
 						executable: false
 					});
-
-					if (supportsSymlinks) {
-						await p.copyResource('resources2/l1.txt', resourcesL1, {
-							atime: dateB,
-							mtime: dateB,
-							executable: true
-						});
-						await p.copyResource('resources2/l2.txt', resourcesL2, {
-							atime: dateB,
-							mtime: dateB,
-							executable: false
-						});
-					}
 				}
-			);
+			});
 
 			await rm(resources, {recursive: true, force: true});
 
-			const st = async (path: string) => lstat(p.resourcePath(path));
+			const st = async (path: string) => lstat(b.resourcePath(path));
 
 			const res0 = await st('resources0');
 			notEqual(res0.atime.getFullYear(), 2001);
@@ -255,23 +250,20 @@ void describe('bundle', () => {
 			await mkdir(dirname(resourcesA), {recursive: true});
 			await writeFile(resourcesA, 'alpha');
 
-			const p = new BundleDummy(dest);
-			await p.withFile(
-				fixtureFile('dummy.exe'),
-				fixtureFile('config.ini.crlf.bin'),
-				async p => {
-					await p.createResourceFile('d/b.txt', 'beta');
+			const b = new BundleDummy(dest);
+			b.projector.skeleton = fixtureFile('dummy.zip');
+			await b.withFile(fixtureFile('config.ini.crlf.bin'), async p => {
+				await p.createResourceFile('d/b.txt', 'beta');
 
-					// Merge contents at root of resources.
-					await p.copyResource('.', resources, {
-						merge: true
-					});
-				}
-			);
+				// Merge contents at root of resources.
+				await p.copyResource('.', resources, {
+					merge: true
+				});
+			});
 
 			await rm(resources, {recursive: true, force: true});
 
-			const st = async (path: string) => lstat(p.resourcePath(path));
+			const st = async (path: string) => lstat(b.resourcePath(path));
 
 			strictEqual((await st('d/a.txt')).isFile(), true);
 			strictEqual((await st('d/b.txt')).isFile(), true);
