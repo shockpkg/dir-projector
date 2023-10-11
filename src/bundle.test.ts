@@ -64,7 +64,8 @@ void describe('bundle', () => {
 
 			const b = new BundleDummy(dest);
 			b.projector.skeleton = fixtureFile('dummy.zip');
-			await b.withFile(fixtureFile('config.ini.crlf.bin'));
+			b.projector.configFile = fixtureFile('config.ini.crlf.bin');
+			await b.write();
 		});
 
 		void it('resources', async () => {
@@ -109,7 +110,8 @@ void describe('bundle', () => {
 
 			const b = new BundleDummy(dest);
 			b.projector.skeleton = fixtureFile('dummy.zip');
-			await b.withFile(fixtureFile('config.ini.crlf.bin'), async p => {
+			b.projector.configFile = fixtureFile('config.ini.crlf.bin');
+			await b.write(async p => {
 				await p.copyResource('resources0', resources);
 
 				await p.copyResource('resources1', resources, {
@@ -252,7 +254,8 @@ void describe('bundle', () => {
 
 			const b = new BundleDummy(dest);
 			b.projector.skeleton = fixtureFile('dummy.zip');
-			await b.withFile(fixtureFile('config.ini.crlf.bin'), async p => {
+			b.projector.configFile = fixtureFile('config.ini.crlf.bin');
+			await b.write(async p => {
 				await p.createResourceFile('d/b.txt', 'beta');
 
 				// Merge contents at root of resources.

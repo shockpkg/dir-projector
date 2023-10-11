@@ -36,6 +36,9 @@ const projector = new ProjectorWindows('projector-windows/application.exe');
 // Required skeleton.
 projector.skeleton = 'skeleton.zip';
 
+// File to create config file with.
+projector.configFile = 'config.ini';
+
 // Optional custom icon.
 projector.iconFile = 'icon.ico';
 
@@ -73,7 +76,7 @@ projector.nestXtrasConfiguration = true;
 // Optionally fix Shockwave 3D Xtra InstalledDisplayDrivers reading.
 projector.patchShockwave3dInstalledDisplayDriversSize = true;
 
-await projector.withFile('config.ini');
+await projector.write();
 ```
 
 ### Mac App
@@ -85,6 +88,9 @@ const projector = new ProjectorMacApp('projector-macapp/application.app');
 
 // Required skeleton.
 projector.skeleton = 'skeleton.zip';
+
+// File to create config file with.
+projector.configFile = 'config.ini';
 
 // Optional custom icon.
 projector.iconFile = 'icon.icns';
@@ -124,7 +130,7 @@ projector.nestXtrasContents = true;
 // Optionally use Intel-only skeleton.
 // projector.intel = true;
 
-await projector.withFile('config.ini');
+await projector.write();
 ```
 
 ## Bundle
@@ -139,7 +145,10 @@ const bundle = new BundleWindows('bundle-windows/application.exe');
 // Use projector property to set options.
 bundle.projector.skeleton = 'skeleton.zip';
 
-await bundle.withFile('config.ini', async b => {
+// File to create config file with.
+bundle.projector.configFile = 'config.ini';
+
+await bundle.write(async b => {
 	// Add resources in callback.
 	await b.copyResource('movie.dir', 'movie.dir');
 });
@@ -155,7 +164,10 @@ const bundle = new BundleMacApp('bundle-macapp/application.app');
 // Use projector property to set options.
 bundle.projector.skeleton = 'skeleton.zip';
 
-await bundle.withFile('config.ini', async b => {
+// File to create config file with.
+bundle.projector.configFile = 'config.ini';
+
+await bundle.write(async b => {
 	// Add resources in callback.
 	await b.copyResource('movie.dir', 'movie.dir');
 });

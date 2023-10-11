@@ -3,7 +3,6 @@ import {
 	chmod,
 	lstat,
 	mkdir,
-	readFile,
 	readlink,
 	stat,
 	symlink,
@@ -133,28 +132,16 @@ export abstract class Bundle {
 	}
 
 	/**
-	 * Open output with file.
-	 *
-	 * @param configFile Config file.
+	 * Open output.
 	 */
-	public async openFile(configFile: string | null) {
-		const configData = configFile ? await readFile(configFile) : null;
-		await this.openData(configData);
-	}
-
-	/**
-	 * Open output with data.
-	 *
-	 * @param configData Config data.
-	 */
-	public async openData(configData: Readonly<Buffer> | null) {
+	public async open() {
 		if (this._isOpen) {
 			throw new Error('Already open');
 		}
 		await this._checkOutput();
 
 		this._closeQueue.clear();
-		await this._openData(configData);
+		await this._open();
 
 		this._isOpen = true;
 	}
@@ -175,34 +162,14 @@ export abstract class Bundle {
 	}
 
 	/**
-	 * Write out projector with player and file.
+	 * Write out the bundle.
 	 * Has a callback to write out the resources.
 	 *
-	 * @param configFile Config file.
 	 * @param func Async function.
 	 * @returns Return value of the async function.
 	 */
-	public async withFile<T>(
-		configFile: string | null,
-		func: ((self: this) => Promise<T>) | null = null
-	) {
-		const configData = configFile ? await readFile(configFile) : null;
-		return this.withData(configData, func);
-	}
-
-	/**
-	 * Write out projector with player and data.
-	 * Has a callback to write out the resources.
-	 *
-	 * @param configData Config data.
-	 * @param func Async function.
-	 * @returns Return value of the async function.
-	 */
-	public async withData<T>(
-		configData: Readonly<Buffer> | null,
-		func: ((self: this) => Promise<T>) | null = null
-	) {
-		await this.openData(configData);
+	public async write<T>(func: ((self: this) => Promise<T>) | null = null) {
+		await this.open();
 		try {
 			return func ? await func.call(this, this) : null;
 		} finally {
@@ -580,12 +547,10 @@ export abstract class Bundle {
 	}
 
 	/**
-	 * Open output with data.
-	 *
-	 * @param configData Config data.
+	 * Open output.
 	 */
-	protected async _openData(configData: Readonly<Buffer> | null) {
-		await this.projector.withData(configData);
+	protected async _open() {
+		await this.projector.write();
 	}
 
 	/**

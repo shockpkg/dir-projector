@@ -31,15 +31,13 @@ void describe('bundle/windows', () => {
 
 					const b = new BundleWindows(dest);
 					b.projector.skeleton = await getSkeleton();
-					await b.withFile(
-						fixtureFile('config.ini.crlf.bin'),
-						async b => {
-							await b.copyResource(
-								'movie.dir',
-								fixtureFile('dir7.dir')
-							);
-						}
-					);
+					b.projector.configFile = fixtureFile('config.ini.crlf.bin');
+					await b.write(async b => {
+						await b.copyResource(
+							'movie.dir',
+							fixtureFile('dir7.dir')
+						);
+					});
 				});
 
 				void it('complex', async () => {
@@ -49,6 +47,7 @@ void describe('bundle/windows', () => {
 					const b = new BundleWindows(dest);
 					const p = b.projector;
 					p.skeleton = await getSkeleton();
+					b.projector.configFile = fixtureFile('config.ini.crlf.bin');
 					p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
 					p.splashImageFile = fixtureFile('splash.bmp');
 					p.nestXtrasConfiguration = true;
@@ -60,15 +59,12 @@ void describe('bundle/windows', () => {
 						patchShockwave3dInstalledDisplayDriversSize;
 					p.iconFile = fixtureFile('icon.ico');
 					p.versionStrings = versionStrings;
-					await b.withFile(
-						fixtureFile('config.ini.crlf.bin'),
-						async b => {
-							await b.copyResource(
-								'movie.dir',
-								fixtureFile('dir7.dir')
-							);
-						}
-					);
+					await b.write(async b => {
+						await b.copyResource(
+							'movie.dir',
+							fixtureFile('dir7.dir')
+						);
+					});
 				});
 			});
 		}

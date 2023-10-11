@@ -27,15 +27,13 @@ void describe('bundle/mac/app', () => {
 
 					const b = new BundleMacApp(dest);
 					b.projector.skeleton = await getSkeleton();
-					await b.withFile(
-						fixtureFile('config.ini.lf.bin'),
-						async b => {
-							await b.copyResource(
-								'movie.dir',
-								fixtureFile('dir7.dir')
-							);
-						}
-					);
+					b.projector.configFile = fixtureFile('config.ini.lf.bin');
+					await b.write(async b => {
+						await b.copyResource(
+							'movie.dir',
+							fixtureFile('dir7.dir')
+						);
+					});
 				});
 
 				void it('complex', async () => {
@@ -45,6 +43,7 @@ void describe('bundle/mac/app', () => {
 					const b = new BundleMacApp(dest);
 					const p = b.projector;
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.lf.bin');
 					p.lingoFile = fixtureFile('lingo.ini.lf.bin');
 					p.splashImageFile = fixtureFile('splash.pict');
 					p.iconFile = fixtureFile('icon.icns');
@@ -57,15 +56,12 @@ void describe('bundle/mac/app', () => {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
-					await b.withFile(
-						fixtureFile('config.ini.lf.bin'),
-						async b => {
-							await b.copyResource(
-								'movie.dir',
-								fixtureFile('dir7.dir')
-							);
-						}
-					);
+					await b.write(async b => {
+						await b.copyResource(
+							'movie.dir',
+							fixtureFile('dir7.dir')
+						);
+					});
 				});
 			});
 		}

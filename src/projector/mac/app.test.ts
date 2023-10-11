@@ -27,7 +27,8 @@ void describe('projector/mac/app', () => {
 
 					const p = new ProjectorMacApp(dest);
 					p.skeleton = await getSkeleton();
-					await p.withFile(fixtureFile('config.ini.lf.bin'));
+					p.configFile = fixtureFile('config.ini.lf.bin');
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -41,11 +42,12 @@ void describe('projector/mac/app', () => {
 
 					const p = new ProjectorMacApp(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.lf.bin');
 					p.includeXtras = {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
-					await p.withFile(fixtureFile('config.ini.lf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -59,12 +61,13 @@ void describe('projector/mac/app', () => {
 
 					const p = new ProjectorMacApp(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.lf.bin');
 					p.includeXtras = {
 						Scripting: null,
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.xtra': null
 					};
-					await p.withFile(fixtureFile('config.ini.lf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -78,12 +81,13 @@ void describe('projector/mac/app', () => {
 
 					const p = new ProjectorMacApp(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.lf.bin');
 					p.includeXtras = {
 						Scripting: 'Scripting RENAMED',
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.xtra': 'GIF Agent RENAMED.xtra'
 					};
-					await p.withFile(fixtureFile('config.ini.lf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -97,8 +101,9 @@ void describe('projector/mac/app', () => {
 
 					const p = new ProjectorMacApp(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.lf.bin');
 					p.shockwave = true;
-					await p.withFile(fixtureFile('config.ini.lf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -112,12 +117,13 @@ void describe('projector/mac/app', () => {
 
 					const p = new ProjectorMacApp(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.lf.bin');
 					p.nestXtrasConfiguration = true;
 					p.includeXtras = {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
-					await p.withFile(fixtureFile('config.ini.lf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -132,12 +138,13 @@ void describe('projector/mac/app', () => {
 
 						const p = new ProjectorMacApp(dest);
 						p.skeleton = await getSkeleton();
+						p.configFile = fixtureFile('config.ini.lf.bin');
 						p.nestXtrasContents = true;
 						p.includeXtras = {
 							// eslint-disable-next-line @typescript-eslint/naming-convention
 							'': null
 						};
-						await p.withFile(fixtureFile('config.ini.lf.bin'));
+						await p.write();
 
 						await copyFile(
 							fixtureFile('dir7.dir'),
@@ -153,8 +160,9 @@ void describe('projector/mac/app', () => {
 
 						const p = new ProjectorMacApp(dest);
 						p.skeleton = await getSkeleton();
+						p.configFile = fixtureFile('config.ini.lf.bin');
 						p.intel = true;
-						await p.withFile(fixtureFile('config.ini.lf.bin'));
+						await p.write();
 
 						await copyFile(
 							fixtureFile('dir7.dir'),
@@ -169,6 +177,7 @@ void describe('projector/mac/app', () => {
 
 					const p = new ProjectorMacApp(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.lf.bin');
 					p.lingoFile = fixtureFile('lingo.ini.lf.bin');
 					p.splashImageFile = fixtureFile('splash.pict');
 					p.iconFile = fixtureFile('icon.icns');
@@ -181,7 +190,7 @@ void describe('projector/mac/app', () => {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
-					await p.withFile(fixtureFile('config.ini.lf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),

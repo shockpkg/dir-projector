@@ -15,7 +15,8 @@ void describe('projector', () => {
 
 			const p = new ProjectorDummy(dest);
 			p.skeleton = 'dummy';
-			await p.withFile(fixtureFile('config.ini.crlf.bin'));
+			p.configFile = fixtureFile('config.ini.crlf.bin');
+			await p.write();
 
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
@@ -26,8 +27,9 @@ void describe('projector', () => {
 
 			const p = new ProjectorDummy(dest);
 			p.skeleton = 'dummy';
+			p.configFile = fixtureFile('config.ini.crlf.bin');
 			p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
-			await p.withFile(fixtureFile('config.ini.crlf.bin'));
+			await p.write();
 
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
@@ -38,8 +40,9 @@ void describe('projector', () => {
 
 			const p = new ProjectorDummy(dest);
 			p.skeleton = 'dummy';
+			p.configFile = fixtureFile('config.ini.crlf.bin');
 			p.splashImageFile = fixtureFile('splash.bmp');
-			await p.withFile(fixtureFile('config.ini.crlf.bin'));
+			await p.write();
 
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});
@@ -50,9 +53,10 @@ void describe('projector', () => {
 
 			const p = new ProjectorDummy(dest);
 			p.skeleton = 'dummy';
+			p.configFile = fixtureFile('config.ini.crlf.bin');
 			p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
 			p.splashImageFile = fixtureFile('splash.bmp');
-			await p.withFile(fixtureFile('config.ini.crlf.bin'));
+			await p.write();
 
 			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
 		});

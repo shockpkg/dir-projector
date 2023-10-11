@@ -86,6 +86,22 @@ export abstract class Projector {
 	public skeleton: string | null = null;
 
 	/**
+	 * Config data.
+	 */
+	public configData:
+		| Readonly<string[]>
+		| string
+		| Readonly<Uint8Array>
+		| (() => Readonly<string[]> | string | Readonly<Uint8Array>)
+		| (() => Promise<Readonly<string[]> | string | Readonly<Uint8Array>>)
+		| null = null;
+
+	/**
+	 * Config file.
+	 */
+	public configFile: string | null = null;
+
+	/**
 	 * Output path.
 	 */
 	public readonly path: string;
@@ -183,6 +199,48 @@ export abstract class Projector {
 		return this.nestXtrasConfiguration && cn
 			? pathJoin(dirname(this.path), cn, this.xtrasName)
 			: pathJoin(dirname(this.path), this.xtrasName);
+	}
+
+	/**
+	 * Get config file data.
+	 *
+	 * @returns Config data or null.
+	 */
+	public async getConfigData() {
+		const {configData, configFile} = this;
+		if (configData) {
+			switch (typeof configData) {
+				case 'function': {
+					const d = await configData();
+					if (typeof d === 'string') {
+						return new TextEncoder().encode(d);
+					}
+					if (Array.isArray(d)) {
+						return new TextEncoder().encode(
+							d.join(this.configNewline)
+						);
+					}
+					return d as Readonly<Uint8Array>;
+				}
+				case 'string': {
+					return new TextEncoder().encode(configData);
+				}
+				default: {
+					// Fall through.
+				}
+			}
+			if (Array.isArray(configData)) {
+				return new TextEncoder().encode(
+					configData.join(this.configNewline)
+				);
+			}
+			return configData as Readonly<Uint8Array>;
+		}
+		if (configFile) {
+			const d = await readFile(configFile);
+			return new Uint8Array(d.buffer, d.byteOffset, d.byteLength);
+		}
+		return null;
 	}
 
 	/**
@@ -290,22 +348,9 @@ export abstract class Projector {
 	}
 
 	/**
-	 * Write out projector with skeleton and config file.
-	 *
-	 * @param configFile Config file.
+	 * Write out the projector.
 	 */
-	public async withFile(configFile: string | null) {
-		await this.withData(configFile ? await readFile(configFile) : null);
-	}
-
-	/**
-	 * Write out projector with skeleton and config data.
-	 *
-	 * @param configData Config data.
-	 */
-	public async withData(
-		configData: Readonly<string[]> | string | Readonly<Buffer> | null
-	) {
+	public async write() {
 		const {skeleton} = this;
 		if (!skeleton) {
 			throw new Error('No projector skeleton configured');
@@ -314,7 +359,7 @@ export abstract class Projector {
 		await this._checkOutput();
 		await this._writeSkeleton(skeleton);
 		await this._modifySkeleton();
-		await this._writeConfig(configData);
+		await this._writeConfig();
 		await this._writeSplashImage();
 		await this._writeLingo();
 	}
@@ -339,21 +384,9 @@ export abstract class Projector {
 
 	/**
 	 * Write out the projector config file.
-	 *
-	 * @param configData Config data.
 	 */
-	protected async _writeConfig(
-		configData: Readonly<string[]> | string | Readonly<Buffer> | null
-	) {
-		let data;
-		if (typeof configData === 'string') {
-			data = configData;
-		} else if (Array.isArray(data)) {
-			data = (configData as string[]).join(this.configNewline);
-		} else if (configData) {
-			data = configData as Readonly<Buffer>;
-		}
-
+	protected async _writeConfig() {
+		const data = await this.getConfigData();
 		if (data) {
 			const {configPath} = this;
 			await mkdir(dirname(configPath), {recursive: true});

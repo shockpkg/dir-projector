@@ -31,7 +31,8 @@ void describe('projector/windows', () => {
 
 					const p = new ProjectorWindows(dest);
 					p.skeleton = await getSkeleton();
-					await p.withFile(fixtureFile('config.ini.crlf.bin'));
+					p.configFile = fixtureFile('config.ini.crlf.bin');
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -45,13 +46,14 @@ void describe('projector/windows', () => {
 
 					const p = new ProjectorWindows(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.includeXtras = {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
 					p.patchShockwave3dInstalledDisplayDriversSize =
 						patchShockwave3dInstalledDisplayDriversSize;
-					await p.withFile(fixtureFile('config.ini.crlf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -65,6 +67,7 @@ void describe('projector/windows', () => {
 
 					const p = new ProjectorWindows(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.includeXtras = {
 						Scripting: null,
 						// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -72,7 +75,7 @@ void describe('projector/windows', () => {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.x32': null
 					};
-					await p.withFile(fixtureFile('config.ini.crlf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -86,6 +89,7 @@ void describe('projector/windows', () => {
 
 					const p = new ProjectorWindows(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.includeXtras = {
 						Scripting: 'Scripting RENAMED',
 						// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -93,7 +97,7 @@ void describe('projector/windows', () => {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'GIF Agent.x32': 'GIF Agent RENAMED.x32'
 					};
-					await p.withFile(fixtureFile('config.ini.crlf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -107,8 +111,9 @@ void describe('projector/windows', () => {
 
 					const p = new ProjectorWindows(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.shockwave = true;
-					await p.withFile(fixtureFile('config.ini.crlf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -122,6 +127,7 @@ void describe('projector/windows', () => {
 
 					const p = new ProjectorWindows(dest);
 					p.skeleton = await getSkeleton();
+					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.nestXtrasConfiguration = true;
 					p.includeXtras = {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -129,7 +135,7 @@ void describe('projector/windows', () => {
 					};
 					p.patchShockwave3dInstalledDisplayDriversSize =
 						patchShockwave3dInstalledDisplayDriversSize;
-					await p.withFile(fixtureFile('config.ini.crlf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
@@ -143,6 +149,7 @@ void describe('projector/windows', () => {
 
 					const p = new ProjectorWindows(dest);
 					p.skeleton = await getSkeleton();
+					p.configData = fixtureFile('config.ini.crlf.bin');
 					p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
 					p.splashImageFile = fixtureFile('splash.bmp');
 					p.nestXtrasConfiguration = true;
@@ -154,7 +161,7 @@ void describe('projector/windows', () => {
 						patchShockwave3dInstalledDisplayDriversSize;
 					p.iconFile = fixtureFile('icon.ico');
 					p.versionStrings = versionStrings;
-					await p.withFile(fixtureFile('config.ini.crlf.bin'));
+					await p.write();
 
 					await copyFile(
 						fixtureFile('dir7.dir'),
