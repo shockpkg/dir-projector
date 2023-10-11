@@ -2,22 +2,21 @@ import {describe, it} from 'node:test';
 import {ok} from 'node:assert';
 import {join as pathJoin} from 'node:path';
 
-import {listSamples} from '../../projector/mac/app.spec';
-import {cleanBundlesDir} from '../../bundle.spec';
-import {fixtureFile, getPackageFile} from '../../util.spec';
-import {BundleMac} from '../mac';
+import {listSamples} from '../projector/mac.spec';
+import {cleanBundlesDir} from '../bundle.spec';
+import {fixtureFile, getPackageFile} from '../util.spec';
+import {Bundle} from '../bundle';
 
-import {BundleMacApp} from './app';
+import {BundleMac} from './mac';
 
-void describe('bundle/mac/app', () => {
-	void describe('BundleMacApp', () => {
-		void it('instanceof BundleMac', () => {
-			ok(BundleMacApp.prototype instanceof BundleMac);
+void describe('bundle/mac', () => {
+	void describe('BundleMac', () => {
+		void it('instanceof Bundle', () => {
+			ok(BundleMac.prototype instanceof Bundle);
 		});
 
 		for (const {name} of listSamples()) {
-			const getDir = async (d: string) =>
-				cleanBundlesDir('mac', 'app', name, d);
+			const getDir = async (d: string) => cleanBundlesDir('mac', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
 			void describe(name, () => {
@@ -25,7 +24,7 @@ void describe('bundle/mac/app', () => {
 					const dir = await getDir('simple');
 					const dest = pathJoin(dir, 'application.app');
 
-					const b = new BundleMacApp(dest);
+					const b = new BundleMac(dest);
 					b.projector.skeleton = await getSkeleton();
 					b.projector.configFile = fixtureFile('config.ini.lf.bin');
 					await b.write(async b => {
@@ -40,7 +39,7 @@ void describe('bundle/mac/app', () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.app');
 
-					const b = new BundleMacApp(dest);
+					const b = new BundleMac(dest);
 					const p = b.projector;
 					p.skeleton = await getSkeleton();
 					p.configFile = fixtureFile('config.ini.lf.bin');

@@ -2,10 +2,10 @@ import {
 	platformIsMac,
 	shouldTest,
 	getInstalledPackagesSync
-} from '../../util.spec';
+} from '../util.spec';
 
 export function listSamples() {
-	if (!shouldTest('mac-app')) {
+	if (!shouldTest('mac')) {
 		return [];
 	}
 	const r = [];

@@ -149,7 +149,7 @@ void describe('projector/windows', () => {
 
 					const p = new ProjectorWindows(dest);
 					p.skeleton = await getSkeleton();
-					p.configData = fixtureFile('config.ini.crlf.bin');
+					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
 					p.splashImageFile = fixtureFile('splash.bmp');
 					p.nestXtrasConfiguration = true;

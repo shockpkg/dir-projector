@@ -79,12 +79,12 @@ projector.patchShockwave3dInstalledDisplayDriversSize = true;
 await projector.write();
 ```
 
-### Mac App
+### Mac
 
 ```js
-import {ProjectorMacApp} from '@shockpkg/dir-projector';
+import {ProjectorMac} from '@shockpkg/dir-projector';
 
-const projector = new ProjectorMacApp('projector-macapp/application.app');
+const projector = new ProjectorMac('projector-mac/application.app');
 
 // Required skeleton.
 projector.skeleton = 'skeleton.zip';
@@ -154,12 +154,12 @@ await bundle.write(async b => {
 });
 ```
 
-### Mac App
+### Mac
 
 ```js
-import {BundleMacApp} from '@shockpkg/dir-projector';
+import {BundleMac} from '@shockpkg/dir-projector';
 
-const bundle = new BundleMacApp('bundle-macapp/application.app');
+const bundle = new BundleMac('bundle-mac/application.app');
 
 // Use projector property to set options.
 bundle.projector.skeleton = 'skeleton.zip';
