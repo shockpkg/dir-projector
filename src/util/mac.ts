@@ -81,19 +81,21 @@ export async function machoTypesFile(path: string) {
 	let data;
 	const f = await open(path, 'r');
 	try {
-		const h = 8;
-		const head = Buffer.alloc(h);
-		const {bytesRead} = await f.read(head, 0, h, 0);
-		if (bytesRead < h) {
-			data = head.subarray(0, bytesRead);
+		const m = 8;
+		const h = new Uint8Array(m);
+		const {bytesRead} = await f.read(h, 0, m, 0);
+		if (bytesRead < m) {
+			data = h.subarray(0, bytesRead);
 		} else {
+			const v = new DataView(h.buffer, h.byteOffset, h.byteLength);
 			const n =
-				head.readUInt32BE(0) === FAT_MAGIC
-					? head.readUInt32BE(4) * 20
+				v.getUint32(0, false) === FAT_MAGIC
+					? v.getUint32(4, false) * 20
 					: 4;
-			const d = Buffer.alloc(n);
-			const {bytesRead} = await f.read(d, 0, n, h);
-			data = Buffer.concat([head, d.subarray(0, bytesRead)]);
+			const d = new Uint8Array(m + n);
+			d.set(h);
+			const {bytesRead} = await f.read(d, m, n, m);
+			data = d.subarray(0, m + bytesRead);
 		}
 	} finally {
 		await f.close();
