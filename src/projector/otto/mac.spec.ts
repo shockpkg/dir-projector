@@ -2,7 +2,7 @@ import {
 	platformIsMac,
 	shouldTest,
 	getInstalledPackagesSync
-} from '../util.spec';
+} from '../../util.spec';
 
 export function listSamples() {
 	if (!shouldTest('mac')) {

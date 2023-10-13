@@ -2,26 +2,25 @@ import {describe, it} from 'node:test';
 import {ok} from 'node:assert';
 import {join as pathJoin} from 'node:path';
 
-import {listSamples, versionStrings} from '../projector/windows.spec';
-import {cleanBundlesDir} from '../bundle.spec';
-import {fixtureFile, getPackageFile} from '../util.spec';
-import {Bundle} from '../bundle';
+import {listSamples, versionStrings} from '../../projector/otto/windows.spec';
+import {cleanBundlesDir} from '../otto.spec';
+import {fixtureFile, getPackageFile} from '../../util.spec';
+import {BundleOtto} from '../otto';
 
-import {BundleWindows} from './windows';
+import {BundleOttoWindows} from './windows';
 
-void describe('bundle/windows', () => {
+void describe('bundle/otto/windows', () => {
 	void describe('BundleWindows', () => {
-		void it('instanceof Bundle', () => {
-			ok(BundleWindows.prototype instanceof Bundle);
+		void it('instanceof', () => {
+			ok(BundleOttoWindows.prototype instanceof BundleOtto);
 		});
 
 		for (const {
 			name,
-			type,
 			patchShockwave3dInstalledDisplayDriversSize
 		} of listSamples()) {
 			const getDir = async (d: string) =>
-				cleanBundlesDir('windows', type, name, d);
+				cleanBundlesDir('otto', 'windows', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
 			void describe(name, () => {
@@ -29,7 +28,7 @@ void describe('bundle/windows', () => {
 					const dir = await getDir('simple');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const b = new BundleWindows(dest);
+					const b = new BundleOttoWindows(dest);
 					b.projector.skeleton = await getSkeleton();
 					b.projector.configFile = fixtureFile('config.ini.crlf.bin');
 					await b.write(async b => {
@@ -44,7 +43,7 @@ void describe('bundle/windows', () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const b = new BundleWindows(dest);
+					const b = new BundleOttoWindows(dest);
 					const p = b.projector;
 					p.skeleton = await getSkeleton();
 					b.projector.configFile = fixtureFile('config.ini.crlf.bin');

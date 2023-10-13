@@ -26,12 +26,14 @@ Currently only flat projectors are supported, not the kind that Director makes w
 
 ## Projector
 
-### Windows
+### Otto
+
+#### Windows
 
 ```js
-import {ProjectorWindows} from '@shockpkg/dir-projector';
+import {ProjectorOttoWindows} from '@shockpkg/dir-projector';
 
-const projector = new ProjectorWindows('projector-windows/application.exe');
+const projector = new ProjectorOttoWindows('projector-windows/application.exe');
 
 // Required skeleton.
 projector.skeleton = 'skeleton.zip';
@@ -79,12 +81,12 @@ projector.patchShockwave3dInstalledDisplayDriversSize = true;
 await projector.write();
 ```
 
-### Mac
+#### Mac
 
 ```js
-import {ProjectorMac} from '@shockpkg/dir-projector';
+import {ProjectorOttoMac} from '@shockpkg/dir-projector';
 
-const projector = new ProjectorMac('projector-mac/application.app');
+const projector = new ProjectorOttoMac('projector-mac/application.app');
 
 // Required skeleton.
 projector.skeleton = 'skeleton.zip';
@@ -135,12 +137,14 @@ await projector.write();
 
 ## Bundle
 
-### Windows
+### Otto
+
+#### Windows
 
 ```js
-import {BundleWindows} from '@shockpkg/dir-projector';
+import {BundleOttoWindows} from '@shockpkg/dir-projector';
 
-const bundle = new BundleWindows('bundle-windows/application.exe');
+const bundle = new BundleOttoWindows('bundle-windows/application.exe');
 
 // Use projector property to set options.
 bundle.projector.skeleton = 'skeleton.zip';
@@ -154,12 +158,12 @@ await bundle.write(async b => {
 });
 ```
 
-### Mac
+#### Mac
 
 ```js
-import {BundleMac} from '@shockpkg/dir-projector';
+import {BundleOttoMac} from '@shockpkg/dir-projector';
 
-const bundle = new BundleMac('bundle-mac/application.app');
+const bundle = new BundleOttoMac('bundle-mac/application.app');
 
 // Use projector property to set options.
 bundle.projector.skeleton = 'skeleton.zip';

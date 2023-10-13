@@ -1,19 +1,28 @@
 import {describe, it} from 'node:test';
+import {ok} from 'node:assert';
 import {copyFile} from 'node:fs/promises';
 import {join as pathJoin} from 'node:path';
 
-import {ProjectorDummy} from './projector.spec';
-import {cleanProjectorDir, fixtureFile} from './util.spec';
+import {cleanProjectorDir, fixtureFile} from '../util.spec';
+import {Projector} from '../projector';
 
-const getDir = async (d: string) => cleanProjectorDir('dummy', d);
+import {ProjectorOtto} from './otto';
+import {ProjectorOttoDummy} from './otto.spec';
 
-void describe('projector', () => {
-	void describe('ProjectorDummy', () => {
+const getDir = async (d: string) => cleanProjectorDir('otto', 'dummy', d);
+
+void describe('projector/otto', () => {
+	void describe('ProjectorOttoDummy', () => {
+		void it('instanceof', () => {
+			ok(ProjectorOttoDummy.prototype instanceof ProjectorOtto);
+			ok(ProjectorOttoDummy.prototype instanceof Projector);
+		});
+
 		void it('simple', async () => {
 			const dir = await getDir('simple');
 			const dest = pathJoin(dir, 'application.exe');
 
-			const p = new ProjectorDummy(dest);
+			const p = new ProjectorOttoDummy(dest);
 			p.skeleton = 'dummy';
 			p.configFile = fixtureFile('config.ini.crlf.bin');
 			await p.write();
@@ -25,7 +34,7 @@ void describe('projector', () => {
 			const dir = await getDir('lingo');
 			const dest = pathJoin(dir, 'application.exe');
 
-			const p = new ProjectorDummy(dest);
+			const p = new ProjectorOttoDummy(dest);
 			p.skeleton = 'dummy';
 			p.configFile = fixtureFile('config.ini.crlf.bin');
 			p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
@@ -38,7 +47,7 @@ void describe('projector', () => {
 			const dir = await getDir('splash');
 			const dest = pathJoin(dir, 'application.exe');
 
-			const p = new ProjectorDummy(dest);
+			const p = new ProjectorOttoDummy(dest);
 			p.skeleton = 'dummy';
 			p.configFile = fixtureFile('config.ini.crlf.bin');
 			p.splashImageFile = fixtureFile('splash.bmp');
@@ -51,7 +60,7 @@ void describe('projector', () => {
 			const dir = await getDir('complex');
 			const dest = pathJoin(dir, 'application.exe');
 
-			const p = new ProjectorDummy(dest);
+			const p = new ProjectorOttoDummy(dest);
 			p.skeleton = 'dummy';
 			p.configFile = fixtureFile('config.ini.crlf.bin');
 			p.lingoFile = fixtureFile('lingo.ini.crlf.bin');

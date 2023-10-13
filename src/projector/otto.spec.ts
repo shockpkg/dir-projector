@@ -1,6 +1,6 @@
-import {Projector} from './projector';
+import {ProjectorOtto} from './otto';
 
-export class ProjectorDummy extends Projector {
+export class ProjectorOttoDummy extends ProjectorOtto {
 	constructor(path: string) {
 		super(path);
 	}

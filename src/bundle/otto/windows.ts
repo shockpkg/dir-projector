@@ -1,22 +1,22 @@
 import {mkdir, open, writeFile} from 'node:fs/promises';
 import {join as pathJoin, basename, dirname} from 'node:path';
 
-import {trimExtension} from '../util';
-import {windowsLauncher} from '../util/windows';
-import {ProjectorWindows} from '../projector/windows';
-import {Bundle} from '../bundle';
+import {trimExtension} from '../../util';
+import {windowsLauncher} from '../../util/windows';
+import {ProjectorOttoWindows} from '../../projector/otto/windows';
+import {BundleOtto} from '../otto';
 
 /**
- * BundleWindows object.
+ * BundleOttoWindows object.
  */
-export class BundleWindows extends Bundle {
+export class BundleOttoWindows extends BundleOtto {
 	/**
-	 * ProjectorWindows instance.
+	 * ProjectorOttoWindows instance.
 	 */
-	public readonly projector: ProjectorWindows;
+	public readonly projector: ProjectorOttoWindows;
 
 	/**
-	 * BundleWindows constructor.
+	 * BundleOttoWindows constructor.
 	 *
 	 * @param path Output path for the main application.
 	 */
@@ -27,18 +27,14 @@ export class BundleWindows extends Bundle {
 	}
 
 	/**
-	 * Main application file extension.
-	 *
-	 * @returns File extension.
+	 * @inheritdoc
 	 */
 	public get extension() {
 		return '.exe';
 	}
 
 	/**
-	 * Create projector instance for the bundle.
-	 *
-	 * @returns Projector instance.
+	 * @inheritdoc
 	 */
 	protected _createProjector() {
 		const {path, extension} = this;
@@ -46,11 +42,11 @@ export class BundleWindows extends Bundle {
 		if (directory === path) {
 			throw new Error(`Output path must end with: ${extension}`);
 		}
-		return new ProjectorWindows(pathJoin(directory, basename(path)));
+		return new ProjectorOttoWindows(pathJoin(directory, basename(path)));
 	}
 
 	/**
-	 * Write the launcher file.
+	 * @inheritdoc
 	 */
 	protected async _writeLauncher() {
 		const {path, projector} = this;

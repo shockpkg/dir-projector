@@ -1,4 +1,4 @@
-import {shouldTest, getInstalledPackagesSync} from '../util.spec';
+import {shouldTest, getInstalledPackagesSync} from '../../util.spec';
 
 export function listSamples() {
 	if (!shouldTest('windows-i386')) {
@@ -17,7 +17,6 @@ export function listSamples() {
 		r.push({
 			name,
 			version,
-			type: 'i386',
 			patchShockwave3dInstalledDisplayDriversSize:
 				version[0] > 8 || (version[0] === 8 && version[1] >= 5)
 		});

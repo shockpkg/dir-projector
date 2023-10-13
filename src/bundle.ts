@@ -557,7 +557,6 @@ export abstract class Bundle {
 	 * Close output.
 	 */
 	protected async _close() {
-		await this._writeLauncher();
 		await this._closeQueue.run();
 	}
 
@@ -590,21 +589,9 @@ export abstract class Bundle {
 	}
 
 	/**
-	 * Main application file extension.
-	 *
-	 * @returns File extension.
-	 */
-	public abstract get extension(): string;
-
-	/**
 	 * Create projector instance for the bundle.
 	 *
 	 * @returns Projector instance.
 	 */
 	protected abstract _createProjector(): Projector;
-
-	/**
-	 * Write the launcher file.
-	 */
-	protected abstract _writeLauncher(): Promise<void>;
 }

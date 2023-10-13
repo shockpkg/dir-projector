@@ -8,13 +8,17 @@ import {
 } from '@shockpkg/archive-files';
 import {Plist, ValueDict, ValueString} from '@shockpkg/plist-dom';
 
-import {pathRelativeBase, pathRelativeBaseMatch, trimExtension} from '../util';
-import {Projector} from '../projector';
+import {
+	pathRelativeBase,
+	pathRelativeBaseMatch,
+	trimExtension
+} from '../../util';
+import {ProjectorOtto} from '../otto';
 
 /**
- * ProjectorMac object.
+ * ProjectorOttoMac object.
  */
-export class ProjectorMac extends Projector {
+export class ProjectorOttoMac extends ProjectorOtto {
 	/**
 	 * Binary name.
 	 */
@@ -73,7 +77,7 @@ export class ProjectorMac extends Projector {
 	public nestXtrasContents = false;
 
 	/**
-	 * ProjectorMac constructor.
+	 * ProjectorOttoMac constructor.
 	 *
 	 * @param path Output path.
 	 */
@@ -82,36 +86,28 @@ export class ProjectorMac extends Projector {
 	}
 
 	/**
-	 * Projector file extension.
-	 *
-	 * @returns File extension.
+	 * @inheritdoc
 	 */
 	public get extension() {
 		return '.app';
 	}
 
 	/**
-	 * Config file newline characters.
-	 *
-	 * @returns Newline characters.
+	 * @inheritdoc
 	 */
 	public get configNewline() {
 		return '\n';
 	}
 
 	/**
-	 * Config file newline characters.
-	 *
-	 * @returns Newline characters.
+	 * @inheritdoc
 	 */
 	public get lingoNewline() {
 		return '\n';
 	}
 
 	/**
-	 * Splash image file extension.
-	 *
-	 * @returns File extension.
+	 * @inheritdoc
 	 */
 	public get splashImageExtension() {
 		return '.pict';
@@ -459,9 +455,7 @@ export class ProjectorMac extends Projector {
 	}
 
 	/**
-	 * Write the projector skeleton from archive.
-	 *
-	 * @param skeleton Skeleton path.
+	 * @inheritdoc
 	 */
 	protected async _writeSkeleton(skeleton: string) {
 		const {
@@ -678,7 +672,7 @@ export class ProjectorMac extends Projector {
 	}
 
 	/**
-	 * Modify the projector skeleton.
+	 * @inheritdoc
 	 */
 	protected async _modifySkeleton() {
 		await this._writeIcon();

@@ -8,17 +8,17 @@ import {
 	fsWalk
 } from '@shockpkg/archive-files';
 
-import {pathRelativeBase, pathRelativeBaseMatch} from '../util';
+import {pathRelativeBase, pathRelativeBaseMatch} from '../../util';
 import {
 	peResourceReplace,
 	windowsPatchShockwave3dInstalledDisplayDriversSize
-} from '../util/windows';
-import {Projector} from '../projector';
+} from '../../util/windows';
+import {ProjectorOtto} from '../otto';
 
 /**
- * ProjectorWindows object.
+ * ProjectorOttoWindows object.
  */
-export class ProjectorWindows extends Projector {
+export class ProjectorOttoWindows extends ProjectorOtto {
 	/**
 	 * Icon file.
 	 */
@@ -46,7 +46,7 @@ export class ProjectorWindows extends Projector {
 	public patchShockwave3dInstalledDisplayDriversSize = false;
 
 	/**
-	 * ProjectorWindows constructor.
+	 * ProjectorOttoWindows constructor.
 	 *
 	 * @param path Output path.
 	 */
@@ -55,36 +55,28 @@ export class ProjectorWindows extends Projector {
 	}
 
 	/**
-	 * Projector file extension.
-	 *
-	 * @returns File extension.
+	 * @inheritdoc
 	 */
 	public get extension() {
 		return '.exe';
 	}
 
 	/**
-	 * Config file newline characters.
-	 *
-	 * @returns Newline characters.
+	 * @inheritdoc
 	 */
 	public get configNewline() {
 		return '\r\n';
 	}
 
 	/**
-	 * Lingo file newline characters.
-	 *
-	 * @returns Newline characters.
+	 * @inheritdoc
 	 */
 	public get lingoNewline() {
 		return '\r\n';
 	}
 
 	/**
-	 * Splash image file extension.
-	 *
-	 * @returns File extension.
+	 * @inheritdoc
 	 */
 	public get splashImageExtension() {
 		return '.BMP';
@@ -110,9 +102,7 @@ export class ProjectorWindows extends Projector {
 	}
 
 	/**
-	 * Write the projector skeleton from archive.
-	 *
-	 * @param skeleton Skeleton path.
+	 * @inheritdoc
 	 */
 	protected async _writeSkeleton(skeleton: string) {
 		const {path, shockwave, sklName, xtrasName, xtrasPath} = this;
@@ -235,7 +225,7 @@ export class ProjectorWindows extends Projector {
 	}
 
 	/**
-	 * Modify the projector skeleton.
+	 * @inheritdoc
 	 */
 	protected async _modifySkeleton() {
 		const iconData = await this.getIconData();

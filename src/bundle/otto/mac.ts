@@ -4,22 +4,22 @@ import {join as pathJoin, basename, dirname} from 'node:path';
 import {fsLstatExists} from '@shockpkg/archive-files';
 import {Plist, ValueDict, ValueString} from '@shockpkg/plist-dom';
 
-import {trimExtension} from '../util';
-import {machoTypesFile, machoAppLauncher} from '../util/mac';
-import {ProjectorMac} from '../projector/mac';
-import {Bundle} from '../bundle';
+import {trimExtension} from '../../util';
+import {machoTypesFile, machoAppLauncher} from '../../util/mac';
+import {ProjectorOttoMac} from '../../projector/otto/mac';
+import {BundleOtto} from '../otto';
 
 /**
- * BundleMac object.
+ * BundleOttoMac object.
  */
-export class BundleMac extends Bundle {
+export class BundleOttoMac extends BundleOtto {
 	/**
-	 * ProjectorMac instance.
+	 * ProjectorOttoMac instance.
 	 */
-	public readonly projector: ProjectorMac;
+	public readonly projector: ProjectorOttoMac;
 
 	/**
-	 * BundleMac constructor.
+	 * BundleOttoMac constructor.
 	 *
 	 * @param path Output path for the main application.
 	 */
@@ -30,9 +30,7 @@ export class BundleMac extends Bundle {
 	}
 
 	/**
-	 * Main application file extension.
-	 *
-	 * @returns File extension.
+	 * @inheritdoc
 	 */
 	public get extension() {
 		return '.app';
@@ -48,18 +46,16 @@ export class BundleMac extends Bundle {
 	}
 
 	/**
-	 * Create projector instance for the bundle.
-	 *
-	 * @returns Projector instance.
+	 * @inheritdoc
 	 */
 	protected _createProjector() {
 		const projName = `${this._getLauncherName()}${this.extension}`;
 		const projPath = pathJoin(this.path, 'Contents', 'Resources', projName);
-		return new ProjectorMac(projPath);
+		return new ProjectorOttoMac(projPath);
 	}
 
 	/**
-	 * Write the launcher file.
+	 * @inheritdoc
 	 */
 	protected async _writeLauncher() {
 		const {path, projector} = this;

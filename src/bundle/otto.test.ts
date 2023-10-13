@@ -1,5 +1,5 @@
 import {describe, it} from 'node:test';
-import {notEqual, strictEqual} from 'node:assert';
+import {notEqual, ok, strictEqual} from 'node:assert';
 import {
 	chmod,
 	lstat,
@@ -13,13 +13,15 @@ import {join as pathJoin, basename, dirname} from 'node:path';
 
 import {fsLchmod, fsLutimes} from '@shockpkg/archive-files';
 
-import {trimExtension} from './util';
-import {fixtureFile} from './util.spec';
-import {ProjectorDummy} from './projector.spec';
-import {Bundle} from './bundle';
-import {cleanBundlesDir} from './bundle.spec';
+import {trimExtension} from '../util';
+import {fixtureFile} from '../util.spec';
+import {Bundle} from '../bundle';
+import {ProjectorOttoDummy} from '../projector/otto.spec';
 
-const getDir = async (d: string) => cleanBundlesDir('dummy', d);
+import {cleanBundlesDir} from './otto.spec';
+import {BundleOtto} from './otto';
+
+const getDir = async (d: string) => cleanBundlesDir('otto', 'dummy', d);
 
 const supportsExecutable = !process.platform.startsWith('win');
 const supportsSymlinks = !process.platform.startsWith('win');
@@ -28,8 +30,8 @@ const supportsSymlinkAttrs = process.platform.startsWith('darwin');
 // eslint-disable-next-line no-bitwise
 const isUserExec = (mode: number) => !!(mode & 0b001000000);
 
-class BundleDummy extends Bundle {
-	public readonly projector: ProjectorDummy;
+class BundleOttoDummy extends BundleOtto {
+	public readonly projector: ProjectorOttoDummy;
 
 	constructor(path: string) {
 		super(path);
@@ -47,7 +49,7 @@ class BundleDummy extends Bundle {
 		if (directory === path) {
 			throw new Error(`Output path must end with: ${extension}`);
 		}
-		return new ProjectorDummy(pathJoin(directory, basename(path)));
+		return new ProjectorOttoDummy(pathJoin(directory, basename(path)));
 	}
 
 	protected async _writeLauncher() {
@@ -56,13 +58,18 @@ class BundleDummy extends Bundle {
 	}
 }
 
-void describe('bundle', () => {
-	void describe('BundleDummy', () => {
+void describe('bundle/otto', () => {
+	void describe('BundleOttoDummy', () => {
+		void it('instanceof', () => {
+			ok(BundleOttoDummy.prototype instanceof BundleOtto);
+			ok(BundleOttoDummy.prototype instanceof Bundle);
+		});
+
 		void it('simple', async () => {
 			const dir = await getDir('simple');
 			const dest = pathJoin(dir, 'application.exe');
 
-			const b = new BundleDummy(dest);
+			const b = new BundleOttoDummy(dest);
 			b.projector.skeleton = fixtureFile('dummy.zip');
 			b.projector.configFile = fixtureFile('config.ini.crlf.bin');
 			await b.write();
@@ -108,7 +115,7 @@ void describe('bundle', () => {
 
 			await utimes(resources, dateA, dateA);
 
-			const b = new BundleDummy(dest);
+			const b = new BundleOttoDummy(dest);
 			b.projector.skeleton = fixtureFile('dummy.zip');
 			b.projector.configFile = fixtureFile('config.ini.crlf.bin');
 			await b.write(async p => {
@@ -252,7 +259,7 @@ void describe('bundle', () => {
 			await mkdir(dirname(resourcesA), {recursive: true});
 			await writeFile(resourcesA, 'alpha');
 
-			const b = new BundleDummy(dest);
+			const b = new BundleOttoDummy(dest);
 			b.projector.skeleton = fixtureFile('dummy.zip');
 			b.projector.configFile = fixtureFile('config.ini.crlf.bin');
 			await b.write(async p => {

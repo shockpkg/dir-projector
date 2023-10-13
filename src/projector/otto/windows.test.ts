@@ -3,25 +3,24 @@ import {ok} from 'node:assert';
 import {copyFile} from 'node:fs/promises';
 import {join as pathJoin} from 'node:path';
 
-import {cleanProjectorDir, fixtureFile, getPackageFile} from '../util.spec';
-import {Projector} from '../projector';
+import {cleanProjectorDir, fixtureFile, getPackageFile} from '../../util.spec';
+import {ProjectorOtto} from '../otto';
 
-import {ProjectorWindows} from './windows';
+import {ProjectorOttoWindows} from './windows';
 import {listSamples, versionStrings} from './windows.spec';
 
-void describe('projector/windows', () => {
-	void describe('ProjectorWindows', () => {
-		void it('instanceof Projector', () => {
-			ok(ProjectorWindows.prototype instanceof Projector);
+void describe('projector/otto/windows', () => {
+	void describe('ProjectorOttoWindows', () => {
+		void it('instanceof', () => {
+			ok(ProjectorOttoWindows.prototype instanceof ProjectorOtto);
 		});
 
 		for (const {
 			name,
-			type,
 			patchShockwave3dInstalledDisplayDriversSize
 		} of listSamples()) {
 			const getDir = async (d: string) =>
-				cleanProjectorDir('windows', type, name, d);
+				cleanProjectorDir('otto', 'windows', name, d);
 			const getSkeleton = async () => getPackageFile(name);
 
 			void describe(name, () => {
@@ -29,7 +28,7 @@ void describe('projector/windows', () => {
 					const dir = await getDir('simple');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows(dest);
+					const p = new ProjectorOttoWindows(dest);
 					p.skeleton = await getSkeleton();
 					p.configFile = fixtureFile('config.ini.crlf.bin');
 					await p.write();
@@ -44,7 +43,7 @@ void describe('projector/windows', () => {
 					const dir = await getDir('xtras-all');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows(dest);
+					const p = new ProjectorOttoWindows(dest);
 					p.skeleton = await getSkeleton();
 					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.includeXtras = {
@@ -65,7 +64,7 @@ void describe('projector/windows', () => {
 					const dir = await getDir('xtras-selective');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows(dest);
+					const p = new ProjectorOttoWindows(dest);
 					p.skeleton = await getSkeleton();
 					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.includeXtras = {
@@ -87,7 +86,7 @@ void describe('projector/windows', () => {
 					const dir = await getDir('xtras-rename');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows(dest);
+					const p = new ProjectorOttoWindows(dest);
 					p.skeleton = await getSkeleton();
 					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.includeXtras = {
@@ -109,7 +108,7 @@ void describe('projector/windows', () => {
 					const dir = await getDir('shockwave');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows(dest);
+					const p = new ProjectorOttoWindows(dest);
 					p.skeleton = await getSkeleton();
 					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.shockwave = true;
@@ -125,7 +124,7 @@ void describe('projector/windows', () => {
 					const dir = await getDir('nestXtrasConfiguration');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows(dest);
+					const p = new ProjectorOttoWindows(dest);
 					p.skeleton = await getSkeleton();
 					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.nestXtrasConfiguration = true;
@@ -147,7 +146,7 @@ void describe('projector/windows', () => {
 					const dir = await getDir('complex');
 					const dest = pathJoin(dir, 'application.exe');
 
-					const p = new ProjectorWindows(dest);
+					const p = new ProjectorOttoWindows(dest);
 					p.skeleton = await getSkeleton();
 					p.configFile = fixtureFile('config.ini.crlf.bin');
 					p.lingoFile = fixtureFile('lingo.ini.crlf.bin');
