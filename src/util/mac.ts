@@ -141,7 +141,7 @@ export async function machoAppLauncherFat(
 	const alignSize = (1 << align) >>> 0;
 
 	// Create the FAT header.
-	const headD = Buffer.alloc(8);
+	const headD = new Uint8Array(8);
 	const headV = new DataView(
 		headD.buffer,
 		headD.byteOffset,
@@ -184,7 +184,7 @@ export async function machoAppLauncherFat(
 			}))
 		)
 	)) {
-		const headD = Buffer.alloc(20);
+		const headD = new Uint8Array(20);
 		const headV = new DataView(
 			headD.buffer,
 			headD.byteOffset,
