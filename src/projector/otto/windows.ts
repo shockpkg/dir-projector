@@ -27,7 +27,11 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 	/**
 	 * Icon data.
 	 */
-	public iconData: Readonly<Buffer> | null = null;
+	public iconData:
+		| Readonly<Uint8Array>
+		| (() => Readonly<Uint8Array>)
+		| (() => Promise<Readonly<Uint8Array>>)
+		| null = null;
 
 	/**
 	 * Version strings.
@@ -98,7 +102,14 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 	 */
 	public async getIconData() {
 		const {iconData, iconFile} = this;
-		return iconData || (iconFile ? readFile(iconFile) : null);
+		if (iconData) {
+			return typeof iconData === 'function' ? iconData() : iconData;
+		}
+		if (iconFile) {
+			const d = await readFile(iconFile);
+			return new Uint8Array(d.buffer, d.byteOffset, d.byteLength);
+		}
+		return null;
 	}
 
 	/**

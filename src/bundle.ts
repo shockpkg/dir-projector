@@ -369,7 +369,7 @@ export abstract class Bundle {
 	 */
 	public async createResourceFile(
 		destination: string,
-		data: Readonly<Buffer> | string,
+		data: Readonly<Uint8Array> | string,
 		options: Readonly<IBundleResourceOptions> | null = null
 	) {
 		this._assertIsOpen();
@@ -398,14 +398,22 @@ export abstract class Bundle {
 	 */
 	public async createResourceSymlink(
 		destination: string,
-		target: Readonly<Buffer> | string,
+		target: Readonly<Uint8Array> | string,
 		options: Readonly<IBundleResourceOptions> | null = null
 	) {
 		this._assertIsOpen();
 
 		const dest = await this._assertNotResourceExists(destination);
 		await mkdir(dirname(dest), {recursive: true});
-		await symlink(target, dest);
+		const t =
+			typeof target === 'string'
+				? target
+				: Buffer.from(
+						target.buffer,
+						target.byteOffset,
+						target.byteLength
+				  );
+		await symlink(t, dest);
 
 		if (options) {
 			await this._setResourceAttributes(dest, options);

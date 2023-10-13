@@ -46,25 +46,33 @@ export abstract class ProjectorOtto extends Projector {
 	public shockwave = false;
 
 	/**
+	 * Splash image data.
+	 */
+	public splashImageData:
+		| Readonly<Uint8Array>
+		| (() => Readonly<Uint8Array>)
+		| null = null;
+
+	/**
 	 * Splash image file.
 	 */
 	public splashImageFile: string | null = null;
 
 	/**
-	 * Splash image data.
+	 * Lingo data.
 	 */
-	public splashImageData: Readonly<Buffer> | null = null;
+	public lingoData:
+		| Readonly<string[]>
+		| string
+		| Readonly<Uint8Array>
+		| (() => Readonly<string[]> | string | Readonly<Uint8Array>)
+		| (() => Promise<Readonly<string[]> | string | Readonly<Uint8Array>>)
+		| null = null;
 
 	/**
 	 * Lingo file.
 	 */
 	public lingoFile: string | null = null;
-
-	/**
-	 * Lingo data.
-	 */
-	public lingoData: Readonly<string[]> | string | Readonly<Buffer> | null =
-		null;
 
 	/**
 	 * Xtras include map.
@@ -241,10 +249,16 @@ export abstract class ProjectorOtto extends Projector {
 	 */
 	public async getSplashImageData() {
 		const {splashImageData, splashImageFile} = this;
-		return (
-			splashImageData ||
-			(splashImageFile ? readFile(splashImageFile) : null)
-		);
+		if (splashImageData) {
+			return typeof splashImageData === 'function'
+				? splashImageData()
+				: splashImageData;
+		}
+		if (splashImageFile) {
+			const d = await readFile(splashImageFile);
+			return new Uint8Array(d.buffer, d.byteOffset, d.byteLength);
+		}
+		return null;
 	}
 
 	/**
@@ -254,16 +268,39 @@ export abstract class ProjectorOtto extends Projector {
 	 */
 	public async getLingoData() {
 		const {lingoData, lingoFile} = this;
-		if (typeof lingoData === 'string') {
-			return Buffer.from(lingoData);
-		}
-		if (Array.isArray(lingoData)) {
-			return Buffer.from(lingoData.join(this.lingoNewline));
-		}
 		if (lingoData) {
-			return lingoData as Readonly<Buffer>;
+			switch (typeof lingoData) {
+				case 'function': {
+					const d = await lingoData();
+					if (typeof d === 'string') {
+						return new TextEncoder().encode(d);
+					}
+					if (Array.isArray(d)) {
+						return new TextEncoder().encode(
+							d.join(this.lingoNewline)
+						);
+					}
+					return d as Readonly<Uint8Array>;
+				}
+				case 'string': {
+					return new TextEncoder().encode(lingoData);
+				}
+				default: {
+					// Fall through.
+				}
+			}
+			if (Array.isArray(lingoData)) {
+				return new TextEncoder().encode(
+					lingoData.join(this.lingoNewline)
+				);
+			}
+			return lingoData as Readonly<Uint8Array>;
 		}
-		return lingoFile ? readFile(lingoFile) : null;
+		if (lingoFile) {
+			const d = await readFile(lingoFile);
+			return new Uint8Array(d.buffer, d.byteOffset, d.byteLength);
+		}
+		return null;
 	}
 
 	/**

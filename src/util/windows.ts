@@ -25,7 +25,7 @@ export interface IPeResourceReplace {
 	 *
 	 * @default null
 	 */
-	iconData?: Readonly<Buffer> | null;
+	iconData?: Readonly<Uint8Array> | null;
 
 	/**
 	 * Replace version strings if not null.
@@ -160,7 +160,10 @@ function exeUpdateSizes(exe: NtExecutable) {
  * @param rsrc NtExecutableResource instance.
  * @param iconData Icon data.
  */
-function rsrcPatchIcon(rsrc: NtExecutableResource, iconData: Readonly<Buffer>) {
+function rsrcPatchIcon(
+	rsrc: NtExecutableResource,
+	iconData: Readonly<Uint8Array>
+) {
 	const ico = Data.IconFile.from(iconData);
 	for (const iconGroup of Resource.IconGroupEntry.fromEntries(rsrc.entries)) {
 		Resource.IconGroupEntry.replaceIconsForResource(
@@ -266,7 +269,7 @@ export async function peResourceReplace(
 	}
 
 	// Write updated EXE file.
-	await writeFile(path, Buffer.from(exeData));
+	await writeFile(path, new Uint8Array(exeData));
 }
 
 /**
@@ -360,7 +363,7 @@ export async function windowsLauncher(
 		exeData = signatureSet(exeData, signedData, true, true);
 	}
 
-	return Buffer.from(exeData);
+	return new Uint8Array(exeData);
 }
 
 interface IPatcherPatch {
@@ -546,7 +549,7 @@ const patchShockwave3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
  * @param name Patch name.
  */
 function patchDataOnce(
-	data: Buffer,
+	data: Uint8Array,
 	candidates: Readonly<IPatcherPatch[]>,
 	name: string
 ) {

@@ -29,19 +29,9 @@ export interface IMachoType {
  * @param data Mach-O data.
  * @returns Mach-O types.
  */
-export function machoTypesData(data: Readonly<Buffer>) {
+export function machoTypesData(data: Readonly<Uint8Array>) {
 	let le = false;
-
-	/**
-	 * Read UINT32 at offset.
-	 *
-	 * @param offset File offset.
-	 * @returns UINT32 value.
-	 */
-	// eslint-disable-next-line arrow-body-style
-	const uint32 = (offset: number) => {
-		return le ? data.readUInt32LE(offset) : data.readUInt32BE(offset);
-	};
+	const dv = new DataView(data.buffer, data.byteOffset, data.byteLength);
 
 	/**
 	 * Read type at offset.
@@ -50,15 +40,15 @@ export function machoTypesData(data: Readonly<Buffer>) {
 	 * @returns Type object.
 	 */
 	const type = (offset: number): IMachoType => ({
-		cpuType: uint32(offset),
-		cpuSubtype: uint32(offset + 4)
+		cpuType: dv.getUint32(offset, le),
+		cpuSubtype: dv.getUint32(offset + 4, le)
 	});
 
-	const magic = uint32(0);
+	const magic = dv.getUint32(0, le);
 	switch (magic) {
 		case FAT_MAGIC: {
 			const r = [];
-			const count = uint32(4);
+			const count = dv.getUint32(4, le);
 			let offset = 8;
 			for (let i = 0; i < count; i++) {
 				r.push(type(offset));
@@ -151,20 +141,25 @@ export async function machoAppLauncherFat(
 	const alignSize = (1 << align) >>> 0;
 
 	// Create the FAT header.
-	const head = Buffer.alloc(8);
-	head.writeUInt32BE(FAT_MAGIC, 0);
-	head.writeUInt32BE(types.length, 4);
+	const headD = Buffer.alloc(8);
+	const headV = new DataView(
+		headD.buffer,
+		headD.byteOffset,
+		headD.byteLength
+	);
+	headV.setUint32(0, FAT_MAGIC, false);
+	headV.setUint32(4, types.length, false);
 
 	// The pieces and their total length.
-	const pieces = [head];
-	let total = head.length;
+	const pieces: Uint8Array[] = [headD];
+	let total = headD.length;
 
 	/**
 	 * Helper to add pieces and update total length.
 	 *
 	 * @param data Data.
 	 */
-	const add = (data: Buffer) => {
+	const add = (data: Uint8Array) => {
 		pieces.push(data);
 		total += data.length;
 	};
@@ -175,7 +170,7 @@ export async function machoAppLauncherFat(
 	const pad = () => {
 		const over = total % alignSize;
 		if (over) {
-			add(Buffer.alloc(alignSize - over));
+			add(new Uint8Array(alignSize - over));
 		}
 	};
 
@@ -189,27 +184,39 @@ export async function machoAppLauncherFat(
 			}))
 		)
 	)) {
-		const head = Buffer.alloc(20);
-		head.writeUInt32BE(type.cpuType, 0);
-		head.writeUInt32BE(type.cpuSubtype, 4);
-		head.writeUInt32BE(align, 16);
+		const headD = Buffer.alloc(20);
+		const headV = new DataView(
+			headD.buffer,
+			headD.byteOffset,
+			headD.byteLength
+		);
+		headV.setUint32(0, type.cpuType, false);
+		headV.setUint32(4, type.cpuSubtype, false);
+		headV.setUint32(16, align, false);
 		parts.push({
-			head,
+			headD,
+			headV,
 			body
 		});
-		add(head);
+		add(headD);
 	}
 
 	// Add binaries aligned, updating their headers.
-	for (const {head, body} of parts) {
+	for (const {headV, body} of parts) {
 		pad();
-		head.writeUInt32BE(total, 8);
-		head.writeUInt32BE(body.length, 12);
+		headV.setUint32(8, total, false);
+		headV.setUint32(12, body.length, false);
 		add(body);
 	}
 
 	// Merge all the pieces.
-	return Buffer.concat(pieces, total);
+	const r = new Uint8Array(total);
+	let i = 0;
+	for (const piece of pieces) {
+		r.set(piece, i);
+		i += piece.length;
+	}
+	return r;
 }
 
 /**
