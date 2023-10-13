@@ -194,7 +194,6 @@ export async function machoAppLauncherFat(
 		headV.setUint32(4, type.cpuSubtype, false);
 		headV.setUint32(16, align, false);
 		parts.push({
-			headD,
 			headV,
 			body
 		});
