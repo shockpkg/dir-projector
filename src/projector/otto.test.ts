@@ -14,8 +14,7 @@ const getDir = async (d: string) => cleanProjectorDir('otto', 'dummy', d);
 void describe('projector/otto', () => {
 	void describe('ProjectorOttoDummy', () => {
 		void it('instanceof', () => {
-			ok(ProjectorOttoDummy.prototype instanceof ProjectorOtto);
-			ok(ProjectorOttoDummy.prototype instanceof Projector);
+			ok(ProjectorOtto.prototype instanceof Projector);
 		});
 
 		void it('simple', async () => {

@@ -61,8 +61,7 @@ class BundleOttoDummy extends BundleOtto {
 void describe('bundle/otto', () => {
 	void describe('BundleOttoDummy', () => {
 		void it('instanceof', () => {
-			ok(BundleOttoDummy.prototype instanceof BundleOtto);
-			ok(BundleOttoDummy.prototype instanceof Bundle);
+			ok(BundleOtto.prototype instanceof Bundle);
 		});
 
 		void it('simple', async () => {
