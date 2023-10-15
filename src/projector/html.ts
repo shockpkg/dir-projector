@@ -9,11 +9,17 @@ import {Projector} from '../projector';
  * @returns HTML strings.
  */
 function he(s: string) {
-	return s
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;');
+	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/**
+ * HTML encode an attribute.
+ *
+ * @param s Raw strings.
+ * @returns HTML strings.
+ */
+function ha(s: string) {
+	return he(s).replace(/"/g, '&quot;');
 }
 
 /**
@@ -341,13 +347,13 @@ export class ProjectorHtml extends Projector {
 			'  <div class="main">',
 			'   <div class="player">',
 			'    <object',
-			...[...object.entries()].map(([a, v]) => `     ${a}="${he(v)}"`),
+			...[...object.entries()].map(([a, v]) => `     ${a}="${ha(v)}"`),
 			'    >',
 			...[...param.entries()].map(
-				([a, v]) => `     <param name="${a}" value="${he(v)}">`
+				([a, v]) => `     <param name="${a}" value="${ha(v)}">`
 			),
 			'     <embed',
-			...[...embed.entries()].map(([a, v]) => `      ${a}="${he(v)}"`),
+			...[...embed.entries()].map(([a, v]) => `      ${a}="${ha(v)}"`),
 			'     >',
 			'    </object>',
 			'   </div>',
