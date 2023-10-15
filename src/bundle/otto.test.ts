@@ -247,5 +247,17 @@ void describe('bundle/otto', () => {
 			strictEqual((await st('d/a.txt')).isFile(), true);
 			strictEqual((await st('d/b.txt')).isFile(), true);
 		});
+
+		void it('flat', async () => {
+			const dir = await getDir('flat');
+			const dest = pathJoin(dir, 'application.exe');
+
+			const b = new BundleOttoDummy(dest, true);
+			b.projector.skeleton = fixtureFile('dummy.zip');
+			b.projector.configFile = fixtureFile('config.ini.crlf.bin');
+			await b.write(async p => {
+				await p.createResourceFile('resource.txt', 'testing123');
+			});
+		});
 	});
 });

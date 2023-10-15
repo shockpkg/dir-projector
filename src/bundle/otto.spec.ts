@@ -18,8 +18,8 @@ export async function cleanBundlesDir(...path: string[]) {
 export class BundleOttoDummy extends BundleOtto {
 	public readonly projector: ProjectorOttoDummy;
 
-	constructor(path: string) {
-		super(path);
+	constructor(path: string, flat = false) {
+		super(path, flat);
 
 		this.projector = this._createProjector();
 	}
@@ -28,13 +28,17 @@ export class BundleOttoDummy extends BundleOtto {
 		return '.exe';
 	}
 
-	protected _createProjector() {
+	protected _getProjectorPathNested(): string {
 		const {path, extension} = this;
 		const directory = trimExtension(path, extension, true);
 		if (directory === path) {
 			throw new Error(`Output path must end with: ${extension}`);
 		}
-		return new ProjectorOttoDummy(pathJoin(directory, basename(path)));
+		return pathJoin(directory, basename(path));
+	}
+
+	protected _createProjector() {
+		return new ProjectorOttoDummy(this._getProjectorPath());
 	}
 
 	protected async _writeLauncher() {

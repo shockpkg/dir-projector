@@ -63,6 +63,21 @@ void describe('bundle/otto/mac', () => {
 						);
 					});
 				});
+
+				void it('flat', async () => {
+					const dir = await getDir('flat');
+					const dest = pathJoin(dir, 'application.app');
+
+					const b = new BundleOttoMac(dest, true);
+					b.projector.skeleton = await getSkeleton();
+					b.projector.configFile = fixtureFile('config.ini.lf.bin');
+					await b.write(async b => {
+						await b.copyResource(
+							'movie.dir',
+							fixtureFile('dir7.dir')
+						);
+					});
+				});
 			});
 		}
 	});

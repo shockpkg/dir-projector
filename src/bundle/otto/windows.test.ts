@@ -65,6 +65,21 @@ void describe('bundle/otto/windows', () => {
 						);
 					});
 				});
+
+				void it('flat', async () => {
+					const dir = await getDir('flat');
+					const dest = pathJoin(dir, 'application.exe');
+
+					const b = new BundleOttoWindows(dest, true);
+					b.projector.skeleton = await getSkeleton();
+					b.projector.configFile = fixtureFile('config.ini.crlf.bin');
+					await b.write(async b => {
+						await b.copyResource(
+							'movie.dir',
+							fixtureFile('dir7.dir')
+						);
+					});
+				});
 			});
 		}
 	});

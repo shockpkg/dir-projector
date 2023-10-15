@@ -19,9 +19,10 @@ export class BundleOttoWindows extends BundleOtto {
 	 * BundleOttoWindows constructor.
 	 *
 	 * @param path Output path for the main application.
+	 * @param flat Flat bundle.
 	 */
-	constructor(path: string) {
-		super(path);
+	constructor(path: string, flat = false) {
+		super(path, flat);
 
 		this.projector = this._createProjector();
 	}
@@ -34,15 +35,22 @@ export class BundleOttoWindows extends BundleOtto {
 	}
 
 	/**
-	 * @inheritdoc
+	 *@inheritdoc
 	 */
-	protected _createProjector() {
+	protected _getProjectorPathNested(): string {
 		const {path, extension} = this;
 		const directory = trimExtension(path, extension, true);
 		if (directory === path) {
 			throw new Error(`Output path must end with: ${extension}`);
 		}
-		return new ProjectorOttoWindows(pathJoin(directory, basename(path)));
+		return pathJoin(directory, basename(path));
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	protected _createProjector() {
+		return new ProjectorOttoWindows(this._getProjectorPath());
 	}
 
 	/**
