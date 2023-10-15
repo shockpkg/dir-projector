@@ -63,7 +63,7 @@ export interface IFilePatch {
 	 * @param data The data to modify.
 	 * @returns Modified data.
 	 */
-	modify: (data: Uint8Array) => Uint8Array;
+	modify: (data: Uint8Array) => Promise<Uint8Array> | Uint8Array;
 
 	/**
 	 * Run after all patches.

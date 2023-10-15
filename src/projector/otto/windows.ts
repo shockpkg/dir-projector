@@ -140,7 +140,8 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 					if (!data) {
 						throw new Error(`Failed to read: ${entry.volumePath}`);
 					}
-					data = patch.modify(data);
+					// eslint-disable-next-line no-await-in-loop
+					data = await patch.modify(data);
 				}
 			}
 
