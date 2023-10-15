@@ -68,7 +68,7 @@ export interface IFilePatch {
 	/**
 	 * Run after all patches.
 	 */
-	after: () => void;
+	after: () => Promise<void> | void;
 }
 
 /**

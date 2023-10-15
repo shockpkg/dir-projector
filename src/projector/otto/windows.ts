@@ -263,6 +263,8 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 		if (!foundXtras) {
 			throw new Error(`Failed to locate: ${xtrasName}`);
 		}
+
+		await Promise.all(patches.map(async p => p.after()));
 	}
 
 	/**
