@@ -1,5 +1,3 @@
-import {readFile, writeFile} from 'node:fs/promises';
-
 import {signatureGet, signatureSet} from 'portable-executable-signature';
 import {
 	NtExecutable,
@@ -221,19 +219,19 @@ function rsrcPatchVersion(
 /**
  * Replace resources in Windows PE file.
  *
- * @param path File path.
+ * @param data File data.
  * @param options Replacement options.
+ * @returns Modified data.
  */
-export async function peResourceReplace(
-	path: string,
+export function peResourceReplace(
+	data: Readonly<Uint8Array>,
 	options: Readonly<IPeResourceReplace>
 ) {
 	const {iconData, versionStrings, removeSignature} = options;
 
 	// Read EXE file and remove signature if present.
-	const exeOriginal = await readFile(path);
-	const signedData = removeSignature ? null : signatureGet(exeOriginal);
-	let exeData = signatureSet(exeOriginal, null, true, true);
+	const signedData = removeSignature ? null : signatureGet(data);
+	let exeData = signatureSet(data, null, true, true);
 
 	// Parse EXE.
 	const exe = NtExecutable.from(exeData);
@@ -271,8 +269,8 @@ export async function peResourceReplace(
 		exeData = signatureSet(exeData, signedData, true, true);
 	}
 
-	// Write updated EXE file.
-	await writeFile(path, new Uint8Array(exeData));
+	// Return updated EXE file.
+	return new Uint8Array(exeData);
 }
 
 /**

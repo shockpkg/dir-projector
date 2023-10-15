@@ -237,16 +237,20 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 	 * @inheritdoc
 	 */
 	protected async _modifySkeleton() {
+		const {path} = this;
 		const iconData = await this.getIconData();
 		const {versionStrings} = this;
 		if (!(iconData || versionStrings)) {
 			return;
 		}
 
-		await peResourceReplace(this.path, {
-			iconData,
-			versionStrings
-		});
+		await writeFile(
+			path,
+			peResourceReplace(await readFile(path), {
+				iconData,
+				versionStrings
+			})
+		);
 
 		await this._patch3dDisplayDriversSize();
 	}
