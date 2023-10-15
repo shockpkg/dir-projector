@@ -9,16 +9,14 @@ import {
 	utimes,
 	writeFile
 } from 'node:fs/promises';
-import {join as pathJoin, basename, dirname} from 'node:path';
+import {join as pathJoin, dirname} from 'node:path';
 
 import {fsLchmod, fsLutimes} from '@shockpkg/archive-files';
 
-import {trimExtension} from '../util';
 import {fixtureFile} from '../util.spec';
 import {Bundle} from '../bundle';
-import {ProjectorOttoDummy} from '../projector/otto.spec';
 
-import {cleanBundlesDir} from './otto.spec';
+import {BundleOttoDummy, cleanBundlesDir} from './otto.spec';
 import {BundleOtto} from './otto';
 
 const getDir = async (d: string) => cleanBundlesDir('otto', 'dummy', d);
@@ -29,34 +27,6 @@ const supportsSymlinkAttrs = process.platform.startsWith('darwin');
 
 // eslint-disable-next-line no-bitwise
 const isUserExec = (mode: number) => !!(mode & 0b001000000);
-
-class BundleOttoDummy extends BundleOtto {
-	public readonly projector: ProjectorOttoDummy;
-
-	constructor(path: string) {
-		super(path);
-
-		this.projector = this._createProjector();
-	}
-
-	public get extension() {
-		return '.exe';
-	}
-
-	protected _createProjector() {
-		const {path, extension} = this;
-		const directory = trimExtension(path, extension, true);
-		if (directory === path) {
-			throw new Error(`Output path must end with: ${extension}`);
-		}
-		return new ProjectorOttoDummy(pathJoin(directory, basename(path)));
-	}
-
-	protected async _writeLauncher() {
-		await mkdir(dirname(this.path), {recursive: true});
-		await writeFile(this.path, 'DUMMY_PE_LAUNCHER_EXE\n', 'utf8');
-	}
-}
 
 void describe('bundle/otto', () => {
 	void describe('BundleOttoDummy', () => {
