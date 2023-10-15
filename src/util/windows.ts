@@ -284,7 +284,7 @@ export async function peResourceReplace(
  */
 export async function windowsLauncher(
 	type: string,
-	resources: Uint8Array | null = null
+	resources: (() => Promise<Uint8Array>) | null = null
 ) {
 	let data;
 	switch (type) {
@@ -304,7 +304,7 @@ export async function windowsLauncher(
 
 	// Read resources from file.
 	const rsrc = NtExecutableResource.from(
-		NtExecutable.from(resources, {
+		NtExecutable.from(await resources(), {
 			ignoreCert: true
 		})
 	);

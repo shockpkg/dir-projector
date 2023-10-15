@@ -81,7 +81,7 @@ export class BundleOttoWindows extends BundleOtto {
 		let launcher = null;
 		switch (machine) {
 			case 0x14c: {
-				launcher = await windowsLauncher('i686', await res());
+				launcher = await windowsLauncher('i686', res);
 				break;
 			}
 			default: {
