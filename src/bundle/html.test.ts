@@ -1,39 +1,41 @@
 import {describe, it} from 'node:test';
 import {ok} from 'node:assert';
-import {copyFile} from 'node:fs/promises';
 import {join as pathJoin} from 'node:path';
 
-import {cleanProjectorDir, fixtureFile} from '../util.spec';
-import {Projector} from '../projector';
+import {fixtureFile} from '../util.spec';
+import {Bundle} from '../bundle';
 
-import {ProjectorHtml} from './html';
+import {cleanBundlesDir} from './otto.spec';
+import {BundleHtml} from './html';
 
-const getDir = async (d: string) => cleanProjectorDir('html', d);
+const getDir = async (d: string) => cleanBundlesDir('html', d);
 
-void describe('projector/html', () => {
-	void describe('ProjectorHtml', () => {
+void describe('bundle/html', () => {
+	void describe('BundleHtml', () => {
 		void it('instanceof', () => {
-			ok(ProjectorHtml.prototype instanceof Projector);
+			ok(BundleHtml.prototype instanceof Bundle);
 		});
 
 		void it('simple', async () => {
 			const dir = await getDir('simple');
-			const dest = pathJoin(dir, 'page.html');
+			const dest = pathJoin(dir, 'application.html');
 
-			const p = new ProjectorHtml(dest);
+			const b = new BundleHtml(dest);
+			const p = b.projector;
 			p.src = 'movie.dir';
 			p.width = 640;
 			p.height = 480;
-			await p.write();
-
-			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
+			await b.write(async b => {
+				await b.copyResource('movie.dir', fixtureFile('dir7.dir'));
+			});
 		});
 
 		void it('complex', async () => {
 			const dir = await getDir('complex');
-			const dest = pathJoin(dir, 'page.html');
+			const dest = pathJoin(dir, 'application.html');
 
-			const p = new ProjectorHtml(dest);
+			const b = new BundleHtml(dest);
+			const p = b.projector;
 			p.src = 'movie.dir';
 			p.width = 640;
 			p.height = 480;
@@ -68,9 +70,23 @@ void describe('projector/html', () => {
 			p.progress = false;
 			p.logo = false;
 			p.playerVersion = 12;
-			await p.write();
+			await b.write(async b => {
+				await b.copyResource('movie.dir', fixtureFile('dir7.dir'));
+			});
+		});
 
-			await copyFile(fixtureFile('dir7.dir'), pathJoin(dir, 'movie.dir'));
+		void it('flat', async () => {
+			const dir = await getDir('flat');
+			const dest = pathJoin(dir, 'application.html');
+
+			const b = new BundleHtml(dest, true);
+			const p = b.projector;
+			p.src = 'movie.dir';
+			p.width = 640;
+			p.height = 480;
+			await b.write(async b => {
+				await b.copyResource('movie.dir', fixtureFile('dir7.dir'));
+			});
 		});
 	});
 });

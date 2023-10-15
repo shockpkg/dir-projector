@@ -1,4 +1,5 @@
-import {writeFile} from 'fs/promises';
+import {dirname} from 'node:path';
+import {mkdir, writeFile} from 'node:fs/promises';
 
 import {Projector} from '../projector';
 import {htmlEncode} from '../util';
@@ -7,6 +8,11 @@ import {htmlEncode} from '../util';
  * ProjectorHtml object.
  */
 export class ProjectorHtml extends Projector {
+	/**
+	 * The HTML document lang.
+	 */
+	public lang: string | null = null;
+
 	/**
 	 * The HTML document title.
 	 */
@@ -170,7 +176,9 @@ export class ProjectorHtml extends Projector {
 	 * @inheritdoc
 	 */
 	public async write() {
-		await writeFile(this.path, this.getHtmlDefault());
+		const {path} = this;
+		await mkdir(dirname(path), {recursive: true});
+		await writeFile(path, this.getHtmlDefault());
 	}
 
 	/**
@@ -193,6 +201,7 @@ export class ProjectorHtml extends Projector {
 	 */
 	public getHtmlDefault() {
 		const {
+			lang,
 			title,
 			background,
 			color,
@@ -277,15 +286,17 @@ export class ProjectorHtml extends Projector {
 			}
 		}
 
+		const docAttr = lang === null ? '' : ` lang=${htmlEncode(lang, true)}`;
+
 		return [
 			'<!DOCTYPE html>',
-			'<html>',
+			`<html${docAttr}>`,
 			' <head>',
 			'  <meta charset="UTF-8">',
+			'  <meta http-equiv="X-UA-Compatible" content="IE=Edge">',
 			...(title === null
 				? []
 				: [`  <title>${htmlEncode(title)}</title>`]),
-			'  <meta http-equiv="X-UA-Compatible" content="IE=Edge">',
 			'  <style>',
 			'   * {',
 			'    margin: 0;',
