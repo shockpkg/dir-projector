@@ -46,6 +46,32 @@ export interface IIncludeXtras {
 }
 
 /**
+ * File patch.
+ */
+export interface IFilePatch {
+	/**
+	 * Check if skeleton file path matches.
+	 *
+	 * @param file File path.
+	 * @returns If matched.
+	 */
+	match: (file: string) => boolean;
+
+	/**
+	 * Modify data, possibly inplace.
+	 *
+	 * @param data The data to modify.
+	 * @returns Modified data.
+	 */
+	modify: (data: Uint8Array) => Uint8Array;
+
+	/**
+	 * Run after all patches.
+	 */
+	after: () => void;
+}
+
+/**
  * ProjectorOtto object.
  */
 export abstract class ProjectorOtto extends Projector {

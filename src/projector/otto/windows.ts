@@ -1,11 +1,10 @@
-import {readFile, writeFile} from 'node:fs/promises';
-import {join as pathJoin, dirname, basename} from 'node:path';
+import {mkdir, readFile, writeFile} from 'node:fs/promises';
+import {join as pathJoin, dirname} from 'node:path';
 
 import {
 	Entry,
 	PathType,
-	createArchiveByFileStatOrThrow,
-	fsWalk
+	createArchiveByFileStatOrThrow
 } from '@shockpkg/archive-files';
 
 import {pathRelativeBase, pathRelativeBaseMatch} from '../../util';
@@ -13,7 +12,7 @@ import {
 	peResourceReplace,
 	windowsPatch3dDisplayDriversSize
 } from '../../util/windows';
-import {ProjectorOtto} from '../otto';
+import {IFilePatch, ProjectorOtto} from '../otto';
 
 /**
  * ProjectorOttoWindows object.
@@ -121,6 +120,39 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 		let foundProjectorSkl = false;
 		let foundXtras = false;
 
+		const patches = await this._getPatches();
+
+		/**
+		 * Extract entry, and also apply patches if any.
+		 *
+		 * @param entry Archive entry.
+		 * @param dest Output path.
+		 */
+		const extract = async (entry: Entry, dest: string) => {
+			let data: Uint8Array | null = null;
+			for (const patch of patches) {
+				if (
+					entry.type === PathType.FILE &&
+					patch.match(entry.volumePath)
+				) {
+					// eslint-disable-next-line no-await-in-loop
+					data = data || (await entry.read());
+					if (!data) {
+						throw new Error(`Failed to read: ${entry.volumePath}`);
+					}
+					data = patch.modify(data);
+				}
+			}
+
+			if (data) {
+				await mkdir(dirname(dest), {recursive: true});
+				await writeFile(dest, data);
+				return;
+			}
+
+			await entry.extract(dest);
+		};
+
 		/**
 		 * Xtras handler.
 		 *
@@ -145,7 +177,7 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 				return true;
 			}
 
-			await entry.extract(pathJoin(xtrasPath, dest));
+			await extract(entry, pathJoin(xtrasPath, dest));
 			return true;
 		};
 
@@ -169,7 +201,7 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 			}
 			foundProjectorSkl = true;
 
-			await entry.extract(path);
+			await extract(entry, path);
 			return true;
 		};
 
@@ -197,7 +229,7 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 				return true;
 			}
 
-			await entry.extract(pathJoin(dirname(path), entryPath));
+			await extract(entry, pathJoin(dirname(path), entryPath));
 			return true;
 		};
 
@@ -234,65 +266,98 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 	}
 
 	/**
-	 * @inheritdoc
+	 * Get patches to apply.
+	 *
+	 * @returns Patches list.
 	 */
-	protected async _modifySkeleton() {
-		const {path} = this;
-		const iconData = await this.getIconData();
-		const {versionStrings} = this;
-		if (!(iconData || versionStrings)) {
-			return;
+	protected async _getPatches() {
+		const patches: IFilePatch[] = [];
+		let p = this._getPatch3dDisplayDriversSize();
+		if (p) {
+			patches.push(p);
 		}
-
-		await writeFile(
-			path,
-			peResourceReplace(await readFile(path), {
-				iconData,
-				versionStrings
-			})
-		);
-
-		await this._patch3dDisplayDriversSize();
+		p = await this._getPatchResources();
+		if (p) {
+			patches.push(p);
+		}
+		return patches;
 	}
 
 	/**
-	 * Patch projector, Shockwave 3D InstalledDisplayDrivers size.
+	 * Get patch for main file resources.
+	 *
+	 * @returns Patch spec.
 	 */
-	protected async _patch3dDisplayDriversSize() {
-		if (!this.patch3dDisplayDriversSize) {
-			return;
+	protected async _getPatchResources() {
+		const iconData = await this.getIconData();
+		const {versionStrings, sklName} = this;
+		if (!(iconData || versionStrings)) {
+			return null;
 		}
 
-		const xtrasDir = this.xtrasPath;
-		const search = 'Shockwave 3D Asset.x32';
-		const searchLower = search.toLowerCase();
+		const skl = sklName;
+		const search = skl.toLowerCase();
+		let count = 0;
 
-		let found = false;
-		await fsWalk(
-			xtrasDir,
-			async (path, stat) => {
-				if (!stat.isFile()) {
-					return;
-				}
-
-				const fn = basename(path);
-				if (fn.toLowerCase() !== searchLower) {
-					return;
-				}
-
-				found = true;
-				const f = pathJoin(xtrasDir, path);
-				const d = await readFile(f);
-				windowsPatch3dDisplayDriversSize(d);
-				await writeFile(f, d);
+		const patch: IFilePatch = {
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			match: (file: string) =>
+				search === file.split('/').pop()!.toLowerCase(),
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			modify: (data: Uint8Array) => {
+				const d = peResourceReplace(data, {
+					iconData,
+					versionStrings
+				});
+				count++;
+				return d;
 			},
-			{
-				ignoreUnreadableDirectories: true
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			after: () => {
+				if (!count) {
+					throw new Error(`Failed to locate for patching: ${skl}`);
+				}
 			}
-		);
-
-		if (!found) {
-			throw new Error(`Failed to locate for patching: ${search}`);
-		}
+		};
+		return patch;
 	}
+
+	/**
+	 * Get patch for Shockwave 3D InstalledDisplayDrivers size.
+	 *
+	 * @returns Patch spec.
+	 */
+	protected _getPatch3dDisplayDriversSize() {
+		if (!this.patch3dDisplayDriversSize) {
+			return null;
+		}
+
+		const x32 = 'Shockwave 3D Asset.x32';
+		const search = x32.toLowerCase();
+		let count = 0;
+
+		const patch: IFilePatch = {
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			match: (file: string) =>
+				search === file.split('/').pop()!.toLowerCase(),
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			modify: (data: Uint8Array) => {
+				windowsPatch3dDisplayDriversSize(data);
+				count++;
+				return data;
+			},
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			after: () => {
+				if (!count) {
+					throw new Error(`Failed to locate for patching: ${x32}`);
+				}
+			}
+		};
+		return patch;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	protected async _modifySkeleton() {}
 }
