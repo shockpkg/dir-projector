@@ -11,7 +11,7 @@ export abstract class BundleOtto extends Bundle {
 	public abstract readonly projector: ProjectorOtto;
 
 	/**
-	 * ProjectorOtto constructor.
+	 * BundleOtto constructor.
 	 *
 	 * @param path Output path.
 	 * @param flat Flat bundle.
