@@ -404,7 +404,7 @@ function patchHexToBytes(str: string) {
 // Enough to provide amply room for anything that should be in the registry.
 // Sizes 0x10000 for ASCII, and 0x20000 for WCHAR.
 // Not enough room to calculate the correct size, and use it directly.
-const patchShockwave3dInstalledDisplayDriversSizePatches: IPatcherPatch[] = [
+const patch3dDisplayDriversSizePatches: IPatcherPatch[] = [
 	// director-8.5.0 - director-11.0.0-hotfix-1:
 	{
 		find: patchHexToBytes(
@@ -625,12 +625,10 @@ async function patchFileOnce(
  *
  * @param file File path.
  */
-export async function windowsPatchShockwave3dInstalledDisplayDriversSize(
-	file: string
-) {
+export async function windowsPatch3dDisplayDriversSize(file: string) {
 	await patchFileOnce(
 		file,
-		patchShockwave3dInstalledDisplayDriversSizePatches,
+		patch3dDisplayDriversSizePatches,
 		'Windows Shockwave 3D InstalledDisplayDrivers Size'
 	);
 }

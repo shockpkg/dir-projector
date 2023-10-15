@@ -11,7 +11,7 @@ import {
 import {pathRelativeBase, pathRelativeBaseMatch} from '../../util';
 import {
 	peResourceReplace,
-	windowsPatchShockwave3dInstalledDisplayDriversSize
+	windowsPatch3dDisplayDriversSize
 } from '../../util/windows';
 import {ProjectorOtto} from '../otto';
 
@@ -44,10 +44,8 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 	 * Changes to the values stored in InstalledDisplayDrivers cause issues.
 	 * The value is now supposed to hold full paths on modern Windows.
 	 * In particular, Nvidia drivers which do this need this patch.
-	 *
-	 * @default false
 	 */
-	public patchShockwave3dInstalledDisplayDriversSize = false;
+	public patch3dDisplayDriversSize = false;
 
 	/**
 	 * ProjectorOttoWindows constructor.
@@ -250,14 +248,14 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 			versionStrings
 		});
 
-		await this._patchShockwave3dInstalledDisplayDriversSize();
+		await this._patch3dDisplayDriversSize();
 	}
 
 	/**
 	 * Patch projector, Shockwave 3D InstalledDisplayDrivers size.
 	 */
-	protected async _patchShockwave3dInstalledDisplayDriversSize() {
-		if (!this.patchShockwave3dInstalledDisplayDriversSize) {
+	protected async _patch3dDisplayDriversSize() {
+		if (!this.patch3dDisplayDriversSize) {
 			return;
 		}
 
@@ -279,7 +277,7 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 				}
 
 				found = true;
-				await windowsPatchShockwave3dInstalledDisplayDriversSize(
+				await windowsPatch3dDisplayDriversSize(
 					pathJoin(xtrasDir, path)
 				);
 			},

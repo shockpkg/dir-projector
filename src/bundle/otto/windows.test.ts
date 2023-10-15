@@ -54,7 +54,7 @@ void describe('bundle/otto/windows', () => {
 						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'': null
 					};
-					p.patchShockwave3dInstalledDisplayDriversSize =
+					p.patch3dDisplayDriversSize =
 						patchShockwave3dInstalledDisplayDriversSize;
 					p.iconFile = fixtureFile('icon.ico');
 					p.versionStrings = versionStrings;
