@@ -6,6 +6,9 @@ import {fsLstatExists} from '@shockpkg/archive-files';
 import {Projector} from '../projector';
 import {pathRelativeBase, trimExtension} from '../util';
 
+/**
+ * Include Xtra mapping.
+ */
 export interface IIncludeXtraMapping {
 	/**
 	 * Source path, case insensitive.
@@ -20,6 +23,9 @@ export interface IIncludeXtraMapping {
 	dest: string | null;
 }
 
+/**
+ * Include Xtra mapping, best match.
+ */
 export interface IIncludeXtraMappingBest {
 	/**
 	 * Map instance.
@@ -32,6 +38,9 @@ export interface IIncludeXtraMappingBest {
 	relative: string;
 }
 
+/**
+ * Include Xtras.
+ */
 export interface IIncludeXtras {
 	[key: string]: string | null;
 }

@@ -19,6 +19,9 @@ const IMAGE_SCN_CNT_CODE = 0x00000020;
 const IMAGE_SCN_CNT_INITIALIZED_DATA = 0x00000040;
 const IMAGE_SCN_CNT_UNINITIALIZED_DATA = 0x00000080;
 
+/**
+ * PE Resource replace config.
+ */
 export interface IPeResourceReplace {
 	/**
 	 * Replace icons if not null.
@@ -366,6 +369,9 @@ export async function windowsLauncher(
 	return new Uint8Array(exeData);
 }
 
+/**
+ * Patcher patch.
+ */
 interface IPatcherPatch {
 	/**
 	 * The bytes to find.
