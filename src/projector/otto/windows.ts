@@ -1,4 +1,4 @@
-import {readFile} from 'node:fs/promises';
+import {readFile, writeFile} from 'node:fs/promises';
 import {join as pathJoin, dirname, basename} from 'node:path';
 
 import {
@@ -277,9 +277,10 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 				}
 
 				found = true;
-				await windowsPatch3dDisplayDriversSize(
-					pathJoin(xtrasDir, path)
-				);
+				const f = pathJoin(xtrasDir, path);
+				const d = await readFile(f);
+				windowsPatch3dDisplayDriversSize(d);
+				await writeFile(f, d);
 			},
 			{
 				ignoreUnreadableDirectories: true

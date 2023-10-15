@@ -604,30 +604,13 @@ function patchDataOnce(
 }
 
 /**
- * Patch a file once.
- *
- * @param file File path.
- * @param candidates Patch candidates.
- * @param name Patch name.
- */
-async function patchFileOnce(
-	file: string,
-	candidates: Readonly<IPatcherPatch[]>,
-	name: string
-) {
-	const data = await readFile(file);
-	patchDataOnce(data, candidates, name);
-	await writeFile(file, data);
-}
-
-/**
  * Patch Windows Shockwave 3D InstalledDisplayDrivers size.
  *
- * @param file File path.
+ * @param data File data.
  */
-export async function windowsPatch3dDisplayDriversSize(file: string) {
-	await patchFileOnce(
-		file,
+export function windowsPatch3dDisplayDriversSize(data: Uint8Array) {
+	patchDataOnce(
+		data,
 		patch3dDisplayDriversSizePatches,
 		'Windows Shockwave 3D InstalledDisplayDrivers Size'
 	);
