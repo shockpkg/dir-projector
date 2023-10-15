@@ -279,12 +279,12 @@ export async function peResourceReplace(
  * Get Windows launcher for the specified type.
  *
  * @param type Executable type.
- * @param resources File to optionally copy resources from.
+ * @param resources Data to optionally copy resources from.
  * @returns Launcher data.
  */
 export async function windowsLauncher(
 	type: string,
-	resources: string | null = null
+	resources: Uint8Array | null = null
 ) {
 	let data;
 	switch (type) {
@@ -304,7 +304,7 @@ export async function windowsLauncher(
 
 	// Read resources from file.
 	const rsrc = NtExecutableResource.from(
-		NtExecutable.from(await readFile(resources), {
+		NtExecutable.from(resources, {
 			ignoreCert: true
 		})
 	);
