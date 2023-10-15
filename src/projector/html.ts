@@ -64,6 +64,16 @@ export class ProjectorHtml extends Projector {
 	public height: string | number | null = null;
 
 	/**
+	 * The name for object, param, and embed elements.
+	 */
+	public name: string | null = null;
+
+	/**
+	 * The id for the object element.
+	 */
+	public id: string | null = null;
+
+	/**
 	 * The movie background color.
 	 */
 	public bgColor: string | null = null;
@@ -212,6 +222,8 @@ export class ProjectorHtml extends Projector {
 			src,
 			width,
 			height,
+			id,
+			name,
 			bgColor,
 			swStretchStyle,
 			swStretchHAlign,
@@ -248,6 +260,9 @@ export class ProjectorHtml extends Projector {
 		}
 		object.set('width', `${width}`);
 		object.set('height', `${height}`);
+		if (id !== null) {
+			object.set('id', id);
+		}
 
 		const param = new Map<string, string>();
 		param.set('movie', src);
@@ -260,6 +275,12 @@ export class ProjectorHtml extends Projector {
 		embed.set('width', `${width}`);
 		embed.set('height', `${height}`);
 		embed.set('src', src);
+
+		if (name !== null) {
+			object.set('name', name);
+			param.set('name', name);
+			embed.set('name', name);
+		}
 
 		for (const [k, v] of [
 			['bgcolor', bgColor],
