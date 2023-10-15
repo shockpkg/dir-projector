@@ -1,26 +1,7 @@
 import {writeFile} from 'fs/promises';
 
 import {Projector} from '../projector';
-
-/**
- * HTML encode.
- *
- * @param s Raw strings.
- * @returns HTML strings.
- */
-function he(s: string) {
-	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-/**
- * HTML encode an attribute.
- *
- * @param s Raw strings.
- * @returns HTML strings.
- */
-function ha(s: string) {
-	return he(s).replace(/"/g, '&quot;');
-}
+import {htmlEncode} from '../util';
 
 /**
  * ProjectorHtml object.
@@ -301,7 +282,9 @@ export class ProjectorHtml extends Projector {
 			'<html>',
 			' <head>',
 			'  <meta charset="UTF-8">',
-			...(title === null ? [] : [`  <title>${he(title)}</title>`]),
+			...(title === null
+				? []
+				: [`  <title>${htmlEncode(title)}</title>`]),
 			'  <meta http-equiv="X-UA-Compatible" content="IE=Edge">',
 			'  <style>',
 			'   * {',
@@ -315,8 +298,8 @@ export class ProjectorHtml extends Projector {
 			'   body {',
 			...(background === null
 				? []
-				: [`    background: ${he(background)};`]),
-			...(color === null ? [] : [`    color: ${he(color)};`]),
+				: [`    background: ${htmlEncode(background)};`]),
+			...(color === null ? [] : [`    color: ${htmlEncode(color)};`]),
 			'    font-family: Verdana, Geneva, sans-serif;',
 			'   }',
 			'   object,',
@@ -347,13 +330,18 @@ export class ProjectorHtml extends Projector {
 			'  <div class="main">',
 			'   <div class="player">',
 			'    <object',
-			...[...object.entries()].map(([a, v]) => `     ${a}="${ha(v)}"`),
+			...[...object.entries()].map(
+				([a, v]) => `     ${a}="${htmlEncode(v, true)}"`
+			),
 			'    >',
 			...[...param.entries()].map(
-				([a, v]) => `     <param name="${a}" value="${ha(v)}">`
+				([a, v]) =>
+					`     <param name="${a}" value="${htmlEncode(v, true)}">`
 			),
 			'     <embed',
-			...[...embed.entries()].map(([a, v]) => `      ${a}="${ha(v)}"`),
+			...[...embed.entries()].map(
+				([a, v]) => `      ${a}="${htmlEncode(v, true)}"`
+			),
 			'     >',
 			'    </object>',
 			'   </div>',
