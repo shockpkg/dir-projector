@@ -164,8 +164,11 @@ export class ProjectorHtml extends Projector {
 	/**
 	 * Custom HTML to use instead of generated HTML.
 	 */
-	public html: string | (() => string) | (() => Promise<string>) | null =
-		null;
+	public html:
+		| string
+		| ((self: this) => string)
+		| ((self: this) => Promise<string>)
+		| null = null;
 
 	/**
 	 * ProjectorHtml constructor.
@@ -191,7 +194,7 @@ export class ProjectorHtml extends Projector {
 	public async getHtml() {
 		const {html} = this;
 		if (html) {
-			return typeof html === 'function' ? html() : html;
+			return typeof html === 'function' ? html(this) : html;
 		}
 		return this.getHtmlDefault();
 	}
