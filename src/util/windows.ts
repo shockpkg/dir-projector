@@ -165,7 +165,9 @@ function rsrcPatchIcon(
 	rsrc: NtExecutableResource,
 	iconData: Readonly<Uint8Array>
 ) {
-	const ico = Data.IconFile.from(iconData);
+	const ico = Data.IconFile.from(
+		iconData.buffer.slice(iconData.byteOffset, iconData.byteLength)
+	);
 	for (const iconGroup of Resource.IconGroupEntry.fromEntries(rsrc.entries)) {
 		Resource.IconGroupEntry.replaceIconsForResource(
 			rsrc.entries,
