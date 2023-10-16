@@ -716,12 +716,7 @@ export class ProjectorOttoMac extends ProjectorOtto {
 		if (!foundXtras) {
 			throw new Error(`Failed to locate: ${xtrasName}`);
 		}
-	}
 
-	/**
-	 * @inheritdoc
-	 */
-	protected async _modifySkeleton() {
 		await this._writeIcon();
 		await this._writePkgInfo();
 		await this._updateInfoPlist();

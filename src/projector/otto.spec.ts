@@ -24,8 +24,4 @@ export class ProjectorOttoDummy extends ProjectorOtto {
 	protected async _writeSkeleton(skeleton: string) {
 		// Do nothing.
 	}
-
-	protected async _modifySkeleton() {
-		// Do nothing.
-	}
 }

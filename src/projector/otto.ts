@@ -421,7 +421,6 @@ export abstract class ProjectorOtto extends Projector {
 
 		await this._checkOutput();
 		await this._writeSkeleton(skeleton);
-		await this._modifySkeleton();
 		await this._writeConfig();
 		await this._writeSplashImage();
 		await this._writeLingo();
@@ -515,9 +514,4 @@ export abstract class ProjectorOtto extends Projector {
 	 * @param skeleton Skeleton path.
 	 */
 	protected abstract _writeSkeleton(skeleton: string): Promise<void>;
-
-	/**
-	 * Modify the projector skeleton.
-	 */
-	protected abstract _modifySkeleton(): Promise<void>;
 }

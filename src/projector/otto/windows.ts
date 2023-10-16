@@ -358,9 +358,4 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 		};
 		return patch;
 	}
-
-	/**
-	 * @inheritdoc
-	 */
-	protected async _modifySkeleton() {}
 }
