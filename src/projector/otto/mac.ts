@@ -13,7 +13,7 @@ import {
 	pathRelativeBaseMatch,
 	trimExtension
 } from '../../util';
-import {ProjectorOtto} from '../otto';
+import {IFilePatch, ProjectorOtto} from '../otto';
 
 /**
  * ProjectorOttoMac object.
@@ -508,7 +508,6 @@ export class ProjectorOttoMac extends ProjectorOtto {
 		const {
 			path,
 
-			hasIcon,
 			hasInfoPlist,
 			hasPkgInfo,
 			shockwave,
@@ -543,6 +542,40 @@ export class ProjectorOttoMac extends ProjectorOtto {
 		let foundRsrc = false;
 		let foundXtras = false;
 
+		const patches = await this._getPatches();
+
+		/**
+		 * Extract entry, and also apply patches if any.
+		 *
+		 * @param entry Archive entry.
+		 * @param dest Output path.
+		 */
+		const extract = async (entry: Entry, dest: string) => {
+			let data: Uint8Array | null = null;
+			for (const patch of patches) {
+				if (
+					entry.type === PathType.FILE &&
+					patch.match(entry.volumePath)
+				) {
+					// eslint-disable-next-line no-await-in-loop
+					data = data || (await entry.read());
+					if (!data) {
+						throw new Error(`Failed to read: ${entry.volumePath}`);
+					}
+					// eslint-disable-next-line no-await-in-loop
+					data = await patch.modify(data);
+				}
+			}
+
+			if (data) {
+				await mkdir(dirname(dest), {recursive: true});
+				await writeFile(dest, data);
+				return;
+			}
+
+			await entry.extract(dest);
+		};
+
 		/**
 		 * Xtras handler.
 		 *
@@ -567,7 +600,7 @@ export class ProjectorOttoMac extends ProjectorOtto {
 				return true;
 			}
 
-			await entry.extract(pathJoin(xtrasPath, dest));
+			await extract(entry, pathJoin(xtrasPath, dest));
 			return true;
 		};
 
@@ -633,11 +666,6 @@ export class ProjectorOttoMac extends ProjectorOtto {
 			if (pathRelativeBaseMatch(projectorRel, appPathIconDefault, true)) {
 				foundIcon = true;
 
-				// Skip extracting icon if custom one.
-				if (hasIcon) {
-					return true;
-				}
-
 				// Possible rename the icon.
 				if (appPathIconCustom) {
 					dest = appPathIconCustom;
@@ -653,7 +681,7 @@ export class ProjectorOttoMac extends ProjectorOtto {
 				}
 			}
 
-			await entry.extract(pathJoin(path, dest));
+			await extract(entry, pathJoin(path, dest));
 			return true;
 		};
 
@@ -717,33 +745,112 @@ export class ProjectorOttoMac extends ProjectorOtto {
 			throw new Error(`Failed to locate: ${xtrasName}`);
 		}
 
-		await this._writeIcon();
-		await this._writePkgInfo();
 		await this._updateInfoPlist();
+
+		await Promise.all(patches.map(async p => p.after()));
 	}
 
 	/**
-	 * Write out the projector icon file.
+	 * Get patches to apply.
+	 *
+	 * @returns Patches list.
 	 */
-	protected async _writeIcon() {
-		const data = await this.getIconData();
-		if (data) {
-			const {iconPath} = this;
-			await mkdir(dirname(iconPath), {recursive: true});
-			await writeFile(iconPath, data);
-		}
+	protected async _getPatches() {
+		return (
+			await Promise.all([this._getPatchIcon(), this._getPatchPkgInfo()])
+		).filter(p => p) as IFilePatch[];
 	}
 
 	/**
-	 * Write out the projector PkgInfo file.
+	 * Get patch for icon.
+	 *
+	 * @returns Patch spec.
 	 */
-	protected async _writePkgInfo() {
-		const data = await this.getPkgInfoData();
-		if (data) {
-			const {pkgInfoPath} = this;
-			await mkdir(dirname(pkgInfoPath), {recursive: true});
-			await writeFile(pkgInfoPath, data);
+	protected async _getPatchIcon() {
+		const iconData = await this.getIconData();
+		if (!iconData) {
+			return null;
 		}
+
+		const {projectorResourcesDirectoryName, appPathIconDefault} = this;
+
+		let count = 0;
+
+		const patch: IFilePatch = {
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			match: (file: string) => {
+				const projectorRel = pathRelativeBase(
+					file,
+					projectorResourcesDirectoryName,
+					true
+				);
+				return (
+					projectorRel !== null &&
+					pathRelativeBaseMatch(
+						projectorRel,
+						appPathIconDefault,
+						true
+					)
+				);
+			},
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			modify: (data: Uint8Array) => {
+				count++;
+				return iconData;
+			},
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			after: () => {
+				if (!count) {
+					const d = projectorResourcesDirectoryName;
+					throw new Error(
+						`Failed to replace: ${d}/${appPathIconDefault}`
+					);
+				}
+			}
+		};
+		return patch;
+	}
+
+	/**
+	 * Get patch for PkgInfo.
+	 *
+	 * @returns Patch spec.
+	 */
+	protected async _getPatchPkgInfo() {
+		const infoData = await this.getPkgInfoData();
+		if (!infoData) {
+			return null;
+		}
+
+		const {projectorResourcesDirectoryName: d, appPathPkgInfo: f} = this;
+
+		let count = 0;
+
+		const patch: IFilePatch = {
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			match: (file: string) => {
+				const projectorRel = pathRelativeBase(file, d, true);
+				return (
+					projectorRel !== null &&
+					pathRelativeBaseMatch(projectorRel, f, true)
+				);
+			},
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			modify: (data: Uint8Array) => {
+				count++;
+				return infoData;
+			},
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			after: async () => {
+				// Some skeletons lack this file, just write in that case.
+				if (!count) {
+					const {pkgInfoPath} = this;
+					await mkdir(dirname(pkgInfoPath), {recursive: true});
+					await writeFile(pkgInfoPath, infoData);
+				}
+			}
+		};
+		return patch;
 	}
 
 	/**
