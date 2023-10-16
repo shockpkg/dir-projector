@@ -784,9 +784,8 @@ export class ProjectorOttoMac extends ProjectorOtto {
 			after: () => {
 				if (!count) {
 					const d = projectorResourcesDirectoryName;
-					throw new Error(
-						`Failed to replace: ${d}/${appPathIconDefault}`
-					);
+					const f = appPathIconDefault;
+					throw new Error(`Failed to locate for replace: ${d}/${f}`);
 				}
 			}
 		};
