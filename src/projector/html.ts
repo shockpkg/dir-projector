@@ -286,7 +286,7 @@ export class ProjectorHtml extends Projector {
 			['bgcolor', bgcolor],
 			['swstretchstyle', swStretchStyle],
 			['swstretchhalign', swStretchHAlign],
-			['swStretchvalign', swStretchVAlign],
+			['swstretchvalign', swStretchVAlign],
 			['swremote', swRemote],
 			['sw1', sw1],
 			['sw2', sw2],
