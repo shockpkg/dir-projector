@@ -42,7 +42,7 @@
 		"all:esm": "npm run clean && npm run build:esm && npm run test:esm && npm run lint && npm run formatted",
 		"all:cjs": "npm run clean && npm run build:cjs && npm run test:cjs && npm run lint && npm run formatted",
 		"all": "npm run clean && npm run build && npm run test && npm run lint && npm run formatted",
-		"prepack": "npm run clean && npm run build"
+		"prepack": "npm run launchers && npm run clean && npm run build"
 	},
 	"repository": "https://github.com/shockpkg/dir-projector.git",
 	"bugs": "https://github.com/shockpkg/dir-projector/issues",
