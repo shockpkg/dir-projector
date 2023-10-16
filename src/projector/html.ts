@@ -76,7 +76,7 @@ export class ProjectorHtml extends Projector {
 	/**
 	 * The movie background color.
 	 */
-	public bgColor: string | null = null;
+	public bgcolor: string | null = null;
 
 	/**
 	 * The movie stretch style (none | meet | fill | stage).
@@ -224,7 +224,7 @@ export class ProjectorHtml extends Projector {
 			height,
 			id,
 			name,
-			bgColor,
+			bgcolor,
 			swStretchStyle,
 			swStretchHAlign,
 			swStretchVAlign,
@@ -283,7 +283,7 @@ export class ProjectorHtml extends Projector {
 		}
 
 		for (const [k, v] of [
-			['bgcolor', bgColor],
+			['bgcolor', bgcolor],
 			['swstretchstyle', swStretchStyle],
 			['swstretchhalign', swStretchHAlign],
 			['swStretchvalign', swStretchVAlign],
