@@ -1,4 +1,4 @@
-import {readFile, mkdir, rm, writeFile} from 'node:fs/promises';
+import {readFile, mkdir, writeFile} from 'node:fs/promises';
 import {join as pathJoin, basename, dirname} from 'node:path';
 
 import {
@@ -507,25 +507,16 @@ export class ProjectorOttoMac extends ProjectorOtto {
 	protected async _writeSkeleton(skeleton: string) {
 		const {
 			path,
-
-			hasInfoPlist,
 			shockwave,
-
-			appPathInfoPlist,
 			appPathFrameworks,
-
 			appPathBinaryDefault,
 			appPathBinaryCustom,
-
 			appPathIconDefault,
 			appPathIconCustom,
-
 			appPathRsrcDefault,
 			appPathRsrcCustom,
-
 			xtrasName,
 			xtrasPath,
-
 			projectorResourcesDirectoryName
 		} = this;
 
@@ -534,7 +525,6 @@ export class ProjectorOttoMac extends ProjectorOtto {
 		let foundProjectorResourcesDirectory = false;
 		let foundFrameworks = false;
 		let foundBinary = false;
-		let foundInfoPlist = false;
 		let foundIcon = false;
 		let foundRsrc = false;
 		let foundXtras = false;
@@ -628,15 +618,6 @@ export class ProjectorOttoMac extends ProjectorOtto {
 				}
 			}
 
-			// Exclude Info.plist if using custom one.
-			if (pathRelativeBaseMatch(projectorRel, appPathInfoPlist, true)) {
-				foundInfoPlist = true;
-
-				if (hasInfoPlist) {
-					return true;
-				}
-			}
-
 			let dest = projectorRel;
 
 			// Possibly rename the binary.
@@ -708,11 +689,6 @@ export class ProjectorOttoMac extends ProjectorOtto {
 			throw new Error(`Failed to locate: ${d}/${appPathBinaryDefault}`);
 		}
 
-		if (!foundInfoPlist) {
-			const d = projectorResourcesDirectoryName;
-			throw new Error(`Failed to locate: ${d}/${appPathInfoPlist}`);
-		}
-
 		if (!foundIcon) {
 			const d = projectorResourcesDirectoryName;
 			throw new Error(`Failed to locate: ${d}/${appPathIconDefault}`);
@@ -727,8 +703,6 @@ export class ProjectorOttoMac extends ProjectorOtto {
 			throw new Error(`Failed to locate: ${xtrasName}`);
 		}
 
-		await this._updateInfoPlist();
-
 		await Promise.all(patches.map(async p => p.after()));
 	}
 
@@ -739,7 +713,11 @@ export class ProjectorOttoMac extends ProjectorOtto {
 	 */
 	protected async _getPatches() {
 		return (
-			await Promise.all([this._getPatchIcon(), this._getPatchPkgInfo()])
+			await Promise.all([
+				this._getPatchIcon(),
+				this._getPatchPkgInfo(),
+				this._getPatchInfoPlist()
+			])
 		).filter(p => p) as IFilePatch[];
 	}
 
@@ -803,17 +781,21 @@ export class ProjectorOttoMac extends ProjectorOtto {
 			return null;
 		}
 
-		const {projectorResourcesDirectoryName: d, appPathPkgInfo: f} = this;
+		const {projectorResourcesDirectoryName, appPathPkgInfo} = this;
 
 		let count = 0;
 
 		const patch: IFilePatch = {
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			match: (file: string) => {
-				const projectorRel = pathRelativeBase(file, d, true);
+				const projectorRel = pathRelativeBase(
+					file,
+					projectorResourcesDirectoryName,
+					true
+				);
 				return (
 					projectorRel !== null &&
-					pathRelativeBaseMatch(projectorRel, f, true)
+					pathRelativeBaseMatch(projectorRel, appPathPkgInfo, true)
 				);
 			},
 			// eslint-disable-next-line jsdoc/require-jsdoc
@@ -835,29 +817,19 @@ export class ProjectorOttoMac extends ProjectorOtto {
 	}
 
 	/**
-	 * Update the projector Info.plist if needed.
-	 */
-	protected async _updateInfoPlist() {
-		const path = this.infoPlistPath;
-		const xml = await this._generateInfoPlist();
-		if (xml === null) {
-			return;
-		}
-
-		await rm(path, {force: true});
-		await mkdir(dirname(path), {recursive: true});
-		await writeFile(path, xml, 'utf8');
-	}
-
-	/**
-	 * Generate Info.plist XML string, if any.
+	 * Get patch for Info.plist.
 	 *
-	 * @returns XML string or null.
+	 * @returns Patch spec.
 	 */
-	protected async _generateInfoPlist() {
+	protected async _getPatchInfoPlist() {
 		const customPlist = await this.getInfoPlistData();
 		const bundleName = this.getBundleName();
-		const {appBinaryNameCustom, appIconNameCustom} = this;
+		const {
+			appBinaryNameCustom,
+			appIconNameCustom,
+			projectorResourcesDirectoryName,
+			appPathInfoPlist
+		} = this;
 		if (
 			!(
 				customPlist !== null ||
@@ -869,33 +841,67 @@ export class ProjectorOttoMac extends ProjectorOtto {
 			return null;
 		}
 
-		// Use a custom plist or the existing one.
-		const xml = customPlist ?? (await readFile(this.infoPlistPath, 'utf8'));
+		let count = 0;
 
-		const plist = new Plist();
-		plist.fromXml(xml);
-		const dict = plist.getValue().castAs(ValueDict);
+		const patch: IFilePatch = {
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			match: (file: string) => {
+				const projectorRel = pathRelativeBase(
+					file,
+					projectorResourcesDirectoryName,
+					true
+				);
+				return (
+					projectorRel !== null &&
+					pathRelativeBaseMatch(projectorRel, appPathInfoPlist, true)
+				);
+			},
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			modify: (data: Uint8Array) => {
+				// Use a custom plist or the existing one.
+				const xml = customPlist ?? new TextDecoder().decode(data);
 
-		if (appIconNameCustom) {
-			dict.set('CFBundleIconFile', new ValueString(appIconNameCustom));
-		}
+				const plist = new Plist();
+				plist.fromXml(xml);
+				const dict = plist.getValue().castAs(ValueDict);
 
-		if (appBinaryNameCustom) {
-			dict.set(
-				'CFBundleExecutable',
-				new ValueString(appBinaryNameCustom)
-			);
-		}
+				if (appIconNameCustom) {
+					dict.set(
+						'CFBundleIconFile',
+						new ValueString(appIconNameCustom)
+					);
+				}
 
-		if (bundleName !== false) {
-			const key = 'CFBundleName';
-			if (bundleName === null) {
-				dict.delete(key);
-			} else {
-				dict.set(key, new ValueString(bundleName));
+				if (appBinaryNameCustom) {
+					dict.set(
+						'CFBundleExecutable',
+						new ValueString(appBinaryNameCustom)
+					);
+				}
+
+				if (bundleName !== false) {
+					const key = 'CFBundleName';
+					if (bundleName === null) {
+						dict.delete(key);
+					} else {
+						dict.set(key, new ValueString(bundleName));
+					}
+				}
+
+				const plistData = new TextEncoder().encode(plist.toXml());
+
+				count++;
+				return plistData;
+			},
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			after: () => {
+				if (!count) {
+					const d = projectorResourcesDirectoryName;
+					const f = appPathInfoPlist;
+					throw new Error(`Failed to locate for update: ${d}/${f}`);
+				}
 			}
-		}
-
-		return plist.toXml();
+		};
+		return patch;
 	}
 }
