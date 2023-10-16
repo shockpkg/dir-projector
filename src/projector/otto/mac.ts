@@ -509,11 +509,9 @@ export class ProjectorOttoMac extends ProjectorOtto {
 			path,
 
 			hasInfoPlist,
-			hasPkgInfo,
 			shockwave,
 
 			appPathInfoPlist,
-			appPathPkgInfo,
 			appPathFrameworks,
 
 			appPathBinaryDefault,
@@ -537,7 +535,6 @@ export class ProjectorOttoMac extends ProjectorOtto {
 		let foundFrameworks = false;
 		let foundBinary = false;
 		let foundInfoPlist = false;
-		let foundPkgInfo = false;
 		let foundIcon = false;
 		let foundRsrc = false;
 		let foundXtras = false;
@@ -640,15 +637,6 @@ export class ProjectorOttoMac extends ProjectorOtto {
 				}
 			}
 
-			// Exclude PkgInfo if using custom one.
-			if (pathRelativeBaseMatch(projectorRel, appPathPkgInfo, true)) {
-				foundPkgInfo = true;
-
-				if (hasPkgInfo) {
-					return true;
-				}
-			}
-
 			let dest = projectorRel;
 
 			// Possibly rename the binary.
@@ -723,12 +711,6 @@ export class ProjectorOttoMac extends ProjectorOtto {
 		if (!foundInfoPlist) {
 			const d = projectorResourcesDirectoryName;
 			throw new Error(`Failed to locate: ${d}/${appPathInfoPlist}`);
-		}
-
-		if (!foundPkgInfo) {
-			// Some projector skeletons lack this file.
-			// const d = projectorResourcesDirectoryName;
-			// throw new Error(`Failed to locate: ${d}/${appPathPkgInfo}`);
 		}
 
 		if (!foundIcon) {
