@@ -2,10 +2,9 @@ import {describe, it} from 'node:test';
 import {ok} from 'node:assert';
 import {join as pathJoin} from 'node:path';
 
-import {fixtureFile} from '../util.spec';
+import {cleanBundlesDir, fixtureFile} from '../util.spec';
 import {Bundle} from '../bundle';
 
-import {cleanBundlesDir} from './otto.spec';
 import {BundleHtml} from './html';
 
 const getDir = async (d: string) => cleanBundlesDir('html', d);

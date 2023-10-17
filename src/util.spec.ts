@@ -16,6 +16,7 @@ export function shouldTest(name: string) {
 
 export const specFixturesPath = pathJoin('spec', 'fixtures');
 export const specProjectorsPath = pathJoin('spec', 'projectors');
+export const specBundlesPath = pathJoin('spec', 'bundles');
 
 export function fixtureFile(name: string) {
 	return pathJoin(specFixturesPath, name);
@@ -27,6 +28,13 @@ export async function getPackageFile(pkg: string) {
 
 export async function cleanProjectorDir(...path: string[]) {
 	const dir = pathJoin(specProjectorsPath, ...path);
+	await rm(dir, {recursive: true, force: true});
+	await mkdir(dir, {recursive: true});
+	return dir;
+}
+
+export async function cleanBundlesDir(...path: string[]) {
+	const dir = pathJoin(specBundlesPath, ...path);
 	await rm(dir, {recursive: true, force: true});
 	await mkdir(dir, {recursive: true});
 	return dir;

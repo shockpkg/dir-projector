@@ -1,19 +1,10 @@
 import {basename, dirname, join as pathJoin} from 'node:path';
-import {mkdir, rm, writeFile} from 'node:fs/promises';
+import {mkdir, writeFile} from 'node:fs/promises';
 
 import {trimExtension} from '../util';
 import {ProjectorOttoDummy} from '../projector/otto.spec';
 
 import {BundleOtto} from './otto';
-
-export const specBundlesPath = pathJoin('spec', 'bundles');
-
-export async function cleanBundlesDir(...path: string[]) {
-	const dir = pathJoin(specBundlesPath, ...path);
-	await rm(dir, {recursive: true, force: true});
-	await mkdir(dir, {recursive: true});
-	return dir;
-}
 
 export class BundleOttoDummy extends BundleOtto {
 	public readonly projector: ProjectorOttoDummy;

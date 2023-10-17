@@ -13,10 +13,10 @@ import {join as pathJoin, dirname} from 'node:path';
 
 import {fsLchmod, fsLutimes} from '@shockpkg/archive-files';
 
-import {fixtureFile} from '../util.spec';
+import {cleanBundlesDir, fixtureFile} from '../util.spec';
 import {Bundle} from '../bundle';
 
-import {BundleOttoDummy, cleanBundlesDir} from './otto.spec';
+import {BundleOttoDummy} from './otto.spec';
 import {BundleOtto} from './otto';
 
 const getDir = async (d: string) => cleanBundlesDir('otto', 'dummy', d);

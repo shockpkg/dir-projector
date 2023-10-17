@@ -3,8 +3,7 @@ import {ok} from 'node:assert';
 import {join as pathJoin} from 'node:path';
 
 import {listSamples, versionStrings} from '../../projector/otto/windows.spec';
-import {cleanBundlesDir} from '../otto.spec';
-import {fixtureFile, getPackageFile} from '../../util.spec';
+import {cleanBundlesDir, fixtureFile, getPackageFile} from '../../util.spec';
 import {BundleOtto} from '../otto';
 
 import {BundleOttoWindows} from './windows';
