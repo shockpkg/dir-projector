@@ -540,34 +540,35 @@ export class ProjectorOttoMac extends ProjectorOtto {
 		 * @param dest Output path.
 		 */
 		const extract = async (entry: Entry, dest: string) => {
-			let data: Uint8Array | null = null;
-			for (const patch of patches) {
-				if (
-					entry.type === PathType.FILE &&
-					patch.match(entry.volumePath)
-				) {
-					// eslint-disable-next-line no-await-in-loop
-					data = data || (await entry.read());
-					if (!data) {
-						throw new Error(`Failed to read: ${entry.volumePath}`);
+			if (entry.type === PathType.FILE) {
+				let data: Uint8Array | null = null;
+				for (const patch of patches) {
+					if (patch.match(entry.volumePath)) {
+						// eslint-disable-next-line no-await-in-loop
+						data = data || (await entry.read());
+						if (!data) {
+							throw new Error(
+								`Failed to read: ${entry.volumePath}`
+							);
+						}
+						// eslint-disable-next-line no-await-in-loop
+						data = await patch.modify(data);
 					}
-					// eslint-disable-next-line no-await-in-loop
-					data = await patch.modify(data);
 				}
-			}
 
-			if (data) {
-				await mkdir(dirname(dest), {recursive: true});
-				await writeFile(dest, data);
-				const {mode} = entry;
-				if (mode) {
-					if (fsLchmodSupported) {
-						await fsLchmod(dest, mode);
-					} else {
-						await chmod(dest, mode);
+				if (data) {
+					await mkdir(dirname(dest), {recursive: true});
+					await writeFile(dest, data);
+					const {mode} = entry;
+					if (mode) {
+						if (fsLchmodSupported) {
+							await fsLchmod(dest, mode);
+						} else {
+							await chmod(dest, mode);
+						}
 					}
+					return;
 				}
-				return;
 			}
 
 			await entry.extract(dest);
