@@ -129,26 +129,37 @@ export class ProjectorOttoWindows extends ProjectorOtto {
 		 * @param dest Output path.
 		 */
 		const extract = async (entry: Entry, dest: string) => {
-			let data: Uint8Array | null = null;
-			for (const patch of patches) {
-				if (
-					entry.type === PathType.FILE &&
-					patch.match(entry.volumePath)
-				) {
-					// eslint-disable-next-line no-await-in-loop
-					data = data || (await entry.read());
-					if (!data) {
-						throw new Error(`Failed to read: ${entry.volumePath}`);
+			if (entry.type === PathType.FILE) {
+				let data: Uint8Array | null = null;
+				for (const patch of patches) {
+					if (patch.match(entry.volumePath)) {
+						if (!data) {
+							// eslint-disable-next-line no-await-in-loop
+							const d = await entry.read();
+							if (!d) {
+								throw new Error(
+									`Failed to read: ${entry.volumePath}`
+								);
+							}
+							data = new Uint8Array(
+								d.buffer,
+								d.byteOffset,
+								d.byteLength
+							);
+						}
+						// eslint-disable-next-line no-await-in-loop
+						data = await patch.modify(data);
 					}
-					// eslint-disable-next-line no-await-in-loop
-					data = await patch.modify(data);
 				}
-			}
 
-			if (data) {
-				await mkdir(dirname(dest), {recursive: true});
-				await writeFile(dest, data);
-				return;
+				if (data) {
+					await mkdir(dirname(dest), {recursive: true});
+					await writeFile(dest, data);
+					await entry.setAttributes(dest, null, {
+						ignoreTimes: true
+					});
+					return;
+				}
 			}
 
 			await entry.extract(dest);
