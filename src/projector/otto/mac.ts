@@ -1,12 +1,10 @@
-import {readFile, mkdir, writeFile, chmod} from 'node:fs/promises';
+import {readFile, mkdir, writeFile} from 'node:fs/promises';
 import {join as pathJoin, basename, dirname} from 'node:path';
 
 import {
 	PathType,
 	Entry,
-	createArchiveByFileStatOrThrow,
-	fsLchmodSupported,
-	fsLchmod
+	createArchiveByFileStatOrThrow
 } from '@shockpkg/archive-files';
 import {Plist, ValueDict, ValueString} from '@shockpkg/plist-dom';
 
@@ -559,14 +557,9 @@ export class ProjectorOttoMac extends ProjectorOtto {
 				if (data) {
 					await mkdir(dirname(dest), {recursive: true});
 					await writeFile(dest, data);
-					const {mode} = entry;
-					if (mode !== null) {
-						if (fsLchmodSupported) {
-							await fsLchmod(dest, mode);
-						} else {
-							await chmod(dest, mode);
-						}
-					}
+					await entry.setAttributes(dest, null, {
+						ignoreTimes: true
+					});
 					return;
 				}
 			}
