@@ -560,7 +560,7 @@ export class ProjectorOttoMac extends ProjectorOtto {
 					await mkdir(dirname(dest), {recursive: true});
 					await writeFile(dest, data);
 					const {mode} = entry;
-					if (mode) {
+					if (mode !== null) {
 						if (fsLchmodSupported) {
 							await fsLchmod(dest, mode);
 						} else {
