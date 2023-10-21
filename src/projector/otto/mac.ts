@@ -542,11 +542,18 @@ export class ProjectorOttoMac extends ProjectorOtto {
 				let data: Uint8Array | null = null;
 				for (const patch of patches) {
 					if (patch.match(entry.volumePath)) {
-						// eslint-disable-next-line no-await-in-loop
-						data = data || (await entry.read());
 						if (!data) {
-							throw new Error(
-								`Failed to read: ${entry.volumePath}`
+							// eslint-disable-next-line no-await-in-loop
+							const d = await entry.read();
+							if (!d) {
+								throw new Error(
+									`Failed to read: ${entry.volumePath}`
+								);
+							}
+							data = new Uint8Array(
+								d.buffer,
+								d.byteOffset,
+								d.byteLength
 							);
 						}
 						// eslint-disable-next-line no-await-in-loop
