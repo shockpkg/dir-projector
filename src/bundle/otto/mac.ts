@@ -47,7 +47,7 @@ export class BundleOttoMac extends BundleOtto {
 	}
 
 	/**
-	 *@inheritdoc
+	 * @inheritdoc
 	 */
 	protected _getProjectorPathNested(): string {
 		const projName = `${this._getLauncherName()}${this.extension}`;
