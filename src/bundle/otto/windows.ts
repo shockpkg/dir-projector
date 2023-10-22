@@ -35,7 +35,7 @@ export class BundleOttoWindows extends BundleOtto {
 	}
 
 	/**
-	 *@inheritdoc
+	 * @inheritdoc
 	 */
 	protected _getProjectorPathNested(): string {
 		const {path, extension} = this;
