@@ -188,7 +188,7 @@ export class ProjectorHtml extends Projector {
 	public async write() {
 		const {path} = this;
 		await mkdir(dirname(path), {recursive: true});
-		await writeFile(path, this.getHtml());
+		await writeFile(path, await this.getHtml());
 	}
 
 	/**
