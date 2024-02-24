@@ -65,7 +65,7 @@ export function peVersionInts(version: string): [number, number] | null {
 				(((numbers[0] || 0) << 16) | (numbers[1] || 0)) >>> 0,
 				// eslint-disable-next-line no-bitwise
 				(((numbers[2] || 0) << 16) | (numbers[3] || 0)) >>> 0
-		  ]
+			]
 		: null;
 }
 
