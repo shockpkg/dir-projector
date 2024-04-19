@@ -14,28 +14,23 @@ jobs:
             PKGSET: ''
             PKG: ''
 
-          - node-version: '18.18.2' # LTS
-            CODE_TEST: 'test-legacy'
-            PKGSET: ''
-            PKG: ''
-
           - node-version: '20.9.0' # LTS
             CODE_TEST: 'test-legacy'
             PKGSET: ''
             PKG: ''
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             CODE_CHECK: 1
             PKGSET: ''
             PKG: ''
 
-          - node-version: '21.6.2' # Latest
+          - node-version: '21.7.3' # Latest
             CODE_TEST: 'test'
             PKGSET: ''
             PKG: ''
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '7-windows'
             PKG:
@@ -44,14 +39,14 @@ jobs:
               - shockwave-projector-director-7.0.2-trial-win-win
               - shockwave-projector-director-7.0.2-win-win
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '8-windows'
             PKG:
               - shockwave-projector-director-8.0.0-trial-win-win
               - shockwave-projector-director-8.0.0-win-win
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '8.5-windows'
             PKG:
@@ -60,14 +55,14 @@ jobs:
               - shockwave-projector-director-8.5.1-win-win
               - shockwave-projector-director-8.5.1-trial-win-win
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '9-windows'
             PKG:
               - shockwave-projector-director-9.0.0-win-win
               - shockwave-projector-director-9.0.0-trial-win-win
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '10-windows'
             PKG:
@@ -78,7 +73,7 @@ jobs:
               - shockwave-projector-director-10.1.1-mac-win
               - shockwave-projector-director-10.1.1-win-win
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '11-windows'
             PKG:
@@ -88,7 +83,7 @@ jobs:
               - shockwave-projector-director-11.0.0-hotfix-3-mac-win
               - shockwave-projector-director-11.0.0-hotfix-3-win-win
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '11.5-windows'
             PKG:
@@ -99,7 +94,7 @@ jobs:
               - shockwave-projector-director-11.5.9-mac-win
               - shockwave-projector-director-11.5.9-win-win
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '12-windows'
             PKG:
@@ -108,7 +103,7 @@ jobs:
               - shockwave-projector-director-12.0.2-mac-win
               - shockwave-projector-director-12.0.2-win-win
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '11-mac'
             PKG:
@@ -118,7 +113,7 @@ jobs:
               - shockwave-projector-director-11.0.0-hotfix-3-mac-mac-zip
               - shockwave-projector-director-11.0.0-hotfix-3-win-mac-zip
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '11.5-mac'
             PKG:
@@ -129,7 +124,7 @@ jobs:
               - shockwave-projector-director-11.5.9-mac-mac-zip
               - shockwave-projector-director-11.5.9-win-mac-zip
 
-          - node-version: '20.11.1' # LTS (current)
+          - node-version: '20.12.2' # LTS (current)
             CODE_TEST: 'test-legacy'
             PKGSET: '12-mac'
             PKG:
@@ -199,7 +194,7 @@ jobs:
       - name: Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20.11.1'
+          node-version: '20.12.2'
           registry-url: https://registry.npmjs.org/
 
       - name: Dependencies
