@@ -3,8 +3,8 @@ import {join as pathJoin, dirname} from 'node:path';
 
 import {fsLstatExists} from '@shockpkg/archive-files';
 
-import {Projector} from '../projector';
-import {pathRelativeBase, trimExtension} from '../util';
+import {Projector} from '../projector.ts';
+import {pathRelativeBase, trimExtension} from '../util.ts';
 
 /**
  * Include Xtra mapping.

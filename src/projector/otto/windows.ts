@@ -7,12 +7,12 @@ import {
 	createArchiveByFileStatOrThrow
 } from '@shockpkg/archive-files';
 
-import {pathRelativeBase, pathRelativeBaseMatch} from '../../util';
+import {pathRelativeBase, pathRelativeBaseMatch} from '../../util.ts';
 import {
 	peResourceReplace,
 	windowsPatch3dDisplayDriversSize
-} from '../../util/windows';
-import {IFilePatch, ProjectorOtto} from '../otto';
+} from '../../util/windows.ts';
+import {IFilePatch, ProjectorOtto} from '../otto.ts';
 
 /**
  * ProjectorOttoWindows object.

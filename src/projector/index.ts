@@ -1,3 +1,3 @@
-export * from './html';
-export * from './otto';
-export * from './otto/';
+export * from './html.ts';
+export * from './otto.ts';
+export * from './otto/index.ts';

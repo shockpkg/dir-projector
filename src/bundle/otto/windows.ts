@@ -1,10 +1,10 @@
 import {mkdir, open, readFile, writeFile} from 'node:fs/promises';
 import {join as pathJoin, basename, dirname} from 'node:path';
 
-import {trimExtension} from '../../util';
-import {windowsLauncher} from '../../util/windows';
-import {ProjectorOttoWindows} from '../../projector/otto/windows';
-import {BundleOtto} from '../otto';
+import {trimExtension} from '../../util.ts';
+import {windowsLauncher} from '../../util/windows.ts';
+import {ProjectorOttoWindows} from '../../projector/otto/windows.ts';
+import {BundleOtto} from '../otto.ts';
 
 /**
  * BundleOttoWindows object.

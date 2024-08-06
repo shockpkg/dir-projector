@@ -2,9 +2,9 @@ import {describe, it} from 'node:test';
 import {deepStrictEqual, strictEqual} from 'node:assert';
 import {createHash} from 'node:crypto';
 
-import {fixtureFile} from '../util.spec';
+import {fixtureFile} from '../util.spec.ts';
 
-import {machoAppLauncher, machoTypesData, machoTypesFile} from './mac';
+import {machoAppLauncher, machoTypesData, machoTypesFile} from './mac.ts';
 
 function sha256(data: Uint8Array) {
 	return createHash('sha256').update(data).digest('hex');

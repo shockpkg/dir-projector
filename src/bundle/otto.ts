@@ -1,5 +1,5 @@
-import {ProjectorOtto} from '../projector/otto';
-import {Bundle} from '../bundle';
+import {ProjectorOtto} from '../projector/otto.ts';
+import {Bundle} from '../bundle.ts';
 
 /**
  * BundleOtto object.

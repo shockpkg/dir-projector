@@ -3,11 +3,15 @@ import {ok} from 'node:assert';
 import {copyFile} from 'node:fs/promises';
 import {join as pathJoin} from 'node:path';
 
-import {cleanProjectorDir, fixtureFile, getPackageFile} from '../../util.spec';
-import {ProjectorOtto} from '../otto';
+import {
+	cleanProjectorDir,
+	fixtureFile,
+	getPackageFile
+} from '../../util.spec.ts';
+import {ProjectorOtto} from '../otto.ts';
 
-import {ProjectorOttoMac} from './mac';
-import {listSamples} from './mac.spec';
+import {ProjectorOttoMac} from './mac.ts';
+import {listSamples} from './mac.spec.ts';
 
 void describe('projector/otto/mac', () => {
 	void describe('ProjectorOttoMac', () => {

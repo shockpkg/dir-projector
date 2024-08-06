@@ -1,10 +1,10 @@
 import {basename, dirname, join as pathJoin} from 'node:path';
 import {mkdir, writeFile} from 'node:fs/promises';
 
-import {trimExtension} from '../util';
-import {ProjectorOttoDummy} from '../projector/otto.spec';
+import {trimExtension} from '../util.ts';
+import {ProjectorOttoDummy} from '../projector/otto.spec.ts';
 
-import {BundleOtto} from './otto';
+import {BundleOtto} from './otto.ts';
 
 export class BundleOttoDummy extends BundleOtto {
 	public readonly projector: ProjectorOttoDummy;

@@ -3,11 +3,11 @@ import {ok} from 'node:assert';
 import {copyFile} from 'node:fs/promises';
 import {join as pathJoin} from 'node:path';
 
-import {cleanProjectorDir, fixtureFile} from '../util.spec';
-import {Projector} from '../projector';
+import {cleanProjectorDir, fixtureFile} from '../util.spec.ts';
+import {Projector} from '../projector.ts';
 
-import {ProjectorOtto} from './otto';
-import {ProjectorOttoDummy} from './otto.spec';
+import {ProjectorOtto} from './otto.ts';
+import {ProjectorOttoDummy} from './otto.spec.ts';
 
 const getDir = async (d: string) => cleanProjectorDir('otto', 'dummy', d);
 

@@ -4,10 +4,10 @@ import {join as pathJoin, basename, dirname} from 'node:path';
 import {fsLstatExists} from '@shockpkg/archive-files';
 import {Plist, ValueDict, ValueString} from '@shockpkg/plist-dom';
 
-import {trimExtension} from '../../util';
-import {machoTypesFile, machoAppLauncher} from '../../util/mac';
-import {ProjectorOttoMac} from '../../projector/otto/mac';
-import {BundleOtto} from '../otto';
+import {trimExtension} from '../../util.ts';
+import {machoTypesFile, machoAppLauncher} from '../../util/mac.ts';
+import {ProjectorOttoMac} from '../../projector/otto/mac.ts';
+import {BundleOtto} from '../otto.ts';
 
 /**
  * BundleOttoMac object.

@@ -1,6 +1,6 @@
 import {open} from 'node:fs/promises';
 
-import {launcher} from '../util';
+import {launcher} from '../util.ts';
 
 const FAT_MAGIC = 0xcafebabe;
 const MH_MAGIC = 0xfeedface;

@@ -2,11 +2,14 @@ import {describe, it} from 'node:test';
 import {ok} from 'node:assert';
 import {join as pathJoin} from 'node:path';
 
-import {listSamples, versionStrings} from '../../projector/otto/windows.spec';
-import {cleanBundlesDir, fixtureFile, getPackageFile} from '../../util.spec';
-import {BundleOtto} from '../otto';
+import {
+	listSamples,
+	versionStrings
+} from '../../projector/otto/windows.spec.ts';
+import {cleanBundlesDir, fixtureFile, getPackageFile} from '../../util.spec.ts';
+import {BundleOtto} from '../otto.ts';
 
-import {BundleOttoWindows} from './windows';
+import {BundleOttoWindows} from './windows.ts';
 
 void describe('bundle/otto/windows', () => {
 	void describe('BundleWindows', () => {

@@ -1,4 +1,4 @@
-import {ProjectorOtto} from './otto';
+import {ProjectorOtto} from './otto.ts';
 
 export class ProjectorOttoDummy extends ProjectorOtto {
 	constructor(path: string) {

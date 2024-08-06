@@ -1,4 +1,4 @@
-import {shouldTest, getInstalledPackagesSync} from '../../util.spec';
+import {shouldTest, getInstalledPackagesSync} from '../../util.spec.ts';
 
 export function listSamples() {
 	if (!shouldTest('windows-i386')) {

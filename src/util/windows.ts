@@ -6,7 +6,7 @@ import {
 	Data
 } from '@shockpkg/resedit';
 
-import {align, launcher} from '../util';
+import {align, launcher} from '../util.ts';
 
 // IMAGE_DATA_DIRECTORY indexes.
 const IDD_RESOURCE = 2;

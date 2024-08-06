@@ -12,8 +12,8 @@ import {
 	pathRelativeBase,
 	pathRelativeBaseMatch,
 	trimExtension
-} from '../../util';
-import {IFilePatch, ProjectorOtto} from '../otto';
+} from '../../util.ts';
+import {IFilePatch, ProjectorOtto} from '../otto.ts';
 
 /**
  * ProjectorOttoMac object.

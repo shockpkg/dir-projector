@@ -2,11 +2,11 @@ import {describe, it} from 'node:test';
 import {ok} from 'node:assert';
 import {join as pathJoin} from 'node:path';
 
-import {listSamples} from '../../projector/otto/mac.spec';
-import {cleanBundlesDir, fixtureFile, getPackageFile} from '../../util.spec';
-import {BundleOtto} from '../otto';
+import {listSamples} from '../../projector/otto/mac.spec.ts';
+import {cleanBundlesDir, fixtureFile, getPackageFile} from '../../util.spec.ts';
+import {BundleOtto} from '../otto.ts';
 
-import {BundleOttoMac} from './mac';
+import {BundleOttoMac} from './mac.ts';
 
 void describe('bundle/otto/mac', () => {
 	void describe('BundleOttoMac', () => {
