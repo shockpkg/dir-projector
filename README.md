@@ -14,11 +14,11 @@ Package for creating Shockwave Director projectors
 
 Creates Shockwave Director projectors from a projector skeleton.
 
-Takes either a directory containing a skeleton or a shockpkg projector package file.
+Takes either a directory containing a skeleton or an archive containing a skeleton (shockpkg package file). Can also generate HTML files to embed content.
 
 Can also create bundles that group the projector and resources in a directory beside a single launcher for Windows or within an application bundle for macOS.
 
-Reading DMG projector packages is only supported on macOS.
+Reading DMG projector packages is only supported on macOS, using ZIP packages instead is recommended.
 
 Currently only flat projectors are supported, not the kind that Director makes where everything is appended to the main binary in some format, and extracted to a temporary directory when run.
 
@@ -26,9 +26,9 @@ Currently only flat projectors are supported, not the kind that Director makes w
 
 ## Projector
 
-### Otto
+### Projector Otto
 
-#### Windows
+#### Projector Otto Windows
 
 ```js
 import {ProjectorOttoWindows} from '@shockpkg/dir-projector';
@@ -81,7 +81,7 @@ projector.patchShockwave3dInstalledDisplayDriversSize = true;
 await projector.write();
 ```
 
-#### Mac
+#### Projector Otto Mac
 
 ```js
 import {ProjectorOttoMac} from '@shockpkg/dir-projector';
@@ -135,7 +135,7 @@ projector.nestXtrasContents = true;
 await projector.write();
 ```
 
-### HTML
+### Projector HTML
 
 ```js
 import {ProjectorHtml} from '@shockpkg/dir-projector';
@@ -183,9 +183,9 @@ await projector.write();
 
 ## Bundle
 
-### Otto
+### Bundle Otto
 
-#### Windows
+#### Bundle Otto Windows
 
 ```js
 import {BundleOttoWindows} from '@shockpkg/dir-projector';
@@ -204,7 +204,7 @@ await bundle.write(async b => {
 });
 ```
 
-#### Mac
+#### Bundle Otto Mac
 
 ```js
 import {BundleOttoMac} from '@shockpkg/dir-projector';
@@ -223,7 +223,7 @@ await bundle.write(async b => {
 });
 ```
 
-### HTML
+### Bundle HTML
 
 ```js
 import {BundleHtml} from '@shockpkg/dir-projector';
