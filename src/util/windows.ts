@@ -50,7 +50,7 @@ export interface IPeResourceReplace {
  * @returns Version integers ([MS, LS]) or null.
  */
 export function peVersionInts(version: string): [number, number] | null {
-	const parts = version.split(/[.,]/);
+	const parts = version.split(/[,.]/);
 	const numbers = [];
 	for (const part of parts) {
 		const n = /^\d+$/.test(part) ? +part : -1;
@@ -392,11 +392,12 @@ interface IPatcherPatch {
  * @returns Bytes and null values.
  */
 function patchHexToBytes(str: string) {
-	return (str.replace(/[\s\r\n]/g, '').match(/.{1,2}/g) || []).map(s => {
+	return (str.replace(/\s/g, '').match(/.{1,2}/g) || []).map(s => {
 		if (s.length !== 2) {
 			throw new Error('Internal error');
 		}
-		return /[0-9A-F]{2}/i.test(s) ? parseInt(s, 16) : null;
+		// eslint-disable-next-line unicorn/prefer-number-properties
+		return /[\da-f]{2}/i.test(s) ? parseInt(s, 16) : null;
 	});
 }
 
@@ -557,7 +558,7 @@ const patch3dDisplayDriversSizePatches: IPatcherPatch[] = [
  */
 function patchDataOnce(
 	data: Uint8Array,
-	candidates: Readonly<IPatcherPatch[]>,
+	candidates: readonly IPatcherPatch[],
 	name: string
 ) {
 	// Search the buffer for patch candidates.
@@ -572,7 +573,8 @@ function patchDataOnce(
 		const end = data.length - find.length;
 		for (let i = 0; i < end; i++) {
 			let found = true;
-			for (let j = 0; j < find.length; j++) {
+			const {length} = find;
+			for (let j = 0; j < length; j++) {
 				const b = find[j];
 				if (b !== null && data[i + j] !== b) {
 					found = false;
@@ -596,7 +598,8 @@ function patchDataOnce(
 	}
 
 	// Apply the patch to the buffer, and write to file.
-	for (let i = 0; i < foundPatch.length; i++) {
+	const {length} = foundPatch;
+	for (let i = 0; i < length; i++) {
 		const b = foundPatch[i];
 		if (b !== null) {
 			data[foundOffset + i] = b;

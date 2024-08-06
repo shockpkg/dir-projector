@@ -97,11 +97,11 @@ export abstract class ProjectorOtto extends Projector {
 	 * Lingo data.
 	 */
 	public lingoData:
-		| Readonly<string[]>
+		| readonly string[]
 		| string
 		| Readonly<Uint8Array>
-		| (() => Readonly<string[]> | string | Readonly<Uint8Array>)
-		| (() => Promise<Readonly<string[]> | string | Readonly<Uint8Array>>)
+		| (() => readonly string[] | string | Readonly<Uint8Array>)
+		| (() => Promise<readonly string[] | string | Readonly<Uint8Array>>)
 		| null = null;
 
 	/**
@@ -128,11 +128,11 @@ export abstract class ProjectorOtto extends Projector {
 	 * Config data.
 	 */
 	public configData:
-		| Readonly<string[]>
+		| readonly string[]
 		| string
 		| Readonly<Uint8Array>
-		| (() => Readonly<string[]> | string | Readonly<Uint8Array>)
-		| (() => Promise<Readonly<string[]> | string | Readonly<Uint8Array>>)
+		| (() => readonly string[] | string | Readonly<Uint8Array>)
+		| (() => Promise<readonly string[] | string | Readonly<Uint8Array>>)
 		| null = null;
 
 	/**
@@ -367,7 +367,7 @@ export abstract class ProjectorOtto extends Projector {
 	 * @returns Best match or null.
 	 */
 	public findIncludeXtrasMappingsBestMatch(
-		mappings: Readonly<IIncludeXtraMapping[]>,
+		mappings: readonly IIncludeXtraMapping[],
 		path: string
 	) {
 		let best: IIncludeXtraMappingBest | null = null;
@@ -396,7 +396,7 @@ export abstract class ProjectorOtto extends Projector {
 	 * @returns Output path or null.
 	 */
 	public includeXtrasMappingsDest(
-		mappings: Readonly<IIncludeXtraMapping[]>,
+		mappings: readonly IIncludeXtraMapping[],
 		path: string
 	) {
 		const best = this.findIncludeXtrasMappingsBestMatch(mappings, path);

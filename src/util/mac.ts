@@ -138,7 +138,7 @@ export async function machoAppLauncherThin(type: Readonly<IMachoType>) {
  * @returns Launcher data.
  */
 export async function machoAppLauncherFat(
-	types: Readonly<Readonly<IMachoType>[]>
+	types: readonly Readonly<IMachoType>[]
 ) {
 	// The lipo utility always uses 12/4096 for ppc, ppc64, i386, and x86_64.
 	const align = 12;
@@ -230,7 +230,7 @@ export async function machoAppLauncherFat(
  * @returns Launcher data.
  */
 export async function machoAppLauncher(
-	types: Readonly<IMachoType> | Readonly<Readonly<IMachoType>[]>
+	types: Readonly<IMachoType> | readonly Readonly<IMachoType>[]
 ) {
 	return Array.isArray(types)
 		? machoAppLauncherFat(types)

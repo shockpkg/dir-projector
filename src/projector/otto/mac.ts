@@ -541,6 +541,7 @@ export class ProjectorOttoMac extends ProjectorOtto {
 			if (entry.type === PathType.FILE) {
 				let data: Uint8Array | null = null;
 				for (const patch of patches) {
+					// eslint-disable-next-line unicorn/prefer-regexp-test
 					if (patch.match(entry.volumePath)) {
 						if (!data) {
 							// eslint-disable-next-line no-await-in-loop
@@ -729,7 +730,7 @@ export class ProjectorOttoMac extends ProjectorOtto {
 				this._getPatchPkgInfo(),
 				this._getPatchInfoPlist()
 			])
-		).filter(p => p) as IFilePatch[];
+		).filter(Boolean) as IFilePatch[];
 	}
 
 	/**
