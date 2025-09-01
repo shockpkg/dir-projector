@@ -148,35 +148,35 @@ projector.width = 640;
 projector.height = 480;
 
 // Optionally configure HTML document.
-p.lang = 'en-US';
-p.title = 'A "special" title with <html> characters';
-p.background = '#000000';
-p.color = '#999999';
+projector.lang = 'en-US';
+projector.title = 'A "special" title with <html> characters';
+projector.background = '#000000';
+projector.color = '#999999';
 
 // Optionally configure object/param/embed elements.
-p.bgcolor = '#000000';
-p.id = 'element-id';
-p.name = 'element-name';
-p.codebase =
+projector.bgcolor = '#000000';
+projector.id = 'element-id';
+projector.name = 'element-name';
+projector.codebase =
 	'http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab#version=12,0,0,112';
-p.pluginspage = 'http://www.macromedia.com/shockwave/download/';
-p.swStretchStyle = 'none';
-p.swStretchHAlign = 'center';
-p.swStretchVAlign = 'center';
-p.swRemote =
+projector.pluginspage = 'http://www.macromedia.com/shockwave/download/';
+projector.swStretchStyle = 'none';
+projector.swStretchHAlign = 'center';
+projector.swStretchVAlign = 'center';
+projector.swRemote =
 	"swSaveEnabled='false' swVolume='false' swRestart='false' swPausePlay='false' swFastForward='false' swContextMenu='true'";
-p.sw1 = 'one';
-p.sw2 = 'two';
-p.sw3 = 'three';
-p.sw4 = 'four';
-p.sw5 = 'five';
-p.sw6 = 'six';
-p.sw7 = 'seven';
-p.sw8 = 'eight';
-p.sw9 = 'nine';
-p.progress = false;
-p.logo = false;
-p.playerVersion = 12;
+projector.sw1 = 'one';
+projector.sw2 = 'two';
+projector.sw3 = 'three';
+projector.sw4 = 'four';
+projector.sw5 = 'five';
+projector.sw6 = 'six';
+projector.sw7 = 'seven';
+projector.sw8 = 'eight';
+projector.sw9 = 'nine';
+projector.progress = false;
+projector.logo = false;
+projector.playerVersion = 12;
 
 await projector.write();
 ```
